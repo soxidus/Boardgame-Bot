@@ -9,10 +9,10 @@ Commands:
     ich                 - Nimm am nächsten Spieleabend teil!
     start_umfrage_spiel - Wähle, welches Spiel du spielen möchtest! (nur in Gruppen)
     start_erweiterung   - Stimmt ab, welche Erweiterung eines Spiels ihr spielen wollt. (nur in Gruppen)
-    ende_umgfrage       - Beende die Abstimmung. (nur in Gruppen)
+    ende_umfrage        - Beende die Abstimmung. (nur in Gruppen)
     ergebnis            - Lass dir die bisher abgegebenen Stimmen anzeigen.
     spiele              - Ich sage dir, welche Spiele du bei mir angemeldet hast.
-    erweiterung         - Ich sage dir, welche Erweiterungen du bei mir angemeldet hast.
+    erweiterungen       - Ich sage dir, welche Erweiterungen du bei mir angemeldet hast.
     neues_spiel         - Trag dein neues Spiel ein!
     neue_erweiterung    - Trag deine neue Erweiterung ein.
     leeren              - Lösche alle laufenden Pläne und Abstimmungen (laufende Spiel-Eintragungen etc. sind davon nicht betroffen)
