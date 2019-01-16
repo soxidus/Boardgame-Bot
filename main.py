@@ -1,6 +1,6 @@
 from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove)
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters)
-
+import telegram
 """
 Commands:
     key                 - Authentifiziere dich!
@@ -92,6 +92,7 @@ def help(bot, update):
 def main():
     """Start the bot."""
 
+    print(telegram.webhookinfo)
     # ''' chris temp test bot '''
     # updater = Updater("745861447:AAFgmej56K8weT-dpaxe97A6Ak-pTOptk-s")
 
@@ -103,19 +104,19 @@ def main():
 
     # on different commands - answer in Telegram
     dp.add_handler(CommandHandler("start", start))
-    dp.add_handler(CommandHandler("start", key))
-    dp.add_handler(CommandHandler("start", neuertermin))
-    dp.add_handler(CommandHandler("help", ich))
-    dp.add_handler(CommandHandler("start", start_umfrage_spiel))
-    dp.add_handler(CommandHandler("start", start_erweiterung))
-    dp.add_handler(CommandHandler("start", ende_umfrage))
-    dp.add_handler(CommandHandler("start", ergebnis))
-    dp.add_handler(CommandHandler("start", spiele))
-    dp.add_handler(CommandHandler("start", erweiterungen))
-    dp.add_handler(CommandHandler("start", neues_spiel))
-    dp.add_handler(CommandHandler("start", neue_erweiterung))
-    dp.add_handler(CommandHandler("start", leeren))
-    dp.add_handler(CommandHandler("start", help))
+    dp.add_handler(CommandHandler("key", key))
+    dp.add_handler(CommandHandler("neuertermin", neuertermin))
+    dp.add_handler(CommandHandler("ich", ich))
+    dp.add_handler(CommandHandler("start_umfrage_spiel", start_umfrage_spiel))
+    dp.add_handler(CommandHandler("start_erweiterung", start_erweiterung))
+    dp.add_handler(CommandHandler("ende_umfrage", ende_umfrage))
+    dp.add_handler(CommandHandler("ergebnis", ergebnis))
+    dp.add_handler(CommandHandler("spiele", spiele))
+    dp.add_handler(CommandHandler("erweiterungen", erweiterungen))
+    dp.add_handler(CommandHandler("neues_spiel", neues_spiel))
+    dp.add_handler(CommandHandler("neue_erweiterung", neue_erweiterung))
+    dp.add_handler(CommandHandler("leeren", leeren))
+    dp.add_handler(CommandHandler("help", help))
 
     # on noncommand i.e message - echo the message on Telegram
     # dp.add_handler(MessageHandler(Filters.text, echo))
