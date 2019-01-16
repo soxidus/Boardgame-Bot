@@ -19,19 +19,17 @@ but also to use an IDE that helps with formatting and testing.
 
 For this reason I use [**PyCharm**](https://www.jetbrains.com/pycharm/)
 
-to install telepot pip should also be installed:
+to install the [Telegram Bot Framework](https://python-telegram-bot.org/) pip should also be installed:
 
 ```shell
 sudo apt-get install python-pip
-sudo pip install telepot
+sudo pip install python-telegram-bot
 ```
 
-afterwards we may test if telepot is working by executing inside an Python Environment:
+afterwards we may test if everything is working by executing inside an Python Environment:
 
 ``` Shell
-import telepot
-bot = telepot.Bot('*** copy bot token from browser ***')
-bot.getMe()
+import telegram.ext
 ```
 
 And that's it!

@@ -1,6 +1,5 @@
-import time
-import telepot
-from telepot.loop import MessageLoop
+from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove)
+from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters)
 
 """
 Commands:
@@ -20,30 +19,104 @@ Commands:
 """
 
 
-def commands(msg):
-    chat_id = msg['chat']['id']
-    command = msg['text']
-
-    print('Got command: %s' % command)
-
-    if command == '/key':
-        bot.sendMessage(chat_id, "Authenticate!!")
-    elif command.startswith('/'):
-        bot.sendMessage(chat_id, command)
-        bot.sendMessage(chat_id, "So far this does nothing else!")
+def start(bot, update):
+    """Send a message when the command /start is issued."""
+    update.message.reply_text('Hi! Authentifizier dich bitte erst um mit mir zu reden')
 
 
-# Run stuff
+def key(bot, update):
+    """Send a message when the command /help is issued."""
+    update.message.reply_text('Help!')
 
-# chris temp test bot
-# bot = telepot.Bot('745861447:AAFgmej56K8weT-dpaxe97A6Ak-pTOptk-s')
 
-# real test bot
-bot = telepot.Bot('702260882:AAF3VcoDbf3sSRVDht5xM3JYu-QNywEpgZg')
+def neuertermin(bot, update):
+    """Send a message when the command /help is issued."""
+    update.message.reply_text('Help!')
 
-MessageLoop(bot, commands).run_as_thread()
 
-print('I am listening ...')
+def ich(bot, update):
+    """Send a message when the command /help is issued."""
+    update.message.reply_text('Help!')
 
-while 1:
-    time.sleep(10)
+
+def start_umfrage_spiel(bot, update):
+    """Send a message when the command /help is issued."""
+    update.message.reply_text('Help!')
+
+
+def start_erweiterung(bot, update):
+    """Send a message when the command /help is issued."""
+    update.message.reply_text('Help!')
+
+
+def ende_umfrage(bot, update):
+    """Send a message when the command /help is issued."""
+    update.message.reply_text('Help!')
+
+
+def ergebnis(bot, update):
+    """Send a message when the command /help is issued."""
+    update.message.reply_text('Help!')
+
+
+def spiele(bot, update):
+    """Send a message when the command /help is issued."""
+    update.message.reply_text('Help!')
+
+
+def erweiterungen(bot, update):
+    """Send a message when the command /help is issued."""
+    update.message.reply_text('Help!')
+
+
+def neues_spiel(bot, update):
+    """Send a message when the command /help is issued."""
+    update.message.reply_text('Help!')
+
+
+def neue_erweiterung(bot, update):
+    """Send a message when the command /help is issued."""
+    update.message.reply_text('Help!')
+
+
+def leeren(bot, update):
+    """Send a message when the command /help is issued."""
+    update.message.reply_text('Help!')
+
+
+def help(bot, update):
+    """Send a message when the command /help is issued."""
+    update.message.reply_text('Help!')
+
+
+def main():
+    """Start the bot."""
+
+    # ''' chris temp test bot '''
+    # updater = Updater("745861447:AAFgmej56K8weT-dpaxe97A6Ak-pTOptk-s")
+
+    # Create the EventHandler and pass it your bot's token.
+    updater = Updater("702260882:AAF3VcoDbf3sSRVDht5xM3JYu-QNywEpgZg")
+
+    # Get the dispatcher to register handlers
+    dp = updater.dispatcher
+
+    # on different commands - answer in Telegram
+    dp.add_handler(CommandHandler("start", start))
+    dp.add_handler(CommandHandler("help", help))
+
+    # on noncommand i.e message - echo the message on Telegram
+    # dp.add_handler(MessageHandler(Filters.text, echo))
+
+    # Start the Bot
+    updater.start_polling()
+
+    # Run the bot until you press Ctrl-C or the process receives SIGINT,
+    # SIGTERM or SIGABRT. This should be used most of the time, since
+    # start_polling() is non-blocking and will stop the bot gracefully.
+    updater.idle()
+
+
+if __name__ == '__main__':
+    main()
+
