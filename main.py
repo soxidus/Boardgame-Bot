@@ -103,7 +103,19 @@ def main():
 
     # on different commands - answer in Telegram
     dp.add_handler(CommandHandler("start", start))
-    dp.add_handler(CommandHandler("help", help))
+    dp.add_handler(CommandHandler("start", key))
+    dp.add_handler(CommandHandler("start", neuertermin))
+    dp.add_handler(CommandHandler("help", ich))
+    dp.add_handler(CommandHandler("start", start_umfrage_spiel))
+    dp.add_handler(CommandHandler("start", start_erweiterung))
+    dp.add_handler(CommandHandler("start", ende_umfrage))
+    dp.add_handler(CommandHandler("start", ergebnis))
+    dp.add_handler(CommandHandler("start", spiele))
+    dp.add_handler(CommandHandler("start", erweiterungen))
+    dp.add_handler(CommandHandler("start", neues_spiel))
+    dp.add_handler(CommandHandler("start", neue_erweiterung))
+    dp.add_handler(CommandHandler("start", leeren))
+    dp.add_handler(CommandHandler("start", help))
 
     # on noncommand i.e message - echo the message on Telegram
     # dp.add_handler(MessageHandler(Filters.text, echo))
