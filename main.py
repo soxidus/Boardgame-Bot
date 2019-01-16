@@ -27,8 +27,8 @@ def commands(msg):
     print('Got command: %s' % command)
 
     if command == '/key':
-        bot.sendMessage(chat_id,"Authenticate!!")
-    else:
+        bot.sendMessage(chat_id, "Authenticate!!")
+    elif command.startswith('/'):
         bot.sendMessage(chat_id, command)
         bot.sendMessage(chat_id, "So far this does nothing else!")
 
