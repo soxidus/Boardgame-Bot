@@ -26,73 +26,72 @@ def start(bot, update):
 
 def key(bot, update):
     """Send a message when the command /help is issued."""
-    update.message.reply_text('Help!')
+    update.message.reply_text('Wie ist das Passwort?')
 
 
 def neuertermin(bot, update):
     """Send a message when the command /help is issued."""
-    update.message.reply_text('Help!')
+    update.message.reply_text('Erstellt einen neuen Temrin!')
 
 
 def ich(bot, update):
     """Send a message when the command /help is issued."""
-    update.message.reply_text('Help!')
+    update.message.reply_text('OK du hast zugesagt!')
 
 
 def start_umfrage_spiel(bot, update):
     """Send a message when the command /help is issued."""
-    update.message.reply_text('Help!')
+    update.message.reply_text('Welches Spiel wollt ihr Spielen')
 
 
 def start_erweiterung(bot, update):
     """Send a message when the command /help is issued."""
-    update.message.reply_text('Help!')
+    update.message.reply_text('Welche Erweiterung?')
 
 
 def ende_umfrage(bot, update):
     """Send a message when the command /help is issued."""
-    update.message.reply_text('Help!')
+    update.message.reply_text('Umfrage Vorbei!!')
 
 
 def ergebnis(bot, update):
     """Send a message when the command /help is issued."""
-    update.message.reply_text('Help!')
+    update.message.reply_text('Das Ergebnis ist...')
 
 
 def spiele(bot, update):
     """Send a message when the command /help is issued."""
-    update.message.reply_text('Help!')
+    update.message.reply_text('Du hast folgende Spiele:')
 
 
 def erweiterungen(bot, update):
     """Send a message when the command /help is issued."""
-    update.message.reply_text('Help!')
+    update.message.reply_text('Du hast folgende Erweiterungen:')
 
 
 def neues_spiel(bot, update):
     """Send a message when the command /help is issued."""
-    update.message.reply_text('Help!')
+    update.message.reply_text('Wie heißt das Spiel?')
 
 
 def neue_erweiterung(bot, update):
     """Send a message when the command /help is issued."""
-    update.message.reply_text('Help!')
+    update.message.reply_text('Wie heißt die Erweiterung?')
 
 
 def leeren(bot, update):
     """Send a message when the command /help is issued."""
-    update.message.reply_text('Help!')
+    update.message.reply_text('Alles zurückgesetzt')
 
 
 def help(bot, update):
     """Send a message when the command /help is issued."""
-    update.message.reply_text('Help!')
+    update.message.reply_text('Folgende Funktionen stehen Zur Verfügung: ...')
 
 
 def main():
     """Start the bot."""
 
-    print(telegram.webhookinfo)
     # ''' chris temp test bot '''
     # updater = Updater("745861447:AAFgmej56K8weT-dpaxe97A6Ak-pTOptk-s")
 
