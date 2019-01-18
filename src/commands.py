@@ -1,4 +1,4 @@
- # coding=utf-8
+# coding=utf-8
 
 from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove)
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters)
@@ -35,10 +35,6 @@ def key(bot, update):
     msg = bot.send_message(update.message.chat_id,
                            'Wie ist das Passwort?',
                            reply_markup=ForceReply())
-
-    print(update.message)
-
-#    if :
 
 
 def neuertermin(bot, update):
