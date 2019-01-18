@@ -7,10 +7,15 @@ from telegram.ext import (Updater, CommandHandler, Filters, MessageHandler)
 import logging
 import reply_handler
 
-def main():
 
+<<<<<<< HEAD
     # logging.basicConfig(level=logging.DEBUG,
     #                 format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+=======
+def main():
+    logging.basicConfig(level=logging.DEBUG,
+                        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+>>>>>>> d592d67439b180321766c8cc3591bcea2d0decf1
 
     # Create the EventHandler and pass it your bot's token.
     #    bot = telegram.bot(token="702260882:AAF3VcoDbf3sSRVDht5xM3JYu-QNywEpgZg")
