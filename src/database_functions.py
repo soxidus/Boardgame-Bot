@@ -1,24 +1,21 @@
 import mysql.connector
 
 
-def setup_database():
-        testdb = mysql.connector.connect(
-            host="localhost",
-            user="testuser",
-            passwd="password",
-            database="testdb"
-        )
-
-        cursor_testdb = testdb.cursor()
-        cursor_testdb.execute("")
-
-        authdb = mysql.connector.connect(
+def setup_database(db):
+    if db == 'auth':
+        db = mysql.connector.connect(
             host="localhost",
             user="testuser",
             passwd="password",
             database="auth"
         )
 
-        cursor_authdb = authdb.cursor()
-        cursor_authdb.execute("")
+    if db == 'testdb':
+        db = mysql.connector.connect(
+            host="localhost",
+            user="testuser",
+            passwd="password",
+            database="testdb"
+        )
 
+    return db
