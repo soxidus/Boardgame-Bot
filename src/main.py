@@ -5,12 +5,8 @@ from telegram.ext import (Updater, CommandHandler)
 
 
 def main():
-
-    # SETUP Database
-    setup_database()
-
     # Create the EventHandler and pass it your bot's token.
-#    bot = telegram.bot(token="702260882:AAF3VcoDbf3sSRVDht5xM3JYu-QNywEpgZg")
+    #    bot = telegram.bot(token="702260882:AAF3VcoDbf3sSRVDht5xM3JYu-QNywEpgZg")
     updater = Updater("702260882:AAF3VcoDbf3sSRVDht5xM3JYu-QNywEpgZg")
 
     # Get the dispatcher to register handlers

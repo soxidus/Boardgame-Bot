@@ -1,7 +1,7 @@
 import mysql.connector
 
 
-def setup_database(db):
+def choose_database(db):
     if db == 'auth':
         db = mysql.connector.connect(
             host="localhost",
