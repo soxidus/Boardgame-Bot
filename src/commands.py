@@ -4,6 +4,7 @@ from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove)
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters)
 from telegram import *
 from database_functions import *
+import reply_handler
 
 """
 Commands:
@@ -25,17 +26,16 @@ Commands:
 
 def start(bot, update):
     bot.send_message(update.message.chat_id,
-                     'Hi! Authentifizier dich bitte erst um mit mir zu reden')
+                     'Hi! Authentifiziere dich bitte erst, um mit mir zu reden')
     key(bot, update)
 
 
 def key(bot, update):
-    passphrase = "Minze"
-
     msg = bot.send_message(update.message.chat_id,
-                           'Wie ist das Passwort?',
+                           'Wie lautet das Passwort?',
                            reply_markup=ForceReply())
 
+    reply_handler.reply_jobs.add(msg.message_id, "auth")
 
 def neuertermin(bot, update):
     update.message.reply_text('Erstellt einen neuen Temrin!')

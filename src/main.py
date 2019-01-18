@@ -1,16 +1,16 @@
 # coding=utf-8
 
-from reply_handler import *
 from database_functions import *
 from commands import *
 from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove)
 from telegram.ext import (Updater, CommandHandler, Filters, MessageHandler)
 import logging
+import reply_handler
 
 def main():
 
-    logging.basicConfig(level=logging.DEBUG,
-                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    # logging.basicConfig(level=logging.DEBUG,
+    #                 format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
     # Create the EventHandler and pass it your bot's token.
     #    bot = telegram.bot(token="702260882:AAF3VcoDbf3sSRVDht5xM3JYu-QNywEpgZg")
@@ -19,7 +19,8 @@ def main():
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
 
-    dp.add_handler(MessageHandler(Filters.reply, handle_reply))
+    dp.add_handler(MessageHandler(Filters.reply, reply_handler.handle_reply))
+    reply_handler.init_reply_jobs()
 
     # on different commands - answer in Telegram
     dp.add_handler(CommandHandler("start", start))
