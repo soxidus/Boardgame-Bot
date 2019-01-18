@@ -37,10 +37,6 @@ def add_entry(db, table, entry, values):
         sql = "INSERT INTO " + table + " " + entry + " " + valcountstr + ")"
         mycursor.execute(sql, values)
 
-    print(sql)
-    print(values)
-#   might need parsing
-
     db.commit()
 
 
