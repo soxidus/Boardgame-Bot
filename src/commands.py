@@ -35,6 +35,7 @@ def key(bot, update):
     msg = bot.send_message(update.message.chat_id,
                            'Wie ist das Passwort?',
                            reply_markup=ForceReply())
+    add_user_auth(update.message.chat_id)
 
 
 def neuertermin(bot, update):
