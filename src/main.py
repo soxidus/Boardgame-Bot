@@ -1,6 +1,7 @@
+from src.database_functions import *
 from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove)
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters)
-import telegram
+from telegram import *
 """
 Commands:
     key                 - Authentifiziere dich!
@@ -21,12 +22,16 @@ Commands:
 
 def start(bot, update):
     """Send a message when the command /start is issued."""
-    update.message.reply_text('Hi! Authentifizier dich bitte erst um mit mir zu reden')
 
+#    bot.send_message(chat_id=update.message.chat_id, text="I'm a bot, please talk to me!")
+    print (update.message.chat_id)
+    bot.send_message(update.message.chat_id,
+                     'Hi! Authentifizier dich bitte erst um mit mir zu reden',
+                     reply_markup=ForceReply())
 
 def key(bot, update):
     """Send a message when the command /help is issued."""
-    update.message.reply_text('Wie ist das Passwort?')
+    update.se('Wie ist das Passwort?')
 
 
 def neuertermin(bot, update):
@@ -95,7 +100,12 @@ def main():
     # ''' chris temp test bot '''
     # updater = Updater("745861447:AAFgmej56K8weT-dpaxe97A6Ak-pTOptk-s")
 
+    # SETUP Database
+    setup_database()
+
+
     # Create the EventHandler and pass it your bot's token.
+#    bot = telegram.bot(token="702260882:AAF3VcoDbf3sSRVDht5xM3JYu-QNywEpgZg")
     updater = Updater("702260882:AAF3VcoDbf3sSRVDht5xM3JYu-QNywEpgZg")
 
     # Get the dispatcher to register handlers
@@ -131,4 +141,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

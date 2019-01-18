@@ -32,6 +32,11 @@ afterwards we may test if everything is working by executing inside an Python En
 import telegram.ext
 ```
 
-And that's it!
+~~And that's it!~~
 
-Now you are good to go and may start working on our lovely bot!
+Almost... for the integration of the Database we need to import mysql connector
+```
+pip install mysql-connector
+```
+
+NOW you are good to go and may start working on our lovely bot!
