@@ -1,3 +1,5 @@
+# coding=utf-8
+
 from src.database_functions import *
 from src.commands import *
 from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove)

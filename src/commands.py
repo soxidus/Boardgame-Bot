@@ -1,3 +1,5 @@
+ # coding=utf-8
+
 from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove)
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters)
 from telegram import *
