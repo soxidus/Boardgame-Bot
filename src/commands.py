@@ -71,7 +71,9 @@ def erweiterungen(bot, update):
 
 def neues_spiel(bot, update):
     update.message.reply_text('Wie heißt das Spiel?')
+    val = ("titlegoeshere", "useridgoeshere", "playercountgoeshere")
 
+    add_game_into_db(val)
 
 def neue_erweiterung(bot, update):
     update.message.reply_text('Wie heißt die Erweiterung?')
