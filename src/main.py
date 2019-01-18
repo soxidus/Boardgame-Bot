@@ -1,5 +1,5 @@
-from src.database_functions import *
-from src.commands import *
+from database_functions import *
+from commands import *
 from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove)
 from telegram.ext import (Updater, CommandHandler)
 

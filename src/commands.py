@@ -1,7 +1,7 @@
 from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove)
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters)
 from telegram import *
-from src.database_functions import *
+from database_functions import *
 
 """
 Commands:
