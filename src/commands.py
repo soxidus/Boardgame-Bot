@@ -38,6 +38,7 @@ def key(bot, update):
 
     reply_handler.reply_jobs.add(msg.message_id, "auth")
 
+
 def neuertermin(bot, update):
     update.message.reply_text('Erstellt einen neuen Temrin!')
 
@@ -75,6 +76,7 @@ def neues_spiel(bot, update):
     val = ("titlegoeshere", "useridgoeshere", "playercountgoeshere")
 
     add_game_into_db(val)
+
 
 def neue_erweiterung(bot, update):
     update.message.reply_text('Wie heißt die Erweiterung?')
