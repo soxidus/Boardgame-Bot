@@ -32,12 +32,29 @@ def add_entry(db, table, entry, values):
         mycursor.execute(sql)
     else:
         valcountstr = "VALUES (%s"
-        for _ in range(len(values)-1):
+        for _ in range(len(values) - 1):
             valcountstr += ",%s "
         sql = "INSERT INTO " + table + " " + entry + " " + valcountstr + ")"
         mycursor.execute(sql, values)
 
     db.commit()
+
+
+def search_single_entry(db, table, entry, values):
+    mycursor = db.cursor()
+
+    if isinstance(values, int):
+        sql = "SELECT * FROM " + table + " WHERE " + entry + " = " + str(values)
+        mycursor.execute(sql)
+    if isinstance(values, str):
+        sql = "SELECT * FROM " + table + " WHERE " + entry + " = " + str(values)
+        mycursor.execute(sql)
+    else:
+        pass
+
+    result = mycursor.fetchall()
+
+    return result
 
 
 def add_game_into_db(values):
@@ -53,3 +70,12 @@ def add_expansion_into_db(values):
 def add_user_auth(user):
     entry = "(id)"
     add_entry(choose_database("auth"), "users", entry, user)
+
+
+def check_user(user):
+    result_user = search_single_entry(choose_database("auth"), "users", "id", user)
+
+    if len(result_user) == 0:
+        return 0
+    else:
+        return 1

@@ -34,57 +34,91 @@ def key(bot, update):
     msg = bot.send_message(update.message.chat_id,
                            'Wie lautet das Passwort?',
                            reply_markup=ForceReply())
-    # add_user_auth(update.message.chat_id)
 
     reply_handler.reply_jobs.add(msg.message_id, "auth")
 
 
 def neuertermin(bot, update):
-    update.message.reply_text('Erstellt einen neuen Temrin!')
+    if check_user(update.message.chat_id):
+        update.message.reply_text('Erstellt einen neuen Temrin!')
+    else:
+        update.message.reply_text('Bitte Authentifiziere dich zuerst!!')
 
 
 def ich(bot, update):
-    update.message.reply_text('OK du hast zugesagt!')
+    if check_user(update.message.chat_id):
+        update.message.reply_text('OK du hast zugesagt!')
+    else:
+        update.message.reply_text('Bitte Authentifiziere dich zuerst!!')
 
 
 def start_umfrage_spiel(bot, update):
-    update.message.reply_text('Welches Spiel wollt ihr Spielen')
+    if check_user(update.message.chat_id):
+        update.message.reply_text('Welches Spiel wollt ihr Spielen')
+    else:
+        update.message.reply_text('Bitte Authentifiziere dich zuerst!!')
 
 
 def start_erweiterung(bot, update):
-    update.message.reply_text('Welche Erweiterung?')
+    if check_user(update.message.chat_id):
+        update.message.reply_text('Welche Erweiterung?')
+    else:
+        update.message.reply_text('Bitte Authentifiziere dich zuerst!!')
 
 
 def ende_umfrage(bot, update):
-    update.message.reply_text('Umfrage Vorbei!!')
+    if check_user(update.message.chat_id):
+        update.message.reply_text('Umfrage Vorbei!!')
+    else:
+        update.message.reply_text('Bitte Authentifiziere dich zuerst!!')
 
 
 def ergebnis(bot, update):
-    update.message.reply_text('Das Ergebnis ist...')
+    if check_user(update.message.chat_id):
+        update.message.reply_text('Das Ergebnis ist...')
+    else:
+        update.message.reply_text('Bitte Authentifiziere dich zuerst!!')
 
 
 def spiele(bot, update):
-    update.message.reply_text('Du hast folgende Spiele:')
+    if check_user(update.message.chat_id):
+        update.message.reply_text('Du hast folgende Spiele:')
+    else:
+        update.message.reply_text('Bitte Authentifiziere dich zuerst!!')
 
 
 def erweiterungen(bot, update):
-    update.message.reply_text('Du hast folgende Erweiterungen:')
+    if check_user(update.message.chat_id):
+        update.message.reply_text('Du hast folgende Erweiterungen:')
+    else:
+        update.message.reply_text('Bitte Authentifiziere dich zuerst!!')
 
 
 def neues_spiel(bot, update):
-    update.message.reply_text('Wie heißt das Spiel?')
-    val = ("titlegoeshere", "useridgoeshere", "playercountgoeshere")
-
-    add_game_into_db(val)
+    if check_user(update.message.chat_id):
+        update.message.reply_text('Wie heißt das Spiel?')
+        val = ("titlegoeshere", "useridgoeshere", "playercountgoeshere")
+        add_game_into_db(val)
+    else:
+        update.message.reply_text('Bitte Authentifiziere dich zuerst!!')
 
 
 def neue_erweiterung(bot, update):
-    update.message.reply_text('Wie heißt die Erweiterung?')
+    if check_user(update.message.chat_id):
+        update.message.reply_text('Wie heißt die Erweiterung?')
+    else:
+        update.message.reply_text('Bitte Authentifiziere dich zuerst!!')
 
 
 def leeren(bot, update):
-    update.message.reply_text('Alles zurückgesetzt')
+    if check_user(update.message.chat_id):
+        update.message.reply_text('Alles zurückgesetzt')
+    else:
+        update.message.reply_text('Bitte Authentifiziere dich zuerst!!')
 
 
 def help(bot, update):
-    update.message.reply_text('Folgende Funktionen stehen Zur Verfügung: ...')
+    if check_user(update.message.chat_id):
+        update.message.reply_text('Folgende Funktionen stehen Zur Verfügung: ...')
+    else:
+        update.message.reply_text('Bitte Authentifiziere dich zuerst!!')

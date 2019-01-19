@@ -51,8 +51,11 @@ def auth(update):
     passphrase = "Minze"
 
     if update.message.text == passphrase:
-        update.message.reply_text("Super! Wir dürfen jetzt miteinander reden.")
-
+        if not check_user(update.message.chat_id):
+            add_user_auth(update.message.chat_id)
+            update.message.reply_text("Super! Wir dürfen jetzt miteinander reden.")
+        else:
+            update.message.reply_text("Du musst das Passwort nicht nochmal eingeben... Rede einfach mit mir!")
     else:
         update.message.reply_text("Schade, das hat leider nicht funktioniert. Mach es gut!")
         update.message.chat.leave()
