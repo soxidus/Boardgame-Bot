@@ -27,18 +27,21 @@ class ForceReplyJobs(object):
         where = self.types_to_indices[reply_type]
         self.message_IDs[where].append(id)                    
 
+
 def init_reply_jobs():
     global reply_jobs
     reply_jobs = ForceReplyJobs()
 
+
 def handle_reply(bot, update):
 
-    dispatch = {"auth":auth, "game_title":default, "game_players":default, "expansion_for":default, "expansion_title":default, "expansion_poll_game":default, "date":default}
+    dispatch = {"auth": auth, "game_title": default, "game_players": default, "expansion_for": default,
+                "expansion_title": default, "expansion_poll_game": default, "date": default}
 
     try:
         which = reply_jobs.is_set(update.message.reply_to_message.message_id)
     except AttributeError:
-        print ("Nope")
+        print("Nope")
         return
     
     dispatch[which].__call__(update)
@@ -53,6 +56,7 @@ def auth(update):
     else:
         update.message.reply_text("Schade, das hat leider nicht funktioniert. Mach es gut!")
         update.message.chat.leave()
+
 
 def default(update):
     update.message.reply_to("Ja... Bald...")

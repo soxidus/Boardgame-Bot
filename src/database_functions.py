@@ -53,4 +53,3 @@ def add_expansion_into_db(values):
 def add_user_auth(user):
     entry = "(id)"
     add_entry(choose_database("auth"), "users", entry, user)
-
