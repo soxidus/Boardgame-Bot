@@ -57,6 +57,22 @@ def search_single_entry(db, table, entry, values):
     return result
 
 
+def search_single_entry_substring(db, table, entry, values):
+    mycursor = db.cursor()
+
+    if isinstance(values, int):
+        sql = "SELECT * FROM " + table + " WHERE " + entry + " LIKE \'%" + str(values) + "%\'"
+        mycursor.execute(sql)
+    if isinstance(values, str):
+        sql = "SELECT * FROM " + table + " WHERE " + entry + " LIKE \'%" + str(values) + "%\'"
+        mycursor.execute(sql)
+    else:
+        pass
+    result = mycursor.fetchall()
+
+    return result
+
+
 def add_game_into_db(values):
     entry = "(title, owner, playercount)"
     add_entry(choose_database("testdb"), "games", entry, values)
@@ -79,3 +95,12 @@ def check_user(user):
         return 0
     else:
         return 1
+
+
+def check_household(user):
+    users_string = search_single_entry_substring(choose_database("testdb"), "households", "user_ids", user)
+
+    if len(users_string) == 0:
+        return user
+    else:
+        return users_string

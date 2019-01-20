@@ -69,6 +69,7 @@ after that we switch to our testuser:
 mysql -u testuser -p
 USE testdb;
 CREATE TABLE games (title VARCHAR(255), owner VARCHAR(255), playercount VARCHAR(255));
+CREATE TABLE households (user_ids VARCHAR(255));
 USE auth;
 CREATE TABLE users (id INT AUTO_INCREMENT PRIMARY KEY);
 quit

@@ -4,7 +4,9 @@ from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove)
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters)
 from telegram import *
 from database_functions import *
+from parse_strings import *
 import reply_handler
+
 
 """
 Commands:
