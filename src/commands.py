@@ -106,30 +106,42 @@ def ergebnis(bot, update):
 
 def spiele(bot, update):
     if check_user(update.message.chat_id):
-        update.message.reply_text('Du hast folgende Spiele:')
+        if update.message.chat.type == "group":
+            pass
+        if update.message.chat.type == "private":
+            update.message.reply_text('Du hast folgende Spiele:')
     else:
         update.message.reply_text('Bitte Authentifiziere dich zuerst!!')
 
 
 def erweiterungen(bot, update):
     if check_user(update.message.chat_id):
-        update.message.reply_text('Du hast folgende Erweiterungen:')
+        if update.message.chat.type == "group":
+            pass
+        if update.message.chat.type == "private":
+            update.message.reply_text('Du hast folgende Erweiterungen:')
     else:
         update.message.reply_text('Bitte Authentifiziere dich zuerst!!')
 
 
 def neues_spiel(bot, update):
     if check_user(update.message.chat_id):
-        update.message.reply_text('Wie heißt das Spiel?')
-        val = ("titlegoeshere", "useridgoeshere", "playercountgoeshere")
-        add_game_into_db(val)
+        if update.message.chat.type == "group":
+            pass
+        if update.message.chat.type == "private":
+            update.message.reply_text('Wie heißt das Spiel?')
+            val = ("titlegoeshere", "useridgoeshere", "playercountgoeshere")
+            add_game_into_db(val)
     else:
         update.message.reply_text('Bitte Authentifiziere dich zuerst!!')
 
 
 def neue_erweiterung(bot, update):
     if check_user(update.message.chat_id):
-        update.message.reply_text('Wie heißt die Erweiterung?')
+        if update.message.chat.type == "group":
+            pass
+        if update.message.chat.type == "private":
+            update.message.reply_text('Wie heißt die Erweiterung?')
     else:
         update.message.reply_text('Bitte Authentifiziere dich zuerst!!')
 
