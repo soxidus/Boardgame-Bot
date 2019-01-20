@@ -119,6 +119,29 @@ def leeren(bot, update):
 
 def help(bot, update):
     if check_user(update.message.chat_id):
-        update.message.reply_text('Folgende Funktionen stehen Zur Verfügung: ...')
+        if update.message.chat.type == "private":
+            bot.send_message(update.message.chat_id,
+                             'Folgende Funktionen stehen Zur Verfügung:\n'
+                             '/key - Authentifiziere dich!\n'
+                             '/ergebnis - Lass dir die bisher abgegebenen Stimmen anzeigen.\n'
+                             '/spiele - Ich sage dir, welche Spiele du bei mir angemeldet hast.\n'
+                             '/erweiterungen - Ich sage dir, welche Erweiterungen du bei mir angemeldet hast.\n'
+                             '/neues_spiel - Trag dein neues Spiel ein!\n'
+                             '/neue_erweiterung - Trag deine neue Erweiterung ein.\n'
+                             '/help - Was kann ich alles tun?')
+        if update.message.chat.type == "group":
+            bot.send_message(update.message.chat_id,
+                             'Folgende Funktionen stehen Zur Verfügung:\n'
+                             '/key - Authentifiziere dich!\n'
+                             '/neuertermin - Wir wollen spielen! (nur in Gruppen)\n'
+                             '/ich - Nimm am nächsten Spieleabend teil! (nur in Gruppen)\n'
+                             '/start_umfrage_spiel - Wähle, welches Spiel du spielen möchtest! (nur in Gruppen)\n'
+                             '/start_erweiterung - Stimmt ab, welche Erweiterung eines Spiels ihr spielen wollt. (nur '
+                             'in Gruppen)\n '
+                             '/ende_umfrage - Beende die Abstimmung. (nur in Gruppen)\n'
+                             '/ergebnis - Lass dir die bisher abgegebenen Stimmen anzeigen.\n'
+                             '/leeren - Lösche alle laufenden Pläne und Abstimmungen (laufende Spiel-Eintragungen '
+                             'etc. sind davon nicht betroffen)\n '
+                             '/help - Was kann ich alles tun?')
     else:
         update.message.reply_text('Bitte Authentifiziere dich zuerst!!')
