@@ -40,42 +40,66 @@ def key(bot, update):
 
 def neuertermin(bot, update):
     if check_user(update.message.chat_id):
-        update.message.reply_text('Erstellt einen neuen Temrin!')
+        if update.message.chat.type == "group":
+            update.message.reply_text('Erstellt einen neuen Temrin!')
+        if update.message.chat.type == "private":
+            update.message.reply_text('NEIN! das hat hier nichts zu suchen!\n'
+                                      'versuch s nochmal im Gruppenchat...')
     else:
         update.message.reply_text('Bitte Authentifiziere dich zuerst!!')
 
 
 def ich(bot, update):
     if check_user(update.message.chat_id):
-        update.message.reply_text('OK du hast zugesagt!')
+        if update.message.chat.type == "group":
+            update.message.reply_text('OK du hast zugesagt!')
+        if update.message.chat.type == "private":
+            update.message.reply_text('NEIN! das hat hier nichts zu suchen!\n'
+                                      'versuch s nochmal im Gruppenchat...')
     else:
         update.message.reply_text('Bitte Authentifiziere dich zuerst!!')
 
 
 def start_umfrage_spiel(bot, update):
     if check_user(update.message.chat_id):
-        update.message.reply_text('Welches Spiel wollt ihr Spielen')
+        if update.message.chat.type == "group":
+            update.message.reply_text('Welches Spiel wollt ihr Spielen')
+        if update.message.chat.type == "private":
+            update.message.reply_text('Wirklich?! Eine Umfrage nur für dich?\n'
+                                      'starte doch bitte eine Umfrage im Gruppenchat...')
     else:
         update.message.reply_text('Bitte Authentifiziere dich zuerst!!')
 
 
 def start_erweiterung(bot, update):
     if check_user(update.message.chat_id):
-        update.message.reply_text('Welche Erweiterung?')
+        if update.message.chat.type == "group":
+            update.message.reply_text('Welche Erweiterung?')
+        if update.message.chat.type == "private":
+            update.message.reply_text('Wirklich?! Eine Umfrage nur für dich?\n'
+                                      'starte doch bitte eine Umfrage im Gruppenchat...')
     else:
         update.message.reply_text('Bitte Authentifiziere dich zuerst!!')
 
 
 def ende_umfrage(bot, update):
     if check_user(update.message.chat_id):
-        update.message.reply_text('Umfrage Vorbei!!')
+        if update.message.chat.type == "group":
+            update.message.reply_text('Umfrage Vorbei!!')
+        if update.message.chat.type == "private":
+            update.message.reply_text('NEIN! das hat hier nichts zu suchen!\n'
+                                      'versuch s nochmal im Gruppenchat...')
     else:
         update.message.reply_text('Bitte Authentifiziere dich zuerst!!')
 
 
 def ergebnis(bot, update):
     if check_user(update.message.chat_id):
-        update.message.reply_text('Das Ergebnis ist...')
+        if update.message.chat.type == "group":
+            update.message.reply_text('Das Ergebnis ist...')
+        if update.message.chat.type == "private":
+            update.message.reply_text('NEIN! das hat hier nichts zu suchen!\n'
+                                      'versuch s nochmal im Gruppenchat...')
     else:
         update.message.reply_text('Bitte Authentifiziere dich zuerst!!')
 
@@ -112,7 +136,11 @@ def neue_erweiterung(bot, update):
 
 def leeren(bot, update):
     if check_user(update.message.chat_id):
-        update.message.reply_text('Alles zurückgesetzt')
+        if update.message.chat.type == "group":
+            update.message.reply_text('Alles zurückgesetzt')
+        if update.message.chat.type == "private":
+            update.message.reply_text('NEIN! das hat hier nichts zu suchen!\n'
+                                      'versuch s nochmal im Gruppenchat...')
     else:
         update.message.reply_text('Bitte Authentifiziere dich zuerst!!')
 
