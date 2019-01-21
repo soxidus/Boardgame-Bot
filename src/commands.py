@@ -7,7 +7,6 @@ from database_functions import *
 from parse_strings import *
 import reply_handler
 
-
 """
 Commands:
     key                 - Authentifiziere dich!
@@ -131,9 +130,18 @@ def neues_spiel(bot, update):
         if update.message.chat.type == "group":
             pass
         if update.message.chat.type == "private":
-            update.message.reply_text('Wie heißt das Spiel?')
-            val = ("titlegoeshere", "useridgoeshere", "playercountgoeshere")
-            add_game_into_db(val)
+            msg = bot.send_message(update.message.chat_id,
+                                   'Wie heißt das Spiel?',
+                                   reply_markup=ForceReply())
+
+            print(reply_handler.reply_jobs.add(msg.message_id, "game_title"))
+
+    #           user_or_household_id = check_household(update.message.from_user.username)
+
+    #          val = ("titlegoeshere", user_or_household_id, "playercountgoeshere")
+
+    #         print(user_or_household_id)
+    #        add_game_into_db(val)
     else:
         update.message.reply_text('Bitte Authentifiziere dich zuerst!!')
 
@@ -143,7 +151,11 @@ def neue_erweiterung(bot, update):
         if update.message.chat.type == "group":
             pass
         if update.message.chat.type == "private":
-            update.message.reply_text('Wie heißt die Erweiterung?')
+            msg = bot.send_message(update.message.chat_id,
+                                   'Wie heißt die Erweiterung?',
+                                   reply_markup=ForceReply())
+
+            reply_handler.reply_jobs.add(msg.message_id, "game_title")
     else:
         update.message.reply_text('Bitte Authentifiziere dich zuerst!!')
 

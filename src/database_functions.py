@@ -103,4 +103,4 @@ def check_household(user):
     if len(users_string) == 0:
         return user
     else:
-        return users_string
+        return users_string[0][0]
