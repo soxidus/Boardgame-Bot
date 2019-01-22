@@ -13,7 +13,8 @@ class ForceReplyJobs(object):
                         5: "expansion_poll_game", 6: "date"}
 
     def __init__(self):
-        self.message_IDs = [[]]
+        #   we can't append on unknown items, so INIT the Array or find an other Solution
+        self.message_IDs = [[], [], [], [], [], [], []]
 
     def is_set(self, id):
         no_types = len(self.message_IDs)
@@ -25,22 +26,23 @@ class ForceReplyJobs(object):
 
     def add(self, id, reply_type):
         where = self.types_to_indices[reply_type]
-        self.message_IDs[where].append(id)                    
+        self.message_IDs[where].append(id)
+
 
 def init_reply_jobs():
     global reply_jobs
     reply_jobs = ForceReplyJobs()
 
-def handle_reply(bot, update):
 
-    dispatch = {"auth":auth, "game_title":default, "game_players":default, "expansion_for":default, "expansion_title":default, "expansion_poll_game":default, "date":default}
+def handle_reply(bot, update):
+    dispatch = {"auth": auth, "game_title": game_title, "game_players": default, "expansion_for": default,
+                "expansion_title": default, "expansion_poll_game": default, "date": default}
 
     try:
         which = reply_jobs.is_set(update.message.reply_to_message.message_id)
     except AttributeError:
-        print ("Nope")
+        print("Nope")
         return
-    
     dispatch[which].__call__(update)
 
 
@@ -48,11 +50,19 @@ def auth(update):
     passphrase = "Minze"
 
     if update.message.text == passphrase:
-        update.message.reply_text("Super! Wir dürfen jetzt miteinander reden.")
-
+        if not check_user(update.message.chat_id):
+            add_user_auth(update.message.chat_id)
+            update.message.reply_text("Super! Wir dürfen jetzt miteinander reden.")
+        else:
+            update.message.reply_text("Du musst das Passwort nicht nochmal eingeben... Rede einfach mit mir!")
     else:
         update.message.reply_text("Schade, das hat leider nicht funktioniert. Mach es gut!")
         update.message.chat.leave()
+
+
+def game_title(update):
+        update.message.reply_text("great!!!")
+
 
 def default(update):
     update.message.reply_to("Ja... Bald...")

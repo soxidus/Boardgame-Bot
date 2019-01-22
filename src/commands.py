@@ -4,6 +4,7 @@ from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove)
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters)
 from telegram import *
 from database_functions import *
+from parse_strings import *
 import reply_handler
 
 """
@@ -37,51 +38,164 @@ def key(bot, update):
 
     reply_handler.reply_jobs.add(msg.message_id, "auth")
 
+
 def neuertermin(bot, update):
-    update.message.reply_text('Erstellt einen neuen Temrin!')
+    if check_user(update.message.chat_id):
+        if update.message.chat.type == "group":
+            update.message.reply_text('Erstellt einen neuen Temrin!')
+        if update.message.chat.type == "private":
+            update.message.reply_text('NEIN! das hat hier nichts zu suchen!\n'
+                                      'versuch s nochmal im Gruppenchat...')
+    else:
+        update.message.reply_text('Bitte Authentifiziere dich zuerst!!')
 
 
 def ich(bot, update):
-    update.message.reply_text('OK du hast zugesagt!')
+    if check_user(update.message.chat_id):
+        if update.message.chat.type == "group":
+            update.message.reply_text('OK du hast zugesagt!')
+        if update.message.chat.type == "private":
+            update.message.reply_text('NEIN! das hat hier nichts zu suchen!\n'
+                                      'versuch s nochmal im Gruppenchat...')
+    else:
+        update.message.reply_text('Bitte Authentifiziere dich zuerst!!')
 
 
 def start_umfrage_spiel(bot, update):
-    update.message.reply_text('Welches Spiel wollt ihr Spielen')
+    if check_user(update.message.chat_id):
+        if update.message.chat.type == "group":
+            update.message.reply_text('Welches Spiel wollt ihr Spielen')
+        if update.message.chat.type == "private":
+            update.message.reply_text('Wirklich?! Eine Umfrage nur für dich?\n'
+                                      'starte doch bitte eine Umfrage im Gruppenchat...')
+    else:
+        update.message.reply_text('Bitte Authentifiziere dich zuerst!!')
 
 
 def start_erweiterung(bot, update):
-    update.message.reply_text('Welche Erweiterung?')
+    if check_user(update.message.chat_id):
+        if update.message.chat.type == "group":
+            update.message.reply_text('Welche Erweiterung?')
+        if update.message.chat.type == "private":
+            update.message.reply_text('Wirklich?! Eine Umfrage nur für dich?\n'
+                                      'starte doch bitte eine Umfrage im Gruppenchat...')
+    else:
+        update.message.reply_text('Bitte Authentifiziere dich zuerst!!')
 
 
 def ende_umfrage(bot, update):
-    update.message.reply_text('Umfrage Vorbei!!')
+    if check_user(update.message.chat_id):
+        if update.message.chat.type == "group":
+            update.message.reply_text('Umfrage Vorbei!!')
+        if update.message.chat.type == "private":
+            update.message.reply_text('NEIN! das hat hier nichts zu suchen!\n'
+                                      'versuch s nochmal im Gruppenchat...')
+    else:
+        update.message.reply_text('Bitte Authentifiziere dich zuerst!!')
 
 
 def ergebnis(bot, update):
-    update.message.reply_text('Das Ergebnis ist...')
+    if check_user(update.message.chat_id):
+        if update.message.chat.type == "group":
+            update.message.reply_text('Das Ergebnis ist...')
+        if update.message.chat.type == "private":
+            update.message.reply_text('NEIN! das hat hier nichts zu suchen!\n'
+                                      'versuch s nochmal im Gruppenchat...')
+    else:
+        update.message.reply_text('Bitte Authentifiziere dich zuerst!!')
 
 
 def spiele(bot, update):
-    update.message.reply_text('Du hast folgende Spiele:')
+    if check_user(update.message.chat_id):
+        if update.message.chat.type == "group":
+            pass
+        if update.message.chat.type == "private":
+            update.message.reply_text('Du hast folgende Spiele:')
+    else:
+        update.message.reply_text('Bitte Authentifiziere dich zuerst!!')
 
 
 def erweiterungen(bot, update):
-    update.message.reply_text('Du hast folgende Erweiterungen:')
+    if check_user(update.message.chat_id):
+        if update.message.chat.type == "group":
+            pass
+        if update.message.chat.type == "private":
+            update.message.reply_text('Du hast folgende Erweiterungen:')
+    else:
+        update.message.reply_text('Bitte Authentifiziere dich zuerst!!')
 
 
 def neues_spiel(bot, update):
-    update.message.reply_text('Wie heißt das Spiel?')
-    val = ("titlegoeshere", "useridgoeshere", "playercountgoeshere")
+    if check_user(update.message.chat_id):
+        if update.message.chat.type == "group":
+            pass
+        if update.message.chat.type == "private":
+            msg = bot.send_message(update.message.chat_id,
+                                   'Wie heißt das Spiel?',
+                                   reply_markup=ForceReply())
 
-    add_game_into_db(val)
+            print(reply_handler.reply_jobs.add(msg.message_id, "game_title"))
+
+    #           user_or_household_id = check_household(update.message.from_user.username)
+
+    #          val = ("titlegoeshere", user_or_household_id, "playercountgoeshere")
+
+    #         print(user_or_household_id)
+    #        add_game_into_db(val)
+    else:
+        update.message.reply_text('Bitte Authentifiziere dich zuerst!!')
+
 
 def neue_erweiterung(bot, update):
-    update.message.reply_text('Wie heißt die Erweiterung?')
+    if check_user(update.message.chat_id):
+        if update.message.chat.type == "group":
+            pass
+        if update.message.chat.type == "private":
+            msg = bot.send_message(update.message.chat_id,
+                                   'Wie heißt die Erweiterung?',
+                                   reply_markup=ForceReply())
+
+            reply_handler.reply_jobs.add(msg.message_id, "game_title")
+    else:
+        update.message.reply_text('Bitte Authentifiziere dich zuerst!!')
 
 
 def leeren(bot, update):
-    update.message.reply_text('Alles zurückgesetzt')
+    if check_user(update.message.chat_id):
+        if update.message.chat.type == "group":
+            update.message.reply_text('Alles zurückgesetzt')
+        if update.message.chat.type == "private":
+            update.message.reply_text('NEIN! das hat hier nichts zu suchen!\n'
+                                      'versuch s nochmal im Gruppenchat...')
+    else:
+        update.message.reply_text('Bitte Authentifiziere dich zuerst!!')
 
 
 def help(bot, update):
-    update.message.reply_text('Folgende Funktionen stehen Zur Verfügung: ...')
+    if check_user(update.message.chat_id):
+        if update.message.chat.type == "private":
+            bot.send_message(update.message.chat_id,
+                             'Folgende Funktionen stehen Zur Verfügung:\n'
+                             '/key - Authentifiziere dich!\n'
+                             '/ergebnis - Lass dir die bisher abgegebenen Stimmen anzeigen.\n'
+                             '/spiele - Ich sage dir, welche Spiele du bei mir angemeldet hast.\n'
+                             '/erweiterungen - Ich sage dir, welche Erweiterungen du bei mir angemeldet hast.\n'
+                             '/neues_spiel - Trag dein neues Spiel ein!\n'
+                             '/neue_erweiterung - Trag deine neue Erweiterung ein.\n'
+                             '/help - Was kann ich alles tun?')
+        if update.message.chat.type == "group":
+            bot.send_message(update.message.chat_id,
+                             'Folgende Funktionen stehen Zur Verfügung:\n'
+                             '/key - Authentifiziere dich!\n'
+                             '/neuertermin - Wir wollen spielen! (nur in Gruppen)\n'
+                             '/ich - Nimm am nächsten Spieleabend teil! (nur in Gruppen)\n'
+                             '/start_umfrage_spiel - Wähle, welches Spiel du spielen möchtest! (nur in Gruppen)\n'
+                             '/start_erweiterung - Stimmt ab, welche Erweiterung eines Spiels ihr spielen wollt. (nur '
+                             'in Gruppen)\n '
+                             '/ende_umfrage - Beende die Abstimmung. (nur in Gruppen)\n'
+                             '/ergebnis - Lass dir die bisher abgegebenen Stimmen anzeigen.\n'
+                             '/leeren - Lösche alle laufenden Pläne und Abstimmungen (laufende Spiel-Eintragungen '
+                             'etc. sind davon nicht betroffen)\n '
+                             '/help - Was kann ich alles tun?')
+    else:
+        update.message.reply_text('Bitte Authentifiziere dich zuerst!!')
