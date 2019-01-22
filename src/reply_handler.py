@@ -52,7 +52,7 @@ def auth(update):
     if update.message.text == passphrase:
         if not check_user(update.message.chat_id):
             add_user_auth(update.message.chat_id)
-            update.message.reply_text("Super! Wir dürfen jetzt miteinander reden.")
+            update.message.reply_text("Super! Wir dürfen jetzt miteinander reden.", reply_markup = ReplyKeyboardRemove())
         else:
             update.message.reply_text("Du musst das Passwort nicht nochmal eingeben... Rede einfach mit mir!")
     else:
