@@ -34,7 +34,6 @@ def key(bot, update):
     msg = bot.send_message(update.message.chat_id,
                            'Wie lautet das Passwort?',
                            reply_markup=ForceReply())
-    # add_user_auth(update.message.chat_id)
 
     reply_handler.reply_jobs.add(msg.message_id, "auth")
 
