@@ -37,7 +37,7 @@ def main():
     dp.add_handler(CommandHandler("neue_erweiterung", neue_erweiterung))
     dp.add_handler(CommandHandler("leeren", leeren))
     dp.add_handler(CommandHandler("help", help))
-
+    dp.add_handler(CommandHandler("stop", stop))
     # Start the Bot
     updater.start_polling()
     updater.idle()

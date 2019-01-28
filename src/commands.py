@@ -131,7 +131,8 @@ def neues_spiel(bot, update):
             pass
         if update.message.chat.type == "private":
             msg = bot.send_message(update.message.chat_id,
-                                   'Wie heißt das Spiel?',
+                                   'Wie heißt das Spiel?\n'
+                                   '/stop ist immer eine Option um abzubrechen!!',
                                    reply_markup=ForceReply())
 
             print(reply_handler.reply_jobs.add(msg.message_id, "game_title"))
@@ -152,7 +153,8 @@ def neue_erweiterung(bot, update):
             pass
         if update.message.chat.type == "private":
             msg = bot.send_message(update.message.chat_id,
-                                   'Wie heißt die Erweiterung?',
+                                   'Wie heißt die Erweiterung?\n'
+                                   '/stop ist immer eine Option um abzubrechen!!',
                                    reply_markup=ForceReply())
 
             reply_handler.reply_jobs.add(msg.message_id, "game_title")
@@ -169,6 +171,10 @@ def leeren(bot, update):
                                       'versuch s nochmal im Gruppenchat...')
     else:
         update.message.reply_text('Bitte Authentifiziere dich zuerst!!')
+
+
+def stop(bot, update):
+    update.message.reply_text("OKAY Hier ist nichts passiert!!")
 
 
 def help(bot, update):
