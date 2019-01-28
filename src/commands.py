@@ -134,8 +134,7 @@ def neues_spiel(bot, update):
                                    'Wie heißt das Spiel?\n'
                                    '/stop ist immer eine Option um abzubrechen!!',
                                    reply_markup=ForceReply())
-
-            print(reply_handler.reply_jobs.add(msg.message_id, "game_title"))
+            reply_handler.reply_jobs.add(msg.message_id, "game_title")
 
     #           user_or_household_id = check_household(update.message.from_user.username)
 

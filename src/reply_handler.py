@@ -41,7 +41,6 @@ def handle_reply(bot, update):
 
     try:
         which = reply_jobs.is_set(update.message.reply_to_message.message_id)
-        print(which)
     except AttributeError:
         print("Nope")
         return
