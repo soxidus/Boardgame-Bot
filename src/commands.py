@@ -57,6 +57,7 @@ def ich(bot, update):
         if update.message.chat.type == "private":
             update.message.reply_text('NEIN! das hat hier nichts zu suchen!\n'
                                       'versuch s nochmal im Gruppenchat...')
+
     else:
         update.message.reply_text('Bitte Authentifiziere dich zuerst!!')
 
@@ -140,8 +141,6 @@ def neues_spiel(bot, update):
                                                     "new_game," + user_or_household_id + ",")
 
     #          val = ("titlegoeshere", user_or_household_id, "playercountgoeshere")
-
-    #         print(user_or_household_id)
     #        add_game_into_db(val)
     else:
         update.message.reply_text('Bitte Authentifiziere dich zuerst!!')
@@ -177,7 +176,6 @@ def leeren(bot, update):
 def stop(bot, update):
     reply_handler.reply_jobs.clear_query()
     update.message.reply_text("OKAY Hier ist nichts passiert!!")
-
 
 
 def help(bot, update):

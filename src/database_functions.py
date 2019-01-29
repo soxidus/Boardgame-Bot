@@ -40,6 +40,15 @@ def add_entry(db, table, entry, values):
     db.commit()
 
 
+def add_game(db, table, entry, values):
+    mycursor = db.cursor()
+    valcountstr = "VALUES ("
+    sql = "INSERT INTO " + table + " " + entry + " " + valcountstr + values + ")"
+    mycursor.execute(sql)
+
+    db.commit()
+
+
 def search_single_entry(db, table, entry, values):
     mycursor = db.cursor()
 
@@ -74,12 +83,12 @@ def search_single_entry_substring(db, table, entry, values):
 
 
 def add_game_into_db(values):
-    entry = "(title, owner, playercount)"
-    add_entry(choose_database("testdb"), "games", entry, values)
+    entry = "(owner, title, playercount)"
+    add_game(choose_database("testdb"), "games", entry, values)
 
 
 def add_expansion_into_db(values):
-    entry = "(title, owner, basegame)"
+    entry = "(owner, title, basegame)"
     add_entry(choose_database("testdb"), "games", entry, values)
 
 

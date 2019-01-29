@@ -4,6 +4,7 @@ from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove)
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters)
 from telegram import *
 from database_functions import *
+from parse_strings import *
 
 
 class ForceReplyJobs(object):
@@ -48,8 +49,8 @@ def init_reply_jobs():
 
 def handle_reply(bot, update):
     call_library = {"auth": auth, "game_title": game_title, "game_players": default, "expansion_for": default,
-                "expansion_title": default, "expansion_poll_game": default,
-                "date": default, "game_max": game_max}
+                    "expansion_title": default, "expansion_poll_game": default,
+                    "date": default, "game_max": game_max}
 
     try:
         which = reply_jobs.is_set(update.message.reply_to_message.message_id)
@@ -80,7 +81,6 @@ def auth(update):
 
 
 def game_title(update, bot, query):
-
     if update.message.text == "/stop":
         reply_jobs.clear_query()
         bot.send_message(update.message.chat_id,
@@ -94,14 +94,19 @@ def game_title(update, bot, query):
 
 
 def game_max(update, bot, query):
-
     if update.message.text == "/stop":
         reply_jobs.clear_query()
         bot.send_message(update.message.chat_id,
                          'OKAY Hier ist nichts passiert!!')
     else:
+        query = query + "," + update.message.text
+        update.message.reply_text(query)
 
-        update.message.reply_text(query + "," + update.message.text)
+        if parse_csv(query)[0] == "new_game":
+            add_game_into_db(parse_values_from_array(remove_first_string(query)))
+
+        else:
+            pass
         reply_jobs.clear_query()
 
 
