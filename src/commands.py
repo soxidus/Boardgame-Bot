@@ -134,9 +134,10 @@ def neues_spiel(bot, update):
                                    'Wie heißt das Spiel?\n'
                                    '/stop ist immer eine Option um abzubrechen!!',
                                    reply_markup=ForceReply())
-            reply_handler.reply_jobs.add(msg.message_id, "game_title")
 
-    #           user_or_household_id = check_household(update.message.from_user.username)
+            user_or_household_id = check_household(update.message.from_user.username)
+            reply_handler.reply_jobs.add_with_query(msg.message_id, "game_title",
+                                                    "new_game," + user_or_household_id + ",")
 
     #          val = ("titlegoeshere", user_or_household_id, "playercountgoeshere")
 
@@ -155,8 +156,9 @@ def neue_erweiterung(bot, update):
                                    'Wie heißt die Erweiterung?\n'
                                    '/stop ist immer eine Option um abzubrechen!!',
                                    reply_markup=ForceReply())
-
-            reply_handler.reply_jobs.add(msg.message_id, "game_title")
+            user_or_household_id = check_household(update.message.from_user.username)
+            reply_handler.reply_jobs.add_with_query(msg.message_id, "game_title",
+                                                    "new_expansion," + user_or_household_id)
     else:
         update.message.reply_text('Bitte Authentifiziere dich zuerst!!')
 
@@ -173,7 +175,9 @@ def leeren(bot, update):
 
 
 def stop(bot, update):
+    reply_handler.reply_jobs.clear_query()
     update.message.reply_text("OKAY Hier ist nichts passiert!!")
+
 
 
 def help(bot, update):
