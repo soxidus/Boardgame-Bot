@@ -112,6 +112,8 @@ def spiele(bot, update):
             pass
         if update.message.chat.type == "private":
             update.message.reply_text('Du hast folgende Spiele:')
+            gamestring = to_messagestring(search_entries_by_user(choose_database("testdb"), 'games', update.message.from_user.username))
+            bot.send_message(update.message.chat_id, text=gamestring)
     else:
         update.message.reply_text('Bitte Authentifiziere dich zuerst!!')
 

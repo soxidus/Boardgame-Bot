@@ -82,6 +82,16 @@ def search_single_entry_substring(db, table, entry, values):
     return result
 
 
+def search_entries_by_user(db, table, owner):
+    mycursor = db.cursor()
+
+    sql = "SELECT * FROM " + table + " WHERE owner LIKE \'%" + owner + "%\'"
+    mycursor.execute(sql)
+    result = mycursor.fetchall()
+
+    return result
+
+
 def add_game_into_db(values):
     entry = "(owner, title, playercount)"
     add_game(choose_database("testdb"), "games", entry, values)

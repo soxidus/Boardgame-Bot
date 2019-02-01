@@ -26,3 +26,11 @@ def remove_first_string(data_string):
 def parse_values_from_array(data_array):
     data_string = str(parse_csv(data_array))[1:-1]
     return data_string
+
+
+def to_messagestring(input_str):
+    messagestring = ""
+
+    for _ in range(len(input_str)):
+        messagestring += input_str[_][0] + ",\n"
+    return messagestring
