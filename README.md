@@ -46,7 +46,9 @@ First install Mariadb:
 
 ```apt install mariadb-server``` 
 
-you may now set an password for your DB Root user,
+```sudo mysql_secure_installation```
+
+you may now set a password for your DB Root user,
  iirc. this defaults to either nothing or root pw.
  
 afterwards we log in to the db to create the two databases and the testuser. 
