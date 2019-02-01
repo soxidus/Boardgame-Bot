@@ -53,7 +53,7 @@ you may now set a password for your DB Root user,
  
 afterwards we log in to the db to create the two databases and the testuser. 
 
-```mysql -u root -p```
+```sudo mysql -u root -p```
 
 and execute the Querys:
 
