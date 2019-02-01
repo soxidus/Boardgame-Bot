@@ -66,9 +66,10 @@ GRANT ALL PRIVILEGES ON auth.* TO testuser;
 FLUSH PRIVILEGES;
 quit
 ```  
-after that we switch to our testuser:
+after that we switch to our testuser (configured above):
+```mysql -u testuser -p```
+
 ```
-mysql -u testuser -p
 USE testdb;
 CREATE TABLE games (title VARCHAR(255), owner VARCHAR(255), playercount VARCHAR(255));
 CREATE TABLE households (user_ids VARCHAR(255));
