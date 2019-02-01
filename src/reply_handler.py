@@ -87,7 +87,11 @@ def game_title(update, bot, query):
                          'OKAY Hier ist nichts passiert!!')
     else:
         msg = bot.send_message(update.message.chat_id,
-                               'now tell me the max. player count?\n'
+                               'Mit wie vielen Leuten kann man ' +
+                               update.message.text +
+                               ' maximal spielen?\n'
+                               'Anworte mit EINER Zahl oder einem X, wenn es mit unendlich vielen gespielt werden '
+                               'kann?\n '
                                '/stop ist immer eine Option um abzubrechen!!',
                                reply_markup=ForceReply())
         reply_jobs.add_with_query(msg.message_id, "game_max", update.message.text)
@@ -100,11 +104,11 @@ def game_max(update, bot, query):
                          'OKAY Hier ist nichts passiert!!')
     else:
         query = query + "," + update.message.text
-        update.message.reply_text(query)
 
         if parse_csv(query)[0] == "new_game":
             add_game_into_db(parse_values_from_array(remove_first_string(query)))
-
+            update.message.reply_text("OK!\n"
+                                      "Das Spiel wurde hinzugefügt  \o/")
         else:
             pass
         reply_jobs.clear_query()
