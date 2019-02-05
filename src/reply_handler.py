@@ -103,7 +103,7 @@ def game_max(update, bot, query):
         bot.send_message(update.message.chat_id,
                          'OKAY Hier ist nichts passiert!!')
     else:
-        query = query + "," + update.message.text
+        query = query + "," + update.message.text + "," + generate_uuid_32()
 
         if parse_csv(query)[0] == "new_game":
             add_game_into_db(parse_values_from_array(remove_first_string(query)))

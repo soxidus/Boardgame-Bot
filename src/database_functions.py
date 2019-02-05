@@ -93,12 +93,12 @@ def search_entries_by_user(db, table, owner):
 
 
 def add_game_into_db(values):
-    entry = "(owner, title, playercount)"
+    entry = "(owner, title, playercount, game_uuid)"
     add_game(choose_database("testdb"), "games", entry, values)
 
 
 def add_expansion_into_db(values):
-    entry = "(owner, title, basegame)"
+    entry = "(owner, title, basegame_uuid)"
     add_entry(choose_database("testdb"), "games", entry, values)
 
 

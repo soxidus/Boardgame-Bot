@@ -1,3 +1,6 @@
+import uuid
+
+
 def parse_single_db_entry(query_string):
     query_string = query_string.split('\'')[1]
     return query_string
@@ -34,3 +37,7 @@ def to_messagestring(input_str):
     for _ in range(len(input_str)):
         messagestring += input_str[_][0] + ",\n"
     return messagestring
+
+
+def generate_uuid_32():
+    return uuid.uuid4().hex
