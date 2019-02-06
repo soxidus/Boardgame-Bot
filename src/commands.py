@@ -39,6 +39,16 @@ def key(bot, update):
     reply_handler.reply_jobs.add(msg.message_id, "auth")
 
 
+def csv_import(bot, update):
+    msg = bot.send_message(update.message.chat_id,
+                           'Gib die Daten ein, die du importieren möchtest im csv Format\n'
+                           'Zur Sicherheit über den chat nur max. 50 auf einmal bitte!\n'
+                           'Im Format: Besitzer,Titel,Max. Spielerzahl',
+                           reply_markup=ForceReply())
+
+    reply_handler.reply_jobs.add(msg.message_id, "csv")
+
+
 def neuertermin(bot, update):
     if check_user(update.message.chat_id):
         if update.message.chat.type == "group":

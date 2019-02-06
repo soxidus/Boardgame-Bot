@@ -1,6 +1,7 @@
 # coding=utf-8
 
 import mysql.connector
+from parse_strings import *
 
 
 def choose_database(db):
@@ -95,6 +96,11 @@ def search_entries_by_user(db, table, owner):
 def add_game_into_db(values):
     entry = "(owner, title, playercount, game_uuid)"
     add_game(choose_database("testdb"), "games", entry, values)
+
+
+def add_multiple_games_into_db(csv_string):
+    for _ in range(len(csv_string)):
+        add_game_into_db(generate_query_string(csv_string[_]))
 
 
 def add_expansion_into_db(values):

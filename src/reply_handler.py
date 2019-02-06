@@ -9,13 +9,13 @@ from parse_strings import *
 
 class ForceReplyJobs(object):
     types_to_indices = {"auth": 0, "game_title": 1, "game_players": 2, "expansion_for": 3, "expansion_title": 4,
-                        "expansion_poll_game": 5, "date": 6, "game_max": 7}
+                        "expansion_poll_game": 5, "date": 6, "game_max": 7, "csv": 8}
     indices_to_types = {0: "auth", 1: "game_title", 2: "game_players", 3: "expansion_for", 4: "expansion_title",
-                        5: "expansion_poll_game", 6: "date", 7: "game_max"}
+                        5: "expansion_poll_game", 6: "date", 7: "game_max", 8: "csv"}
 
     def __init__(self):
         #   we can't append on unknown items, so INIT the Array or find an other Solution
-        self.message_IDs = [[], [], [], [], [], [], [], []]
+        self.message_IDs = [[], [], [], [], [], [], [], [], []]
         self.query_string = ''
 
     def is_set(self, id):
@@ -50,7 +50,7 @@ def init_reply_jobs():
 def handle_reply(bot, update):
     call_library = {"auth": auth, "game_title": game_title, "game_players": default, "expansion_for": default,
                     "expansion_title": default, "expansion_poll_game": default,
-                    "date": default, "game_max": game_max}
+                    "date": default, "game_max": game_max, "csv": csv}
 
     try:
         which = reply_jobs.is_set(update.message.reply_to_message.message_id)
@@ -61,6 +61,8 @@ def handle_reply(bot, update):
 
     if which == "game_title" or which == "game_max":
         call_library[which].__call__(update, bot, query)
+    if which == "csv":
+        call_library[which].__call__(update, bot)
     else:
         call_library[which].__call__(update)
 
@@ -112,6 +114,13 @@ def game_max(update, bot, query):
         else:
             pass
         reply_jobs.clear_query()
+
+
+def csv(update, bot):
+    add_multiple_games_into_db(parse_csv_import(update.message.text))
+
+    bot.send_message(update.message.chat_id,
+                     'OKAY, ich hab die spiele eingetragen')
 
 
 def default(update):
