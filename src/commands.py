@@ -21,6 +21,7 @@ Commands:
     neues_spiel         - Trag dein neues Spiel ein!
     neue_erweiterung    - Trag deine neue Erweiterung ein.
     leeren              - Lösche alle laufenden Pläne und Abstimmungen (laufende Spiel-Eintragungen etc. sind davon nicht betroffen)
+    csv_import          - importiere einfach mehrere Spiele in einer nachricht getrennt durch Kommata Pro Zeile ein Spiel
     help                - Was kann ich alles tun?
 """
 
@@ -43,7 +44,8 @@ def csv_import(bot, update):
     msg = bot.send_message(update.message.chat_id,
                            'Gib die Daten ein, die du importieren möchtest im csv Format\n'
                            'Zur Sicherheit über den chat nur max. 50 auf einmal bitte!\n'
-                           'Im Format: Besitzer,Titel,Max. Spielerzahl',
+                           'Im Format: Besitzer,Titel,Max. Spielerzahl'
+                           'Pro Zeile ein Spiel',
                            reply_markup=ForceReply())
 
     reply_handler.reply_jobs.add(msg.message_id, "csv")
