@@ -37,7 +37,6 @@ def key(bot, update):
         msg = bot.send_message(update.message.chat_id,
                             'Wie lautet das Passwort?',
                             reply_markup=ForceReply())
-
         reply_handler.reply_jobs.add(msg.message_id, "auth")
     else:
         update.message.reply_text('Du musst dich nicht authentifizieren. Ich weiß schon, wer du bist!')
@@ -54,7 +53,6 @@ def csv_import(bot, update):
                                 'Format: Besitzer,Titel,Max. Spielerzahl'
                                 'Pro Zeile ein Spiel',
                                 reply_markup=ForceReply())
-
             reply_handler.reply_jobs.add(msg.message_id, "csv")
     else:
         update.message.reply_text('Bitte authentifiziere dich zunächst mit /key.')
@@ -63,7 +61,9 @@ def csv_import(bot, update):
 def neuertermin(bot, update):
     if check_user(update.message.chat_id):
         if update.message.chat.type == "group":
-            update.message.reply_text('Okay, wann wollt ihr spielen?')
+            update.message.reply_text('Okay, wann wollt ihr spielen?',
+                                        reply_markup=ForceReply())
+            reply_handler.reply_jobs.add(msg.message_id, "date")
         if update.message.chat.type == "private":
             update.message.reply_text('Stopp, das hat hier nichts zu suchen.\n'
                                       'Bitte versuche es im Gruppenchat...')
@@ -97,7 +97,9 @@ def start_umfrage_spiel(bot, update):
 def start_erweiterung(bot, update):
     if check_user(update.message.chat_id):
         if update.message.chat.type == "group":
-            update.message.reply_text('Für welches Spiel soll über Erweiterungen abgestimmt werden?')
+            update.message.reply_text('Für welches Spiel soll über Erweiterungen abgestimmt werden?',
+                                        reply_markup=ForceReply())
+            reply_handler.reply_jobs.add(msg.message_id, "expansion_poll_game")
         if update.message.chat.type == "private":
             update.message.reply_text('Wirklich?! Eine Umfrage nur für dich?\n'
                                       'Starte doch bitte eine Umfrage im Gruppenchat...')
@@ -189,7 +191,7 @@ def neue_erweiterung(bot, update):
 def leeren(bot, update):
     if check_user(update.message.chat_id):
         if update.message.chat.type == "group":
-            update.message.reply_text('Alles zurückgesetzt.')
+            update.message.reply_text('Ich habe alles zurückgesetzt.')
         if update.message.chat.type == "private":
             update.message.reply_text('Stopp, das hat hier nichts zu suchen!\n'
                                       'Bitte versuche es im Gruppenchat...')
