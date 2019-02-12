@@ -1,11 +1,9 @@
 # coding=utf-8
 
-from database_functions import *
-from commands import *
-from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove)
 from telegram.ext import (Updater, CommandHandler, Filters, MessageHandler)
 import logging
 import reply_handler
+import commands
 
 
 def main():

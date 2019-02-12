@@ -1,10 +1,8 @@
 # coding=utf-8
 
-from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove)
-from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters)
-from telegram import *
-from database_functions import *
-from parse_strings import *
+import telegram
+import database_functions
+import parse_strings
 import reply_handler
 
 """
@@ -21,7 +19,7 @@ Commands:
     neues_spiel         - Trag dein neues Spiel ein!
     neue_erweiterung    - Trag deine neue Erweiterung ein.
     leeren              - Lösche alle laufenden Pläne und Abstimmungen (laufende Spiel-Eintragungen etc. sind davon nicht betroffen)
-    csv_import          - importiere einfach mehrere Spiele in einer nachricht getrennt durch Kommata Pro Zeile ein Spiel
+    csv_import          - importiere einfach mehrere Spiele in einer Nachricht getrennt durch Kommata, pro Zeile ein Spiel
     help                - Was kann ich alles tun?
 """
 

@@ -1,10 +1,9 @@
 # coding=utf-8
 
 from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove)
-from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters)
-from telegram import *
-from database_functions import *
-from parse_strings import *
+import database_functions
+import parse_strings
+import planning_functions
 
 # keeps track of ForceReplys not being answered
 # dictionaries types_to_indices and indices_to_types exist for readability
@@ -58,7 +57,6 @@ def handle_reply(bot, update):
 
     try:
         which = reply_jobs.is_set(update.message.reply_to_message.message_id)
-        query = reply_jobs.get_query()
     except AttributeError:
         print("Reply Handling failed.")
         return
@@ -123,7 +121,12 @@ def csv(update):
     update.message.reply_text('OKAY, ich habe die Spiele alle eingetragen.',
                             reply_markup=ReplyKeyboardRemove())
 
+def date(update):
+    update.message.reply_text("Okay, schrei einfach /ich, wenn du teilnehmen willst!",
+                                reply_markup=ReplyKeyboardRemove())
+
 
 def default(update):
     update.message.reply_text("Ja... Bald...", 
                             reply_markup=ReplyKeyboardRemove())
+
