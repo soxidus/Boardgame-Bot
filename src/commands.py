@@ -42,6 +42,7 @@ def key(bot, update):
 
 def csv_import(bot, update):
     if check_user(update.message.chat_id):
+<<<<<<< HEAD
         if update.message.chat.type == "group":
             pass
         if update.message.chat.type == "private":
@@ -54,6 +55,18 @@ def csv_import(bot, update):
             reply_handler.reply_jobs.add(msg.message_id, "csv")
     else:
         update.message.reply_text('Bitte authentifiziere dich zunächst mit /key.')
+=======
+        msg = bot.send_message(update.message.chat_id,
+                               'Gib die Daten ein, die du importieren möchtest im csv Format\n'
+                               'Zur Sicherheit über den Chat nur max. 75 auf einmal bitte!\n'
+                               'Im Format: Besitzer,Titel,Max. Spielerzahl'
+                               'Pro Zeile ein Spiel',
+                               reply_markup=ForceReply())
+
+        reply_handler.reply_jobs.add(msg.message_id, "csv")
+    else:
+        update.message.reply_text('Bitte Authentifiziere dich zuerst!!')
+>>>>>>> e834f5606dcb2ba49529438da5641af026edc369
 
 
 def neuertermin(bot, update):
@@ -145,7 +158,11 @@ def erweiterungen(bot, update):
         if update.message.chat.type == "group":
             pass
         if update.message.chat.type == "private":
+
             update.message.reply_text('Du hast folgende Erweiterungen:')
+            gamestring = to_messagestring(
+                search_entries_by_user(choose_database("testdb"), 'expansions', update.message.from_user.username))
+            bot.send_message(update.message.chat_id, text=gamestring)
     else:
         update.message.reply_text('Bitte authentifiziere dich zunächst mit /key.')
 
