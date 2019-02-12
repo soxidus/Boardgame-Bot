@@ -80,9 +80,11 @@ def auth(update):
             update.message.reply_text("Super! Wir dürfen jetzt miteinander reden.",
                                       reply_markup=ReplyKeyboardRemove())
         else:
-            update.message.reply_text("Du musst das Passwort nicht nochmal eingeben... Rede einfach mit mir!")
+            update.message.reply_text("Du musst das Passwort nicht nochmal eingeben... Rede einfach mit mir!", 
+                                        reply_markup=ReplyKeyboardRemove())
     else:
-        update.message.reply_text("Schade, das hat leider nicht funktioniert. Mach es gut!")
+        update.message.reply_text("Schade, das hat leider nicht funktioniert. Mach es gut!",
+                                    reply_markup=ReplyKeyboardRemove())
         update.message.chat.leave()
 
 # Provided the game title, the bot asks for the maximum player count.
@@ -90,7 +92,8 @@ def game_title(update, bot, query):
     if update.message.text == "/stop":
         reply_jobs.clear_query()
         bot.send_message(update.message.chat_id,
-                         'Okay, hier ist nichts passiert.')
+                         'Okay, hier ist nichts passiert.',
+                         reply_markup=ReplyKeyboardRemove())
     else:
         msg = bot.send_message(update.message.chat_id,
                                'Mit wie vielen Leuten kann man ' +
@@ -107,13 +110,15 @@ def game_max(update, bot, query):
     if update.message.text == "/stop":
         reply_jobs.clear_query()
         bot.send_message(update.message.chat_id,
-                         'Okay, hier ist nichts passiert.')
+                         'Okay, hier ist nichts passiert.',
+                         reply_markup=ReplyKeyboardRemove())
     else:
         query = query + "," + update.message.text + "," + generate_uuid_32()
 
         if parse_csv(query)[0] == "new_game":
             add_game_into_db(parse_values_from_array(remove_first_string(query)))
-            update.message.reply_text("Okay, das Spiel wurde hinzugefügt  \o/")
+            update.message.reply_text("Okay, das Spiel wurde hinzugefügt  \o/", 
+                                        reply_markup=ReplyKeyboardRemove())
         else:
             pass
         reply_jobs.clear_query()
@@ -124,8 +129,10 @@ def csv(update, bot):
     add_multiple_games_into_db(parse_csv_import(update.message.text))
 
     bot.send_message(update.message.chat_id,
-                     'OKAY, ich habe die Spiele alle eingetragen.')
+                     'OKAY, ich habe die Spiele alle eingetragen.',
+                     reply_markup=ReplyKeyboardRemove())
 
 
 def default(update):
-    update.message.reply_to("Ja... Bald...")
+    update.message.reply_to("Ja... Bald...", 
+                            reply_markup=ReplyKeyboardRemove())
