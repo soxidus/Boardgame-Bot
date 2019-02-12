@@ -1,9 +1,7 @@
 # coding=utf-8
 
-from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove)
-import database_functions
-import parse_strings
-import planning_functions
+from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove, ForceReply)
+from database_functions import *
 
 # keeps track of ForceReplys not being answered
 # dictionaries types_to_indices and indices_to_types exist for readability

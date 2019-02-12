@@ -3,7 +3,7 @@
 from telegram.ext import (Updater, CommandHandler, Filters, MessageHandler)
 import logging
 import reply_handler
-import commands
+from commands import *
 
 
 def main():
