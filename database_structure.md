@@ -18,14 +18,19 @@ While this table could easily be just another table in the actual database, we d
 This is the main database. Everything the bot is actually working with is stored here.
 
 ### 2.1 Table "games"
-This table is for boardgames and expansions. Base games get a unique hash generated upon being added. Expansions get the same hash as their base game.
-"games" has five fields: "title", "owner", "playercount", "game_uuid" and "basegame_uuid".
+This table is for boardgames. They get a unique hash generated upon being added.
+"games" has four fields: "title", "owner", "playercount" and "game_uuid".
 "title" refers to the game title, i.e. a string.
 "owner" refers to the owners of this game, identified by username (i.e. alias). More than one owner is possible if the game is owned by a household (see below).
 "playercount" is the maximum amount of players you can play this game with. "X" means infinite. This information is crucial for the poll options generator!
 "game_uuid" is a hash generated uniquely for this owner-title relationship.
-"basgame_uuid" is the hash of the basegame (i.e. title-owner) this expansion belongs to.
 
 ### 2.2 Table "households"
 "households" has only one field which is "user_ids".
 In "user_ids" all the usernames (i.e. aliases) of people living together are stored. That way, not every one of them has to register every game they own - instead, the bot knows they're living together so everyone has access to the same games and keeps it in mind while planning game night. 
+
+### 2.3 Table "expansions"
+This table is for expansions. It has three fields: "basegame_uuid", "title" and "owner".
+"basegame_uuid" is the unique hash which was assigned to the basegame this expansion belongs to, i.e. the owner-boardgame relation.
+ "title" is the title of the expansion.
+ "owner" is the owner of the expansion.
