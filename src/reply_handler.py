@@ -6,7 +6,8 @@ from telegram import *
 from database_functions import *
 from parse_strings import *
 
-
+# keeps track of ForceReplys not being answered
+# dictionaries types_to_indices and indices_to_types exist for readability
 class ForceReplyJobs(object):
     types_to_indices = {"auth": 0, "game_title": 1, "game_players": 2, "expansion_for": 3, "expansion_title": 4,
                         "expansion_poll_game": 5, "date": 6, "game_max": 7, "csv": 8}
@@ -18,6 +19,8 @@ class ForceReplyJobs(object):
         self.message_IDs = [[], [], [], [], [], [], [], [], []]
         self.query_string = ''
 
+    # Searches through all the Replys we are waiting on if we are waiting on a reply to "id".
+    # If found, it returns the type of ForceReplyJob and removes the message from the ForceReplyJobs object.
     def is_set(self, id):
         no_types = len(self.message_IDs)
         for i in range(0, no_types):
@@ -26,6 +29,7 @@ class ForceReplyJobs(object):
                     self.message_IDs[i].remove(message_id)
                     return self.indices_to_types[i]
 
+    # If bot sends a ForceReply, register the message ID because we are waiting on an answer.
     def add(self, id, reply_type):
         where = self.types_to_indices[reply_type]
         self.message_IDs[where].append(id)
@@ -46,7 +50,7 @@ def init_reply_jobs():
     global reply_jobs
     reply_jobs = ForceReplyJobs()
 
-
+# depending on the type of Reply, call a handler function
 def handle_reply(bot, update):
     call_library = {"auth": auth, "game_title": game_title, "game_players": default, "expansion_for": default,
                     "expansion_title": default, "expansion_poll_game": default,
@@ -56,7 +60,7 @@ def handle_reply(bot, update):
         which = reply_jobs.is_set(update.message.reply_to_message.message_id)
         query = reply_jobs.get_query()
     except AttributeError:
-        print("Nope")
+        print("Reply Handling failed.")
         return
 
     if which == "game_title" or which == "game_max":
@@ -66,7 +70,7 @@ def handle_reply(bot, update):
     else:
         call_library[which].__call__(update)
 
-
+# Checks the passphrase and adds the user's chat id into the auth-db if correct.
 def auth(update):
     passphrase = "Minze"
 
@@ -81,7 +85,7 @@ def auth(update):
         update.message.reply_text("Schade, das hat leider nicht funktioniert. Mach es gut!")
         update.message.chat.leave()
 
-
+# Provided the game title, the bot asks for the maximum player count.
 def game_title(update, bot, query):
     if update.message.text == "/stop":
         reply_jobs.clear_query()
@@ -98,7 +102,7 @@ def game_title(update, bot, query):
                                reply_markup=ForceReply())
         reply_jobs.add_with_query(msg.message_id, "game_max", update.message.text)
 
-
+# Provided the game title and maximum player count, the new game is added into the games table of testdb.
 def game_max(update, bot, query):
     if update.message.text == "/stop":
         reply_jobs.clear_query()
@@ -114,7 +118,8 @@ def game_max(update, bot, query):
             pass
         reply_jobs.clear_query()
 
-
+# Parses csv data into the games table of testdb. 
+# Be careful with this, it could mess up the entire database if someone gets confused with a komma.
 def csv(update, bot):
     add_multiple_games_into_db(parse_csv_import(update.message.text))
 
