@@ -112,7 +112,7 @@ def add_user_auth(user):
     entry = "(id)"
     add_entry(choose_database("auth"), "users", entry, user)
 
-
+# Is the user authenticated?
 def check_user(user):
     result_user = search_single_entry(choose_database("auth"), "users", "id", user)
 
@@ -121,7 +121,7 @@ def check_user(user):
     else:
         return 1
 
-
+# Does the user live together with another one? Either both or only his name is returned
 def check_household(user):
     users_string = search_single_entry_substring(choose_database("testdb"), "households", "user_ids", user)
 
