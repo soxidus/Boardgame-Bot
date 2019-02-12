@@ -7,7 +7,7 @@ class Singleton(object):
         cls.__it__ = it = object.__new__(cls)
         it.init(*args, **kwds)
         return it
-    def init(self, *args, **kwds):
+    def init(self):
         pass
 
 class GameNight(Singleton):
@@ -28,10 +28,18 @@ class GameNight(Singleton):
     def add_participant(self, user_id):
         self.participants.append(user_id)
 
-    def remove_participant(self,user_id):
+    def remove_participant(self, user_id):
         self.participants.remove(user_id)
-    
 
 class Poll(object):
     def __init__(self, participants):
-        pass
+        self.options = self.generate_options(participants)
+        self.current_votes = []
+        for p in participants:
+            self.current_votes.append([p, 0, 0])
+        self.result = []
+        for o in self.options:
+            self.result.append([o, 0])
+
+    def generate_options(self, participants):
+        return []
