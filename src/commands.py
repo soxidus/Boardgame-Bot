@@ -61,7 +61,7 @@ def csv_import(bot, update):
 def neuertermin(bot, update):
     if check_user(update.message.chat_id):
         if update.message.chat.type == "group":
-            update.message.reply_text('Okay, wann wollt ihr spielen?',
+            msg = update.message.reply_text('Okay, wann wollt ihr spielen?',
                                         reply_markup=ForceReply())
             reply_handler.reply_jobs.add(msg.message_id, "date")
         if update.message.chat.type == "private":
@@ -97,7 +97,7 @@ def start_umfrage_spiel(bot, update):
 def start_erweiterung(bot, update):
     if check_user(update.message.chat_id):
         if update.message.chat.type == "group":
-            update.message.reply_text('Für welches Spiel soll über Erweiterungen abgestimmt werden?',
+            msg = update.message.reply_text('Für welches Spiel soll über Erweiterungen abgestimmt werden?',
                                         reply_markup=ForceReply())
             reply_handler.reply_jobs.add(msg.message_id, "expansion_poll_game")
         if update.message.chat.type == "private":
