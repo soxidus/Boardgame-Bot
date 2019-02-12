@@ -161,13 +161,9 @@ def neues_spiel(bot, update):
                                    'Wie heißt dein neues Spiel?\n'
                                    'Antworte mit /stop, um abzubrechen.',
                                    reply_markup=ForceReply())
-
             user_or_household_id = check_household(update.message.from_user.username)
             reply_handler.reply_jobs.add_with_query(msg.message_id, "game_title",
                                                     "new_game," + user_or_household_id + ",")
-
-    #          val = ("titlegoeshere", user_or_household_id, "playercountgoeshere")
-    #        add_game_into_db(val)
     else:
         update.message.reply_text('Bitte authentifiziere dich zunächst mit /key.')
 

@@ -8,7 +8,7 @@ new one has no Structure yet.
 
 If you want to test the Code locally you may do so but have to meet the requirements.
 
-    - Python 2.xx oder 3.xx 
+    - Python 3.xx 
     - python-telegram-bot
     - maria-db environment
 
@@ -24,8 +24,8 @@ For this reason I use [**PyCharm**](https://www.jetbrains.com/pycharm/)
 to install the [Telegram Bot Framework](https://python-telegram-bot.org/) pip should also be installed:
 
 ```shell
-sudo apt-get install python-pip
-sudo pip install python-telegram-bot
+sudo apt-get install python3-pip
+pip3 install python-telegram-bot
 ```
 
 afterwards we may test if everything is working by executing inside an Python Environment:
@@ -38,7 +38,7 @@ import telegram.ext
 
 Almost... for the integration of the Database we need to import mysql connector
 ```
-pip install mysql-connector
+pip3 install mysql-connector
 ```
 ### Database
 
@@ -71,7 +71,7 @@ after that we switch to our testuser (configured above):
 
 ```
 USE testdb;
-CREATE TABLE games (title VARCHAR(255), owner VARCHAR(255), playercount VARCHAR(255));
+CREATE TABLE games (title VARCHAR(255), owner VARCHAR(255), playercount VARCHAR(255), game_uuid VARCHAR(255), basegame_uuid VARCHAR(255));
 CREATE TABLE households (user_ids VARCHAR(255));
 USE auth;
 CREATE TABLE users (id INT AUTO_INCREMENT PRIMARY KEY);

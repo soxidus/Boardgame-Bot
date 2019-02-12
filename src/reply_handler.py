@@ -63,12 +63,7 @@ def handle_reply(bot, update):
         print("Reply Handling failed.")
         return
 
-    if which == "game_title" or which == "game_max":
-        call_library[which].__call__(update, bot, query)
-    if which == "csv":
-        call_library[which].__call__(update, bot)
-    else:
-        call_library[which].__call__(update)
+    call_library[which].__call__(update)
 
 # Checks the passphrase and adds the user's chat id into the auth-db if correct.
 def auth(update):
@@ -88,32 +83,29 @@ def auth(update):
         update.message.chat.leave()
 
 # Provided the game title, the bot asks for the maximum player count.
-def game_title(update, bot, query):
+def game_title(update):
     if update.message.text == "/stop":
         reply_jobs.clear_query()
-        bot.send_message(update.message.chat_id,
-                         'Okay, hier ist nichts passiert.',
-                         reply_markup=ReplyKeyboardRemove())
+        update.message.reply_text('Okay, hier ist nichts passiert.',
+                                    reply_markup=ReplyKeyboardRemove())
     else:
-        msg = bot.send_message(update.message.chat_id,
-                               'Mit wie vielen Leuten kann man ' +
-                               update.message.text +
-                               ' maximal spielen?\n'
-                               'Anworte mit EINER Zahl oder einem X, wenn es mit unendlich vielen gespielt werden '
-                               'kann.\n '
-                               'Antworte mit /stop, um abzubrechen!!',
-                               reply_markup=ForceReply())
+        msg = update.message.reply_text('Mit wie vielen Leuten kann man ' +
+                                        update.message.text +
+                                        ' maximal spielen?\n'
+                                        'Anworte mit EINER Zahl oder einem X, wenn es mit unendlich vielen gespielt werden '
+                                        'kann.\n '
+                                        'Antworte mit /stop, um abzubrechen.',
+                                        reply_markup=ForceReply())
         reply_jobs.add_with_query(msg.message_id, "game_max", update.message.text)
 
 # Provided the game title and maximum player count, the new game is added into the games table of testdb.
-def game_max(update, bot, query):
+def game_max(update):
     if update.message.text == "/stop":
         reply_jobs.clear_query()
-        bot.send_message(update.message.chat_id,
-                         'Okay, hier ist nichts passiert.',
-                         reply_markup=ReplyKeyboardRemove())
+        update.message.reply_text('Okay, hier ist nichts passiert.',
+                                    reply_markup=ReplyKeyboardRemove())
     else:
-        query = query + "," + update.message.text + "," + generate_uuid_32()
+        query = reply_jobs.get_query() + "," + update.message.text + "," + generate_uuid_32()
 
         if parse_csv(query)[0] == "new_game":
             add_game_into_db(parse_values_from_array(remove_first_string(query)))
@@ -125,14 +117,13 @@ def game_max(update, bot, query):
 
 # Parses csv data into the games table of testdb. 
 # Be careful with this, it could mess up the entire database if someone gets confused with a komma.
-def csv(update, bot):
+def csv(update):
     add_multiple_games_into_db(parse_csv_import(update.message.text))
 
-    bot.send_message(update.message.chat_id,
-                     'OKAY, ich habe die Spiele alle eingetragen.',
-                     reply_markup=ReplyKeyboardRemove())
+    update.message.reply_text('OKAY, ich habe die Spiele alle eingetragen.',
+                            reply_markup=ReplyKeyboardRemove())
 
 
 def default(update):
-    update.message.reply_to("Ja... Bald...", 
+    update.message.reply_text("Ja... Bald...", 
                             reply_markup=ReplyKeyboardRemove())
