@@ -2,8 +2,9 @@
 
 from telegram.ext import (Updater, CommandHandler, Filters, MessageHandler)
 import logging
-import reply_handler
+from reply_handler import init_reply_jobs
 from commands import *
+from planning_functions import init_plan
 
 
 def main():
@@ -18,7 +19,9 @@ def main():
     dp = updater.dispatcher
 
     dp.add_handler(MessageHandler(Filters.reply, reply_handler.handle_reply))
-    reply_handler.init_reply_jobs()
+
+    init_reply_jobs()
+    init_plan()
 
     # on different commands - answer in Telegram
     dp.add_handler(CommandHandler("start", start))
