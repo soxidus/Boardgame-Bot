@@ -2,7 +2,7 @@
 
 import logging
 from telegram.ext import (Updater, CommandHandler, Filters, MessageHandler)
-from reply_handler import (init_reply_jobs, handle_reply)
+from reply_handler import handle_reply
 from commands import *
 from filters import Vote
 from planning_functions import handle_vote
@@ -20,7 +20,6 @@ def main():
     dp = updater.dispatcher
 
     # init some custom stuff
-    init_reply_jobs()
     vote_filter = Vote()
 
     # This order is crucial! DO NOT CHANGE IT!
