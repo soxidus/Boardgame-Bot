@@ -92,15 +92,16 @@ def search_entries_by_user(db, table, owner):
 
     return result
 
-
-def search_column_entries_by_user(db, table, entry, owner):
+# Selects entries from column in table where owner is owner and the playercount is >= the participants
+# as of now, this is used for boardgames only, but it could be useful for expansions as well
+def get_playable_entries(db, table, column, owner, no_participants):
     mycursor = db.cursor()
 
-    sql = "SELECT " + entry + " FROM " + table + " WHERE owner LIKE \'%" + owner + "%\'"
+    sql = "SELECT " + column + " FROM " + table + " WHERE owner LIKE \'%" + owner + "%\' AND playercount>=" + str(no_participants)
     mycursor.execute(sql)
     result = mycursor.fetchall()
 
-    return result    
+    return result  
 
 
 def add_game_into_db(values):

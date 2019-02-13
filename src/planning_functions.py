@@ -1,6 +1,6 @@
-from database_functions import *
 from random import randrange
-from parse_strings import single_db_entry_to_string
+from database_functions import *
+from database_functions import single_db_entry_to_string
 
 
 # Singleton implementation from https://www.python.org/download/releases/2.2/descrintro/#__new__
@@ -33,15 +33,13 @@ class GameNight(Singleton):
         if self.date is None:
             self.date = date
             return 0
-        else:
-            return -1
+        return -1
 
     def set_poll(self):
         if self.poll is None and self.date is not None:
             self.poll = Poll(self.participants)
             return 0
-        else:
-            return -1
+        return -1
 
     def clear(self):
         self.init()
@@ -52,14 +50,16 @@ class GameNight(Singleton):
             if self.poll is not None:
                 self.poll.add_voter(user_id)
             return 0
-        else:
-            return -1
+        return -1
 
-            # Caution: the player only gets removed from game night. He can still vote because it's too much overhead
-            # to handle it differently.
-
+    # Caution: the player only gets removed from game night. He can still vote because it's too much overhead
+    # to handle it differently.
     def remove_participant(self, user_id):
-        self.participants.remove(user_id)
+        try:
+            self.participants.remove(user_id)
+            return 0
+        except ValueError:
+            return -1
 
 
 class Poll(object):
@@ -75,17 +75,39 @@ class Poll(object):
     def add_voter(self, user_id):
         self.current_votes.append([user_id, None])
 
-    # Todo: check Player amount, crazy algorithm
+    # remove last vote and disable voting for this user
+    def remove_voter(self, user_id):
+        for row in self.current_votes:
+            if row[0] == user_id:
+                last_vote = row[1]
+                self.current_votes.remove(row)
+        # did he even vote?
+        if last_vote:
+            for o in self.result:
+                if o[0] == last_vote:
+                    o[1] -= 1
+
     def generate_options(self, participants):
-        games = set()
+        games = set() # use a set because it takes care of duplicates immediately
         for p in participants:
-            print(single_db_entry_to_string(
-                search_column_entries_by_user(choose_database("testdb"), 'games', 'title', p)))
-            games.update(search_column_entries_by_user(choose_database("testdb"), 'games', 'title', p))
-        games = list(games)
+            entries = get_playable_entries(choose_database("testdb"), 'games', 'title', p, len(participants))
+            for e in entries:
+                games.add(single_db_entry_to_string(e))
+        games = list(games) # convert to list so we can index it randomly
+
         options = []
-        for _ in range(4):
-            options.append(games[randrange(len(games))])
+        if len(games) < 4:
+            no_opts = len(games)
+        else:
+            no_opts = 4
+
+        i = 0
+        while i < no_opts:
+            opt = games[randrange(len(games))]
+            if opt not in options:
+                options.append(opt)
+                i += 1
+
         return options
 
     # who is the username, what is the option they voted for (i.e. text)
@@ -104,21 +126,18 @@ class Poll(object):
                 # this person voted for the same thing again
                 if old_vote == what:
                     return 0
-                # has already voted & changed his vote
-                else:
-                    # remember this person's current vote
-                    row[1] = what
-                    for o in self.result:
-                        if o == old_vote:
-                            o[1] -= 1
-                        elif o == what:
-                            o[1] += 1
-                    return 1
-            else:
+                # has already voted & changed his vote:
                 row[1] = what
                 for o in self.result:
-                    if o == what:
+                    if o[0] == old_vote:
+                        o[1] -= 1
+                    elif o[0] == what:
                         o[1] += 1
                 return 1
-        else:
-            return -1
+            # first vote
+            row[1] = what
+            for o in self.result:
+                if o[0] == what:
+                    o[1] += 1
+            return 1
+        return -1

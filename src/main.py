@@ -27,6 +27,7 @@ def main():
     dp.add_handler(CommandHandler("neuertermin", neuertermin))
     dp.add_handler(CommandHandler("csv_import", csv_import))
     dp.add_handler(CommandHandler("ich", ich))
+    dp.add_handler(CommandHandler("nichtich", nichtich))
     dp.add_handler(CommandHandler("wer", wer))
     dp.add_handler(CommandHandler("start_umfrage_spiel", start_umfrage_spiel))
     dp.add_handler(CommandHandler("start_erweiterung", start_erweiterung))

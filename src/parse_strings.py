@@ -52,7 +52,7 @@ def to_messagestring(input_str):
 def single_db_entry_to_string(db_entry):
     string = ""
     for _ in range(len(db_entry)):
-        string += db_entry[_][0]
+        string += db_entry[_]
     return string
 
 

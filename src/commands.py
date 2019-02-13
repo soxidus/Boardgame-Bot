@@ -6,10 +6,12 @@ import reply_handler
 from planning_functions import (GameNight, Poll)
 
 """
-Commands:
+Commands registered with BotFather:
     key                 - Authentifiziere dich!
     neuertermin         - Wir wollen spielen! (nur in Gruppen)
     ich                 - Nimm am nächsten Spieleabend teil!
+    nichtich            - Melde dich vom Spieleabend ab.
+    wer                 - Finde heraus, wer alles am Spieleabend teilnimmt
     start_umfrage_spiel - Wähle, welches Spiel du spielen möchtest! (nur in Gruppen)
     start_erweiterung   - Stimmt ab, welche Erweiterung eines Spiels ihr spielen wollt. (nur in Gruppen)
     ende_umfrage        - Beende die Abstimmung. (nur in Gruppen)
@@ -19,7 +21,6 @@ Commands:
     neues_spiel         - Trag dein neues Spiel ein!
     neue_erweiterung    - Trag deine neue Erweiterung ein.
     leeren              - Lösche alle laufenden Pläne und Abstimmungen (laufende Spiel-Eintragungen etc. sind davon nicht betroffen)
-    csv_import          - importiere einfach mehrere Spiele in einer Nachricht getrennt durch Kommata, pro Zeile ein Spiel
     help                - Was kann ich alles tun?
 """
 
@@ -91,7 +92,25 @@ def ich(bot, update):
 def wer(bot, update):
     if check_user(update.message.chat_id):
         participants = GameNight().get_participants()
-        update.message.reply_text(participants + 'nehmen teil.')
+        if participants == "":
+            update.message.reply_text("Bisher nimmt niemand am Spieleabend teil.")
+        else:
+            update.message.reply_text(participants + 'nehmen teil.')
+
+def nichtich(bot, update):
+    if check_user(update.message.chat_id):
+        if update.message.chat.type == "group":
+            plan = GameNight()
+            check = plan.remove_participant(update.message.from_user.username)
+            if check < 0:
+                update.message.reply_text('Das war leider nichts. Du warst nicht angemeldet.')
+            else:
+                update.message.reply_text('Schade, dass du doch nicht teilnehmen kannst.')
+        if update.message.chat.type == "private":
+            update.message.reply_text('Stopp, das hat hier nichts zu suchen.\n'
+                                      'Bitte versuche es im Gruppenchat...')
+    else:
+        update.message.reply_text('Bitte authentifiziere dich zunächst mit /key.')
 
 
 def start_umfrage_spiel(bot, update):
@@ -229,27 +248,30 @@ def help(bot, update):
     if check_user(update.message.chat_id):
         if update.message.chat.type == "private":
             bot.send_message(update.message.chat_id,
-                             'Folgende Funktionen stehen dir im Privatchat zur Verfügung:\n'
-                             '/key - Authentifiziere dich!\n'
-                             '/ergebnis - Lass dir die bisher abgegebenen Stimmen anzeigen.\n'
-                             '/spiele - Ich sage dir, welche Spiele du bei mir angemeldet hast.\n'
-                             '/erweiterungen - Ich sage dir, welche Erweiterungen du bei mir angemeldet hast.\n'
-                             '/neues_spiel - Trag dein neues Spiel ein!\n'
-                             '/neue_erweiterung - Trag deine neue Erweiterung ein.\n'
-                             '/help - Was kann ich alles tun?')
+                            'Folgende Funktionen stehen dir im Privatchat zur Verfügung:\n'
+                            '/key - Authentifiziere dich!\n'
+                            '/wer - Finde heraus, wer alles am Spieleabend teilnimmt\n'
+                            '/ergebnis - Lass dir die bisher abgegebenen Stimmen anzeigen.\n'
+                            '/spiele - Ich sage dir, welche Spiele du bei mir angemeldet hast.\n'
+                            '/erweiterungen - Ich sage dir, welche Erweiterungen du bei mir angemeldet hast.\n'
+                            '/neues_spiel - Trag dein neues Spiel ein!\n'
+                            '/neue_erweiterung - Trag deine neue Erweiterung ein.\n'
+                            '/help - Was kann ich alles tun?')
         if update.message.chat.type == "group":
             bot.send_message(update.message.chat_id,
-                             'Folgende Funktionen stehen dir im Gruppenchat zur Verfügung:\n'
-                             '/key - Authentifiziere dich!\n'
-                             '/neuertermin - Wir wollen spielen! (nur in Gruppen)\n'
-                             '/ich - Nimm am nächsten Spieleabend teil! (nur in Gruppen)\n'
-                             '/start_umfrage_spiel - Wähle, welches Spiel du spielen möchtest! (nur in Gruppen)\n'
-                             '/start_erweiterung - Stimmt ab, welche Erweiterung eines Spiels ihr spielen wollt. (nur '
-                             'in Gruppen)\n '
-                             '/ende_umfrage - Beende die Abstimmung. (nur in Gruppen)\n'
-                             '/ergebnis - Lass dir die bisher abgegebenen Stimmen anzeigen.\n'
-                             '/leeren - Lösche alle laufenden Pläne und Abstimmungen (laufende Spiel-Eintragungen '
-                             'etc. sind davon nicht betroffen)\n '
-                             '/help - Was kann ich alles tun?')
+                            'Folgende Funktionen stehen dir im Gruppenchat zur Verfügung:\n'
+                            '/key - Authentifiziere dich!\n'
+                            '/neuertermin - Wir wollen spielen! (nur in Gruppen)\n'
+                            '/ich - Nimm am nächsten Spieleabend teil! (nur in Gruppen)\n'
+                            '/nichtich - Melde dich vom Spieleabend ab (nur in Gruppen)\n'
+                            '/wer - Finde heraus, wer alles am Spieleabend teilnimmt\n'
+                            '/start_umfrage_spiel - Wähle, welches Spiel du spielen möchtest! (nur in Gruppen)\n'
+                            '/start_erweiterung - Stimmt ab, welche Erweiterung eines Spiels ihr spielen wollt. (nur '
+                            'in Gruppen)\n '
+                            '/ende_umfrage - Beende die Abstimmung. (nur in Gruppen)\n'
+                            '/ergebnis - Lass dir die bisher abgegebenen Stimmen anzeigen.\n'
+                            '/leeren - Lösche alle laufenden Pläne und Abstimmungen (laufende Spiel-Eintragungen '
+                            'etc. sind davon nicht betroffen)\n '
+                            '/help - Was kann ich alles tun?')
     else:
         update.message.reply_text('Bitte authentifiziere dich zunächst mit /key.')
