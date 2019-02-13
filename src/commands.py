@@ -2,7 +2,7 @@
 
 from telegram import (ForceReply, ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove)
 from database_functions import *
-import reply_handler
+from reply_handler import ForceReplyJobs
 from planning_functions import GameNight
 
 """
@@ -38,7 +38,7 @@ def key(bot, update):
         msg = bot.send_message(update.message.chat_id,
                                'Wie lautet das Passwort?',
                                reply_markup=ForceReply())
-        reply_handler.reply_jobs.add(msg.message_id, "auth")
+        ForceReplyJobs().add(msg.message_id, "auth")
 
 
 def csv_import(bot, update):
@@ -53,7 +53,7 @@ def csv_import(bot, update):
                                    'Format: Besitzer, Titel, Max. Spielerzahl'
                                    'Pro Zeile ein Spiel',
                                    reply_markup=ForceReply())
-            reply_handler.reply_jobs.add(msg.message_id, "csv")
+            ForceReplyJobs().add(msg.message_id, "csv")
     else:
         update.message.reply_text('Bitte authentifiziere dich zunächst mit /key.')
 
@@ -63,7 +63,7 @@ def neuertermin(bot, update):
         if update.message.chat.type == "group":
             msg = update.message.reply_text('Okay, wann wollt ihr spielen?',
                                             reply_markup=ForceReply())
-            reply_handler.reply_jobs.add(msg.message_id, "date")
+            ForceReplyJobs().add(msg.message_id, "date")
         if update.message.chat.type == "private":
             update.message.reply_text('Stopp, das hat hier nichts zu suchen.\n'
                                       'Bitte versuche es im Gruppenchat...')
@@ -142,7 +142,7 @@ def start_erweiterung(bot, update):
         if update.message.chat.type == "group":
             msg = update.message.reply_text('Für welches Spiel soll über Erweiterungen abgestimmt werden?',
                                             reply_markup=ForceReply())
-            reply_handler.reply_jobs.add(msg.message_id, "expansion_poll_game")
+            ForceReplyJobs().add(msg.message_id, "expansion_poll_game")
         if update.message.chat.type == "private":
             update.message.reply_text('Wirklich?! Eine Umfrage nur für dich?\n'
                                       'Starte doch bitte eine Umfrage im Gruppenchat...')
@@ -226,7 +226,7 @@ def neues_spiel(bot, update):
                                    'Antworte mit /stop, um abzubrechen.',
                                    reply_markup=ForceReply())
             user_or_household_id = check_household(update.message.from_user.username)
-            reply_handler.reply_jobs.add_with_query(msg.message_id, "game_title",
+            ForceReplyJobs().add_with_query(msg.message_id, "game_title",
                                                     "new_game," + user_or_household_id + ",")
     else:
         update.message.reply_text('Bitte authentifiziere dich zunächst mit /key.')
@@ -242,7 +242,7 @@ def neue_erweiterung(bot, update):
                                    'Antworte mit /stop, um abzubrechen!!',
                                    reply_markup=ForceReply())
             user_or_household_id = check_household(update.message.from_user.username)
-            reply_handler.reply_jobs.add_with_query(msg.message_id, "expansion_for",
+            ForceReplyJobs().add_with_query(msg.message_id, "expansion_for",
                                                     "new_expansion," + user_or_household_id)
     else:
         update.message.reply_text('Bitte authentifiziere dich zunächst mit /key.')
@@ -260,7 +260,7 @@ def leeren(bot, update):
 
 
 def stop(bot, update):
-    reply_handler.reply_jobs.clear_query()
+    ForceReplyJobs().clear_query()
     update.message.reply_text("Okay, hier ist nichts passiert.")
 
 
