@@ -80,11 +80,26 @@ def ich(bot, update):
                 update.message.reply_text(
                     'Das war leider nichts. Vereinbart erst einmal einen Termin mit /neuertermin.')
             else:
-                update.message.reply_text('OK du hast zugesagt!')
+                update.message.reply_text('Okay ' + update.message.from_user.first_name + ', du hast zugesagt!')
         if update.message.chat.type == "private":
             update.message.reply_text('Stopp, das hat hier nichts zu suchen.\n'
                                       'Bitte versuche es im Gruppenchat...')
 
+    else:
+        update.message.reply_text('Bitte authentifiziere dich zunächst mit /key.')
+
+def nichtich(bot, update):
+    if check_user(update.message.chat_id):
+        if update.message.chat.type == "group":
+            plan = GameNight()
+            check = plan.remove_participant(update.message.from_user.username)
+            if check < 0:
+                update.message.reply_text('Das war leider nichts. Du warst nicht angemeldet.')
+            else:
+                update.message.reply_text('Schade, dass du doch nicht teilnehmen kannst, ' + update.message.from_user.first_name)
+        if update.message.chat.type == "private":
+            update.message.reply_text('Stopp, das hat hier nichts zu suchen.\n'
+                                      'Bitte versuche es im Gruppenchat...')
     else:
         update.message.reply_text('Bitte authentifiziere dich zunächst mit /key.')
 
@@ -96,21 +111,6 @@ def wer(bot, update):
             update.message.reply_text("Bisher nimmt niemand am Spieleabend teil.")
         else:
             update.message.reply_text(participants + 'nehmen teil.')
-
-def nichtich(bot, update):
-    if check_user(update.message.chat_id):
-        if update.message.chat.type == "group":
-            plan = GameNight()
-            check = plan.remove_participant(update.message.from_user.username)
-            if check < 0:
-                update.message.reply_text('Das war leider nichts. Du warst nicht angemeldet.')
-            else:
-                update.message.reply_text('Schade, dass du doch nicht teilnehmen kannst.')
-        if update.message.chat.type == "private":
-            update.message.reply_text('Stopp, das hat hier nichts zu suchen.\n'
-                                      'Bitte versuche es im Gruppenchat...')
-    else:
-        update.message.reply_text('Bitte authentifiziere dich zunächst mit /key.')
 
 
 def start_umfrage_spiel(bot, update):

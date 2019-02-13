@@ -2,8 +2,10 @@
 
 from telegram.ext import (Updater, CommandHandler, Filters, MessageHandler)
 import logging
-from reply_handler import init_reply_jobs
+from reply_handler import (init_reply_jobs, handle_reply)
 from commands import *
+from filters import Vote
+from planning_functions import handle_vote
 
 
 def main():
@@ -17,9 +19,13 @@ def main():
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
 
-    dp.add_handler(MessageHandler(Filters.reply, reply_handler.handle_reply))
-
+    # init some custom stuff
     init_reply_jobs()
+    vote_filter = Vote()
+
+    # This order is crucial! DO NOT CHANGE IT!
+    dp.add_handler(MessageHandler(vote_filter, handle_vote))
+    dp.add_handler(MessageHandler(Filters.reply, handle_reply))
 
     # on different commands - answer in Telegram
     dp.add_handler(CommandHandler("start", start))
