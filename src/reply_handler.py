@@ -62,9 +62,11 @@ def handle_reply(bot, update):
         which = reply_jobs.is_set(update.message.reply_to_message.message_id)
     except AttributeError:
         print("Reply Handling failed.")
-        return
-
-    call_library[which].__call__(update)
+    else:
+        try:
+            call_library[which].__call__(update)
+        except KeyError: # this is what happens to normal text
+            pass
 
 
 # Checks the passphrase and adds the user's chat id into the auth-db if correct.

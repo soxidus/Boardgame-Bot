@@ -35,6 +35,7 @@ class GameNight(Singleton):
     def init(self, *args, **kdws):
         self.date = None
         self.poll = None
+        self.old_poll = None
         self.participants = []
 
     def get_participants(self):
@@ -46,17 +47,23 @@ class GameNight(Singleton):
     def set_date(self, date):
         if self.date is None:
             self.date = date
+            self.old_poll = None
             return 0
         return -1
 
-    def set_poll(self):
+    def set_poll(self, user_id):
         if self.poll is None and self.date is not None:
-            self.poll = Poll(self.participants)
-            return 0
+            if user_id in self.participants:
+                self.poll = Poll(self.participants)
+                self.old_poll = None
+                return 0
         return -1
 
     def clear(self):
-        self.init()
+        self.old_poll = self.poll
+        self.date = None
+        self.poll = None
+        self.participants = []
 
     def add_participant(self, user_id):
         if self.date is not None:
@@ -71,13 +78,15 @@ class GameNight(Singleton):
     def remove_participant(self, user_id):
         try:
             self.participants.remove(user_id)
-            return 0
         except ValueError:
             return -1
+        else:
+            return 0
 
 
 class Poll(object):
     def __init__(self, participants):
+        self.running = True
         self.options = self.generate_options(participants)
         self.current_votes = []
         for p in participants:
@@ -127,6 +136,8 @@ class Poll(object):
     # who is the username, what is the option they voted for (i.e. text)
     # returns -1 if voter wasn't allowed to vote, 0 if they voted for the same, else 1
     def register_vote(self, who, what):
+        if self.running == False:
+            return -1
         allowed = False
         for row in self.current_votes:
             if row[0] == who:
@@ -154,4 +165,24 @@ class Poll(object):
                 if o[0] == what:
                     o[1] += 1
             return 1
+        return -1
+
+    def print_votes(self):
+        out = ""
+        for row in self.result:
+            out += row[0] + ": " + str(row[1]) + "\n"
+        return out
+
+    # stops people from voting
+    def end(self, user_id):
+        if not self.running:
+            return 0
+        allowed = False
+        for row in self.current_votes:
+            if row[0] == user_id:
+                allowed = True
+                break
+        if allowed:
+            self.running = False
+            return 0
         return -1

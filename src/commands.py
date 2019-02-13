@@ -1,6 +1,6 @@
 # coding=utf-8
 
-from telegram import (ForceReply, ReplyKeyboardMarkup, KeyboardButton)
+from telegram import (ForceReply, ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove)
 from database_functions import *
 import reply_handler
 from planning_functions import (GameNight, Poll)
@@ -111,16 +111,19 @@ def wer(bot, update):
             update.message.reply_text("Bisher nimmt niemand am Spieleabend teil.")
         else:
             update.message.reply_text(participants + 'nehmen teil.')
+    else:
+        update.message.reply_text('Bitte authentifiziere dich zunächst mit /key.')
 
 
 def start_umfrage_spiel(bot, update):
     if check_user(update.message.chat_id):
         if update.message.chat.type == "group":
             plan = GameNight()
-            check = plan.set_poll()
+            check = plan.set_poll(update.message.from_user.username)
             if check < 0:
-                update.message.reply_text(
-                    'Das war leider nichts. Habt ihr kein Datum festgelegt? Holt das mit /neuertermin nach.')
+                update.message.reply_text('Das war leider nichts. \n'
+                                          'Habt ihr kein Datum festgelegt? Holt das mit /neuertermin nach.\n'
+                                          'Vielleicht hast du dich auch einfach nicht angemeldet? Hole das mit /ich nach.')
             else:
                 keys = []
                 for o in plan.poll.options:
@@ -150,8 +153,18 @@ def start_erweiterung(bot, update):
 def ende_umfrage(bot, update):
     if check_user(update.message.chat_id):
         if update.message.chat.type == "group":
-            update.message.reply_text(
-                'Die Umfrage ist beendet. Mit /ergebnis könnt ihr sehen, wie sie ausgegangen ist.')
+            plan = GameNight()
+            try:
+                check = plan.poll.end(update.message.from_user.username)
+            except AttributeError:
+                update.message.reply_text('Das hat leider nicht funktioniert. Scheinbar gibt es keine Umfrage, die ich beenden könnte.')
+            else:
+                if check < 0:
+                    update.message.reply_text('Das hat leider nicht funktioniert. Du hast wohl nicht das Recht zu dieser Aktion.')
+                else:
+                    plan.clear()
+                    update.message.reply_text('Die Umfrage ist beendet. Mit /ergebnis könnt ihr sehen, wie sie ausgegangen ist.', 
+                                                reply_markup=ReplyKeyboardRemove())
         if update.message.chat.type == "private":
             update.message.reply_text('Stopp, das hat hier nichts zu suchen.\n'
                                       'Bitte versuche es im Gruppenchat...')
@@ -161,11 +174,18 @@ def ende_umfrage(bot, update):
 
 def ergebnis(bot, update):
     if check_user(update.message.chat_id):
-        if update.message.chat.type == "group":
-            update.message.reply_text('Das Ergebnis ist...')
-        if update.message.chat.type == "private":
-            update.message.reply_text('Stopp, das hat hier nichts zu suchen.\n'
-                                      'Bitte versuche es im Gruppenchat...')
+        plan = GameNight()
+        try:
+            votes = plan.poll.print_votes()
+        except AttributeError: # poll doesn't exist 
+            try:
+                votes = plan.old_poll.print_votes() # poll was ended
+            except AttributeError:
+                update.message.reply_text('Leider gibt es derzeit kein Ergebnis, was ich dir zeigen kann.')
+            else:
+                update.message.reply_text('Das Ergebnis ist: \n' + votes)
+        else:
+            update.message.reply_text('Das Ergebnis ist: \n' + votes)
     else:
         update.message.reply_text('Bitte authentifiziere dich zunächst mit /key.')
 
@@ -248,30 +268,30 @@ def help(bot, update):
     if check_user(update.message.chat_id):
         if update.message.chat.type == "private":
             bot.send_message(update.message.chat_id,
-                            'Folgende Funktionen stehen dir im Privatchat zur Verfügung:\n'
-                            '/key - Authentifiziere dich!\n'
-                            '/wer - Finde heraus, wer alles am Spieleabend teilnimmt\n'
-                            '/ergebnis - Lass dir die bisher abgegebenen Stimmen anzeigen.\n'
-                            '/spiele - Ich sage dir, welche Spiele du bei mir angemeldet hast.\n'
-                            '/erweiterungen - Ich sage dir, welche Erweiterungen du bei mir angemeldet hast.\n'
-                            '/neues_spiel - Trag dein neues Spiel ein!\n'
-                            '/neue_erweiterung - Trag deine neue Erweiterung ein.\n'
-                            '/help - Was kann ich alles tun?')
+                             'Folgende Funktionen stehen dir im Privatchat zur Verfügung:\n'
+                             '/key - Authentifiziere dich!\n'
+                             '/wer - Finde heraus, wer alles am Spieleabend teilnimmt\n'
+                             '/ergebnis - Lass dir die bisher abgegebenen Stimmen anzeigen.\n'
+                             '/spiele - Ich sage dir, welche Spiele du bei mir angemeldet hast.\n'
+                             '/erweiterungen - Ich sage dir, welche Erweiterungen du bei mir angemeldet hast.\n'
+                             '/neues_spiel - Trag dein neues Spiel ein!\n'
+                             '/neue_erweiterung - Trag deine neue Erweiterung ein.\n'
+                             '/help - Was kann ich alles tun?')
         if update.message.chat.type == "group":
             bot.send_message(update.message.chat_id,
-                            'Folgende Funktionen stehen dir im Gruppenchat zur Verfügung:\n'
-                            '/key - Authentifiziere dich!\n'
-                            '/neuertermin - Wir wollen spielen! (nur in Gruppen)\n'
-                            '/ich - Nimm am nächsten Spieleabend teil! (nur in Gruppen)\n'
-                            '/nichtich - Melde dich vom Spieleabend ab (nur in Gruppen)\n'
-                            '/wer - Finde heraus, wer alles am Spieleabend teilnimmt\n'
-                            '/start_umfrage_spiel - Wähle, welches Spiel du spielen möchtest! (nur in Gruppen)\n'
-                            '/start_erweiterung - Stimmt ab, welche Erweiterung eines Spiels ihr spielen wollt. (nur '
-                            'in Gruppen)\n '
-                            '/ende_umfrage - Beende die Abstimmung. (nur in Gruppen)\n'
-                            '/ergebnis - Lass dir die bisher abgegebenen Stimmen anzeigen.\n'
-                            '/leeren - Lösche alle laufenden Pläne und Abstimmungen (laufende Spiel-Eintragungen '
-                            'etc. sind davon nicht betroffen)\n '
-                            '/help - Was kann ich alles tun?')
+                             'Folgende Funktionen stehen dir im Gruppenchat zur Verfügung:\n'
+                             '/key - Authentifiziere dich!\n'
+                             '/neuertermin - Wir wollen spielen! (nur in Gruppen)\n'
+                             '/ich - Nimm am nächsten Spieleabend teil! (nur in Gruppen)\n'
+                             '/nichtich - Melde dich vom Spieleabend ab (nur in Gruppen)\n'
+                             '/wer - Finde heraus, wer alles am Spieleabend teilnimmt\n'
+                             '/start_umfrage_spiel - Wähle, welches Spiel du spielen möchtest! (nur in Gruppen)\n'
+                             '/start_erweiterung - Stimmt ab, welche Erweiterung eines Spiels ihr spielen wollt. (nur '
+                             'in Gruppen)\n '
+                             '/ende_umfrage - Beende die Abstimmung. (nur in Gruppen)\n'
+                             '/ergebnis - Lass dir die bisher abgegebenen Stimmen anzeigen.\n'
+                             '/leeren - Lösche alle laufenden Pläne und Abstimmungen (laufende Spiel-Eintragungen '
+                             'etc. sind davon nicht betroffen)\n '
+                             '/help - Was kann ich alles tun?')
     else:
         update.message.reply_text('Bitte authentifiziere dich zunächst mit /key.')

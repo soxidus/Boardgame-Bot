@@ -1,7 +1,7 @@
 # coding=utf-8
 
-from telegram.ext import (Updater, CommandHandler, Filters, MessageHandler)
 import logging
+from telegram.ext import (Updater, CommandHandler, Filters, MessageHandler)
 from reply_handler import (init_reply_jobs, handle_reply)
 from commands import *
 from filters import Vote

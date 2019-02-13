@@ -1,5 +1,5 @@
 from telegram.ext import BaseFilter
-from planning_functions import (GameNight, Poll)
+from planning_functions import GameNight
 
 class Vote(BaseFilter):
     name = 'Filters.vote'
@@ -7,7 +7,7 @@ class Vote(BaseFilter):
     def filter(self, message):
         try:
             possible_votes = GameNight().poll.options
-            return bool(message.text in possible_votes)
         except AttributeError:
             return False
-
+        else:
+            return bool(message.text in possible_votes)
