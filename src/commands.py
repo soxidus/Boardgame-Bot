@@ -251,7 +251,11 @@ def neue_erweiterung(bot, update):
 def leeren(bot, update):
     if check_user(update.message.chat_id):
         if update.message.chat.type == "group":
-            update.message.reply_text('Ich habe alles zurückgesetzt.')
+            plan = GameNight()
+            plan.clear()
+            bot.set_chat_title(update.message.chat.id, 'Spielwiese')
+            update.message.reply_text('Ich habe alle Termine und Umfragen zurückgesetzt.',
+                                      reply_markup=ReplyKeyboardRemove())
         if update.message.chat.type == "private":
             update.message.reply_text('Stopp, das hat hier nichts zu suchen!\n'
                                       'Bitte versuche es im Gruppenchat...')
