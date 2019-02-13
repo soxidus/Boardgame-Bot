@@ -14,11 +14,12 @@ If you want to test the Code locally you may do so but have to meet the requirem
 
 ## Quick Start 
 
-To get started locally I recommend not just installing python (duh)
+To get started locally I recommend not just installing python3
 but also to use an IDE that helps with formatting and testing.
 
 For this reason I use [**PyCharm**](https://www.jetbrains.com/pycharm/)
 
+The Coding-Style is [**PEP8**](https://www.python.org/dev/peps/pep-0008/)
 ### Dependencies
 
 to install the [Telegram Bot Framework](https://python-telegram-bot.org/) pip should also be installed:
