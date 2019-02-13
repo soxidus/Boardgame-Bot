@@ -2,7 +2,6 @@
 
 from telegram import (ForceReply, ReplyKeyboardMarkup, KeyboardButton)
 from database_functions import *
-import parse_strings
 import reply_handler
 from planning_functions import (GameNight, Poll)
 
@@ -36,10 +35,9 @@ def key(bot, update):
         update.message.reply_text('Du musst dich nicht authentifizieren. Ich weiß schon, wer du bist!')
     else:
         msg = bot.send_message(update.message.chat_id,
-                            'Wie lautet das Passwort?',
-                            reply_markup=ForceReply())
+                               'Wie lautet das Passwort?',
+                               reply_markup=ForceReply())
         reply_handler.reply_jobs.add(msg.message_id, "auth")
-
 
 
 def csv_import(bot, update):
@@ -48,11 +46,12 @@ def csv_import(bot, update):
             pass
         if update.message.chat.type == "private":
             msg = bot.send_message(update.message.chat_id,
-                                'Gib die Daten ein, die du im CSV-Format in die Spiele-Datenbank importieren möchtest.\n'
-                                'Importiere zur Sicherheit max. 75 Einträge über den Chat auf einmal!\n'
-                                'Format: Besitzer,Titel,Max. Spielerzahl'
-                                'Pro Zeile ein Spiel',
-                                reply_markup=ForceReply())
+                                   'Gib die Daten ein, die du im CSV-Format in die Spiele-Datenbank importieren '
+                                   'möchtest.\n '
+                                   'Importiere zur Sicherheit max. 75 Einträge über den Chat auf einmal!\n'
+                                   'Format: Besitzer, Titel, Max. Spielerzahl'
+                                   'Pro Zeile ein Spiel',
+                                   reply_markup=ForceReply())
             reply_handler.reply_jobs.add(msg.message_id, "csv")
     else:
         update.message.reply_text('Bitte authentifiziere dich zunächst mit /key.')
@@ -62,7 +61,7 @@ def neuertermin(bot, update):
     if check_user(update.message.chat_id):
         if update.message.chat.type == "group":
             msg = update.message.reply_text('Okay, wann wollt ihr spielen?',
-                                        reply_markup=ForceReply())
+                                            reply_markup=ForceReply())
             reply_handler.reply_jobs.add(msg.message_id, "date")
         if update.message.chat.type == "private":
             update.message.reply_text('Stopp, das hat hier nichts zu suchen.\n'
@@ -77,15 +76,17 @@ def ich(bot, update):
             plan = GameNight()
             check = plan.add_participant(update.message.from_user.username)
             if check < 0:
-                update.message.reply_text('Das war leider nichts. Vereintbart erst einmal einen Termin mit /neuertermin.')
+                update.message.reply_text(
+                    'Das war leider nichts. Vereinbart erst einmal einen Termin mit /neuertermin.')
             else:
-                update.message.reply_text('OK du hast zugesagt!')                
+                update.message.reply_text('OK du hast zugesagt!')
         if update.message.chat.type == "private":
             update.message.reply_text('Stopp, das hat hier nichts zu suchen.\n'
                                       'Bitte versuche es im Gruppenchat...')
 
     else:
         update.message.reply_text('Bitte authentifiziere dich zunächst mit /key.')
+
 
 def wer(bot, update):
     if check_user(update.message.chat_id):
@@ -98,14 +99,15 @@ def start_umfrage_spiel(bot, update):
         if update.message.chat.type == "group":
             plan = GameNight()
             check = plan.set_poll()
-            if check<0:
-                update.message.reply_text('Das war leider nichts. Habt ihr kein Datum festgelegt? Holt das mit /neuertermin nach.')
+            if check < 0:
+                update.message.reply_text(
+                    'Das war leider nichts. Habt ihr kein Datum festgelegt? Holt das mit /neuertermin nach.')
             else:
                 keys = []
                 for o in plan.poll.options:
                     keys.append([KeyboardButton(o)])
                 update.message.reply_text('Welches Spiel wollt ihr spielen?',
-                                            reply_markup=ReplyKeyboardMarkup(keys, one_time_keyboard=True))
+                                          reply_markup=ReplyKeyboardMarkup(keys, one_time_keyboard=True))
         if update.message.chat.type == "private":
             update.message.reply_text('Wirklich?! Eine Umfrage nur für dich?\n'
                                       'Starte doch bitte eine Umfrage im Gruppenchat...')
@@ -117,7 +119,7 @@ def start_erweiterung(bot, update):
     if check_user(update.message.chat_id):
         if update.message.chat.type == "group":
             msg = update.message.reply_text('Für welches Spiel soll über Erweiterungen abgestimmt werden?',
-                                        reply_markup=ForceReply())
+                                            reply_markup=ForceReply())
             reply_handler.reply_jobs.add(msg.message_id, "expansion_poll_game")
         if update.message.chat.type == "private":
             update.message.reply_text('Wirklich?! Eine Umfrage nur für dich?\n'
@@ -129,7 +131,8 @@ def start_erweiterung(bot, update):
 def ende_umfrage(bot, update):
     if check_user(update.message.chat_id):
         if update.message.chat.type == "group":
-            update.message.reply_text('Die Umfrage ist beendet. Mit /ergebnis könnt ihr sehen, wie sie ausgegangen ist.')
+            update.message.reply_text(
+                'Die Umfrage ist beendet. Mit /ergebnis könnt ihr sehen, wie sie ausgegangen ist.')
         if update.message.chat.type == "private":
             update.message.reply_text('Stopp, das hat hier nichts zu suchen.\n'
                                       'Bitte versuche es im Gruppenchat...')
@@ -166,7 +169,6 @@ def erweiterungen(bot, update):
         if update.message.chat.type == "group":
             pass
         if update.message.chat.type == "private":
-
             update.message.reply_text('Du hast folgende Erweiterungen:')
             gamestring = to_messagestring(
                 search_entries_by_user(choose_database("testdb"), 'expansions', update.message.from_user.username))

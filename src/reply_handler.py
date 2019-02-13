@@ -4,8 +4,11 @@ from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove, ForceReply)
 from database_functions import *
 from planning_functions import (GameNight, Poll)
 
+
 # keeps track of ForceReplys not being answered
 # dictionaries types_to_indices and indices_to_types exist for readability
+
+
 class ForceReplyJobs(object):
     types_to_indices = {"auth": 0, "game_title": 1, "game_players": 2, "expansion_for": 3, "expansion_title": 4,
                         "expansion_poll_game": 5, "date": 6, "game_max": 7, "csv": 8}
@@ -48,6 +51,7 @@ def init_reply_jobs():
     global reply_jobs
     reply_jobs = ForceReplyJobs()
 
+
 # depending on the type of Reply, call a handler function
 def handle_reply(bot, update):
     call_library = {"auth": auth, "game_title": game_title, "game_players": default, "expansion_for": default,
@@ -62,6 +66,7 @@ def handle_reply(bot, update):
 
     call_library[which].__call__(update)
 
+
 # Checks the passphrase and adds the user's chat id into the auth-db if correct.
 def auth(update):
     passphrase = "Minze"
@@ -72,45 +77,49 @@ def auth(update):
             update.message.reply_text("Super! Wir dürfen jetzt miteinander reden.",
                                       reply_markup=ReplyKeyboardRemove())
         else:
-            update.message.reply_text("Du musst das Passwort nicht nochmal eingeben... Rede einfach mit mir!", 
-                                        reply_markup=ReplyKeyboardRemove())
+            update.message.reply_text("Du musst das Passwort nicht nochmal eingeben... Rede einfach mit mir!",
+                                      reply_markup=ReplyKeyboardRemove())
     else:
         update.message.reply_text("Schade, das hat leider nicht funktioniert. Mach es gut!",
-                                    reply_markup=ReplyKeyboardRemove())
+                                  reply_markup=ReplyKeyboardRemove())
         update.message.chat.leave()
+
 
 # Provided the game title, the bot asks for the maximum player count.
 def game_title(update):
     if update.message.text == "/stop":
         reply_jobs.clear_query()
         update.message.reply_text('Okay, hier ist nichts passiert.',
-                                    reply_markup=ReplyKeyboardRemove())
+                                  reply_markup=ReplyKeyboardRemove())
     else:
         msg = update.message.reply_text('Mit wie vielen Leuten kann man ' +
                                         update.message.text +
                                         ' maximal spielen?\n'
-                                        'Anworte mit EINER Zahl oder einem X, wenn es mit unendlich vielen gespielt werden '
+                                        'Anworte mit EINER Zahl oder einem X, wenn es mit unendlich vielen gespielt '
+                                        'werden '
                                         'kann.\n '
                                         'Antworte mit /stop, um abzubrechen.',
                                         reply_markup=ForceReply())
         reply_jobs.add_with_query(msg.message_id, "game_max", update.message.text)
+
 
 # Provided the game title and maximum player count, the new game is added into the games table of testdb.
 def game_max(update):
     if update.message.text == "/stop":
         reply_jobs.clear_query()
         update.message.reply_text('Okay, hier ist nichts passiert.',
-                                    reply_markup=ReplyKeyboardRemove())
+                                  reply_markup=ReplyKeyboardRemove())
     else:
         query = reply_jobs.get_query() + "," + update.message.text + "," + generate_uuid_32()
 
         if parse_csv(query)[0] == "new_game":
             add_game_into_db(parse_values_from_array(remove_first_string(query)))
-            update.message.reply_text("Okay, das Spiel wurde hinzugefügt  \o/", 
-                                        reply_markup=ReplyKeyboardRemove())
+            update.message.reply_text("Okay, das Spiel wurde hinzugefügt  \o/",
+                                      reply_markup=ReplyKeyboardRemove())
         else:
             pass
         reply_jobs.clear_query()
+
 
 # Parses csv data into the games table of testdb. 
 # Be careful with this, it could mess up the entire database if someone gets confused with a komma.
@@ -118,20 +127,20 @@ def csv(update):
     add_multiple_games_into_db(parse_csv_import(update.message.text))
 
     update.message.reply_text('OKAY, ich habe die Spiele alle eingetragen.',
-                            reply_markup=ReplyKeyboardRemove())
+                              reply_markup=ReplyKeyboardRemove())
+
 
 def date(update):
     check = GameNight().set_date(update.message.text)
     if check < 0:
         update.message.reply_text("Melde dich doch einfach mit /ich beim festgelegten Termin an.",
-                                    reply_markup=ReplyKeyboardRemove())
+                                  reply_markup=ReplyKeyboardRemove())
     else:
         update.message.bot.set_chat_title(update.message.chat.id, 'Spielwiese am ' + update.message.text)
         update.message.reply_text("Okay, schrei einfach /ich, wenn du teilnehmen willst!",
-                                    reply_markup=ReplyKeyboardRemove())
+                                  reply_markup=ReplyKeyboardRemove())
 
 
 def default(update):
-    update.message.reply_text("Ja... Bald...", 
-                            reply_markup=ReplyKeyboardRemove())
-
+    update.message.reply_text("Ja... Bald...",
+                              reply_markup=ReplyKeyboardRemove())

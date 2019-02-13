@@ -48,11 +48,13 @@ def to_messagestring(input_str):
         messagestring += input_str[_][0] + ",\n"
     return messagestring
 
+
 def single_db_entry_to_string(db_entry):
     string = ""
     for _ in range(len(db_entry)):
         string += db_entry[_][0]
     return string
+
 
 def generate_query_string(data_sub_array):
     # this could be done in fewer steps but to visualize the separate parts it's split here

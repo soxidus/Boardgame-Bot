@@ -2,7 +2,8 @@ from database_functions import *
 from random import randrange
 from parse_strings import single_db_entry_to_string
 
-# Singleton implemntation from https://www.python.org/download/releases/2.2/descrintro/#__new__
+
+# Singleton implementation from https://www.python.org/download/releases/2.2/descrintro/#__new__
 class Singleton(object):
     def __new__(cls, *args, **kwds):
         it = cls.__dict__.get("__it__")
@@ -11,8 +12,10 @@ class Singleton(object):
         cls.__it__ = it = object.__new__(cls)
         it.init(*args, **kwds)
         return it
+
     def init(self, *args, **kwds):
         pass
+
 
 class GameNight(Singleton):
     def init(self, *args, **kdws):
@@ -50,11 +53,14 @@ class GameNight(Singleton):
                 self.poll.add_voter(user_id)
             return 0
         else:
-            return -1         
+            return -1
 
-    # Caution: the player only gets removed from game night. He can still vote because it's too much overhead to handle it differently.
+            # Caution: the player only gets removed from game night. He can still vote because it's too much overhead
+            # to handle it differently.
+
     def remove_participant(self, user_id):
         self.participants.remove(user_id)
+
 
 class Poll(object):
     def __init__(self, participants):
@@ -73,7 +79,8 @@ class Poll(object):
     def generate_options(self, participants):
         games = set()
         for p in participants:
-            print(single_db_entry_to_string(search_column_entries_by_user(choose_database("testdb"), 'games', 'title', p)))
+            print(single_db_entry_to_string(
+                search_column_entries_by_user(choose_database("testdb"), 'games', 'title', p)))
             games.update(search_column_entries_by_user(choose_database("testdb"), 'games', 'title', p))
         games = list(games)
         options = []
