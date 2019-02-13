@@ -1,8 +1,8 @@
 # coding=utf-8
 
-from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove, ForceReply)
+from telegram import (ReplyKeyboardRemove, ForceReply)
 from database_functions import *
-from planning_functions import (GameNight, Poll)
+from planning_functions import GameNight
 
 
 # keeps track of ForceReplys not being answered
@@ -20,24 +20,24 @@ class ForceReplyJobs(object):
         self.message_IDs = [[], [], [], [], [], [], [], [], []]
         self.query_string = ''
 
-    # Searches through all the Replys we are waiting on if we are waiting on a reply to "id".
+    # Searches through all the Replys we are waiting on if we are waiting on a reply to "reply_to_id".
     # If found, it returns the type of ForceReplyJob and removes the message from the ForceReplyJobs object.
-    def is_set(self, id):
+    def is_set(self, reply_to_id):
         no_types = len(self.message_IDs)
         for i in range(0, no_types):
             for message_id in self.message_IDs[i]:
-                if message_id == id:
+                if message_id == reply_to_id:
                     self.message_IDs[i].remove(message_id)
                     return self.indices_to_types[i]
 
     # If bot sends a ForceReply, register the message ID because we are waiting on an answer.
-    def add(self, id, reply_type):
+    def add(self, reply_to_id, reply_type):
         where = self.types_to_indices[reply_type]
-        self.message_IDs[where].append(id)
+        self.message_IDs[where].append(reply_to_id)
 
-    def add_with_query(self, id, reply_type, query):
+    def add_with_query(self, reply_to_id, reply_type, query):
         where = self.types_to_indices[reply_type]
-        self.message_IDs[where].append(id)
+        self.message_IDs[where].append(reply_to_id)
         self.query_string += query
 
     def get_query(self):
@@ -123,7 +123,7 @@ def game_max(update):
         reply_jobs.clear_query()
 
 
-# Parses csv data into the games table of testdb. 
+# Parses csv data into the games table of testdb.
 # Be careful with this, it could mess up the entire database if someone gets confused with a komma.
 def csv(update):
     add_multiple_games_into_db(parse_csv_import(update.message.text))

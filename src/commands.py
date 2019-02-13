@@ -3,7 +3,7 @@
 from telegram import (ForceReply, ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove)
 from database_functions import *
 import reply_handler
-from planning_functions import (GameNight, Poll)
+from planning_functions import GameNight
 
 """
 Commands registered with BotFather:
@@ -163,8 +163,8 @@ def ende_umfrage(bot, update):
                     update.message.reply_text('Das hat leider nicht funktioniert. Du hast wohl nicht das Recht zu dieser Aktion.')
                 else:
                     plan.clear()
-                    update.message.reply_text('Die Umfrage ist beendet. Mit /ergebnis könnt ihr sehen, wie sie ausgegangen ist.', 
-                                                reply_markup=ReplyKeyboardRemove())
+                    update.message.reply_text('Die Umfrage ist beendet. Mit /ergebnis könnt ihr sehen, wie sie ausgegangen ist.',
+                                              reply_markup=ReplyKeyboardRemove())
         if update.message.chat.type == "private":
             update.message.reply_text('Stopp, das hat hier nichts zu suchen.\n'
                                       'Bitte versuche es im Gruppenchat...')
@@ -177,7 +177,7 @@ def ergebnis(bot, update):
         plan = GameNight()
         try:
             votes = plan.poll.print_votes()
-        except AttributeError: # poll doesn't exist 
+        except AttributeError: # poll doesn't exist
             try:
                 votes = plan.old_poll.print_votes() # poll was ended
             except AttributeError:

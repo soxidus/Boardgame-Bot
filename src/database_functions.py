@@ -101,7 +101,7 @@ def get_playable_entries(db, table, column, owner, no_participants):
     mycursor.execute(sql)
     result = mycursor.fetchall()
 
-    return result  
+    return result
 
 
 def add_game_into_db(values):

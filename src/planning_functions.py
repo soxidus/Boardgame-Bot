@@ -21,15 +21,15 @@ def handle_vote(bot, update):
     if plan.poll is not None:
         check = plan.poll.register_vote(update.message.from_user.username, update.message.text)
         if check == 0:
-            update.message.reply_text("Okay " + update.message.from_user.first_name + 
-                                        ", du hast erneut für " + update.message.text +
-                                        " gestimmt. Du musst mir das nicht mehrmals sagen, ich bin fähig ;)")
+            update.message.reply_text("Okay " + update.message.from_user.first_name +
+                                      ", du hast erneut für " + update.message.text +
+                                      " gestimmt. Du musst mir das nicht mehrmals sagen, ich bin fähig ;)")
         elif check < 0:
-            update.message.reply_text("Das hat nicht funktioniert. Vielleicht darfst du gar nicht abstimmen, " 
-                                        + update.message.from_user.first_name + "?")
+            update.message.reply_text("Das hat nicht funktioniert. Vielleicht darfst du gar nicht abstimmen, "
+                                      + update.message.from_user.first_name + "?")
         else:
             update.message.reply_text("Okay " + update.message.from_user.first_name +
-                                        ", du hast für " + update.message.text + " gestimmt.")
+                                      ", du hast für " + update.message.text + " gestimmt.")
 
 class GameNight(Singleton):
     def init(self, *args, **kdws):
@@ -136,7 +136,7 @@ class Poll(object):
     # who is the username, what is the option they voted for (i.e. text)
     # returns -1 if voter wasn't allowed to vote, 0 if they voted for the same, else 1
     def register_vote(self, who, what):
-        if self.running == False:
+        if not self.running:
             return -1
         allowed = False
         for row in self.current_votes:
