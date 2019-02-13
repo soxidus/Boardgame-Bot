@@ -2,6 +2,7 @@
 
 from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove, ForceReply)
 from database_functions import *
+from planning_functions import (GameNight, Poll)
 
 # keeps track of ForceReplys not being answered
 # dictionaries types_to_indices and indices_to_types exist for readability
@@ -51,7 +52,7 @@ def init_reply_jobs():
 def handle_reply(bot, update):
     call_library = {"auth": auth, "game_title": game_title, "game_players": default, "expansion_for": default,
                     "expansion_title": default, "expansion_poll_game": default,
-                    "date": default, "game_max": game_max, "csv": csv}
+                    "date": date, "game_max": game_max, "csv": csv}
 
     try:
         which = reply_jobs.is_set(update.message.reply_to_message.message_id)
@@ -120,8 +121,14 @@ def csv(update):
                             reply_markup=ReplyKeyboardRemove())
 
 def date(update):
-    update.message.reply_text("Okay, schrei einfach /ich, wenn du teilnehmen willst!",
-                                reply_markup=ReplyKeyboardRemove())
+    check = GameNight().set_date(update.message.text)
+    if check < 0:
+        update.message.reply_text("Melde dich doch einfach mit /ich beim festgelegten Termin an.",
+                                    reply_markup=ReplyKeyboardRemove())
+    else:
+        update.message.bot.set_chat_title(update.message.chat.id, 'Spielwiese am ' + update.message.text)
+        update.message.reply_text("Okay, schrei einfach /ich, wenn du teilnehmen willst!",
+                                    reply_markup=ReplyKeyboardRemove())
 
 
 def default(update):

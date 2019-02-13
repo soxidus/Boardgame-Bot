@@ -92,6 +92,15 @@ def search_entries_by_user(db, table, owner):
 
     return result
 
+def search_column_entries_by_user(db, table, entry, owner):
+    mycursor = db.cursor()
+
+    sql = "SELECT " + entry + " FROM " + table + " WHERE owner LIKE \'%" + owner + "%\'"
+    mycursor.execute(sql)
+    result = mycursor.fetchall()
+
+    return result    
+
 
 def add_game_into_db(values):
     entry = "(owner, title, playercount, game_uuid)"

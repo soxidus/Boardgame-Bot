@@ -1,12 +1,21 @@
 from database_functions import *
 from random import randrange
+from parse_strings import single_db_entry_to_string
 
-def init_plan():
-    global plan
-    plan = GameNight()
+# Singleton implemntation from https://www.python.org/download/releases/2.2/descrintro/#__new__
+class Singleton(object):
+    def __new__(cls, *args, **kwds):
+        it = cls.__dict__.get("__it__")
+        if it is not None:
+            return it
+        cls.__it__ = it = object.__new__(cls)
+        it.init(*args, **kwds)
+        return it
+    def init(self, *args, **kwds):
+        pass
 
-class GameNight(object):
-    def __init__(self):
+class GameNight(Singleton):
+    def init(self, *args, **kdws):
         self.date = None
         self.poll = None
         self.participants = []
@@ -32,13 +41,16 @@ class GameNight(object):
             return -1
 
     def clear(self):
-        self.__init__()
+        self.init()
 
     def add_participant(self, user_id):
         if self.date is not None:
             self.participants.append(user_id)
             if self.poll is not None:
-                self.poll.add_voter(user_id)            
+                self.poll.add_voter(user_id)
+            return 0
+        else:
+            return -1         
 
     # Caution: the player only gets removed from game night. He can still vote because it's too much overhead to handle it differently.
     def remove_participant(self, user_id):
@@ -57,10 +69,12 @@ class Poll(object):
     def add_voter(self, user_id):
         self.current_votes.append([user_id, None])
 
+    # Todo: check Player amount, crazy algorithm
     def generate_options(self, participants):
         games = set()
         for p in participants:
-            games.update(search_entries_by_user(choose_database("testdb"), "games", p).split(","))
+            print(single_db_entry_to_string(search_column_entries_by_user(choose_database("testdb"), 'games', 'title', p)))
+            games.update(search_column_entries_by_user(choose_database("testdb"), 'games', 'title', p))
         games = list(games)
         options = []
         for _ in range(4):

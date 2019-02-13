@@ -1,9 +1,10 @@
 # coding=utf-8
 
-from telegram import (ForceReply)
+from telegram import (ForceReply, ReplyKeyboardMarkup, KeyboardButton)
 from database_functions import *
 import parse_strings
 import reply_handler
+from planning_functions import (GameNight, Poll)
 
 """
 Commands:
@@ -32,12 +33,13 @@ def start(bot, update):
 
 def key(bot, update):
     if check_user(update.message.chat_id):
+        update.message.reply_text('Du musst dich nicht authentifizieren. Ich weiß schon, wer du bist!')
+    else:
         msg = bot.send_message(update.message.chat_id,
                             'Wie lautet das Passwort?',
                             reply_markup=ForceReply())
         reply_handler.reply_jobs.add(msg.message_id, "auth")
-    else:
-        update.message.reply_text('Du musst dich nicht authentifizieren. Ich weiß schon, wer du bist!')
+
 
 
 def csv_import(bot, update):
@@ -72,7 +74,12 @@ def neuertermin(bot, update):
 def ich(bot, update):
     if check_user(update.message.chat_id):
         if update.message.chat.type == "group":
-            update.message.reply_text('OK du hast zugesagt!')
+            plan = GameNight()
+            check = plan.add_participant(update.message.from_user.username)
+            if check < 0:
+                update.message.reply_text('Das war leider nichts. Vereintbart erst einmal einen Termin mit /neuertermin.')
+            else:
+                update.message.reply_text('OK du hast zugesagt!')                
         if update.message.chat.type == "private":
             update.message.reply_text('Stopp, das hat hier nichts zu suchen.\n'
                                       'Bitte versuche es im Gruppenchat...')
@@ -80,11 +87,25 @@ def ich(bot, update):
     else:
         update.message.reply_text('Bitte authentifiziere dich zunächst mit /key.')
 
+def wer(bot, update):
+    if check_user(update.message.chat_id):
+        participants = GameNight().get_participants()
+        update.message.reply_text(participants + 'nehmen teil.')
+
 
 def start_umfrage_spiel(bot, update):
     if check_user(update.message.chat_id):
         if update.message.chat.type == "group":
-            update.message.reply_text('Welches Spiel wollt ihr spielen?')
+            plan = GameNight()
+            check = plan.set_poll()
+            if check<0:
+                update.message.reply_text('Das war leider nichts. Habt ihr kein Datum festgelegt? Holt das mit /neuertermin nach.')
+            else:
+                keys = []
+                for o in plan.poll.options:
+                    keys.append([KeyboardButton(o)])
+                update.message.reply_text('Welches Spiel wollt ihr spielen?',
+                                            reply_markup=ReplyKeyboardMarkup(keys, one_time_keyboard=True))
         if update.message.chat.type == "private":
             update.message.reply_text('Wirklich?! Eine Umfrage nur für dich?\n'
                                       'Starte doch bitte eine Umfrage im Gruppenchat...')
