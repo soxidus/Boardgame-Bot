@@ -10,13 +10,13 @@ from singleton import Singleton
 # dictionaries types_to_indices and indices_to_types exist for readability
 class ForceReplyJobs(Singleton):
     types_to_indices = {"auth": 0, "game_title": 1, "game_players": 2, "expansion_for": 3, "expansion_title": 4,
-                        "expansion_poll_game": 5, "date": 6, "game_max": 7, "csv": 8}
+                        "expansion_poll_game": 5, "date": 6, "csv": 7}
     indices_to_types = {0: "auth", 1: "game_title", 2: "game_players", 3: "expansion_for", 4: "expansion_title",
-                        5: "expansion_poll_game", 6: "date", 7: "game_max", 8: "csv"}
+                        5: "expansion_poll_game", 6: "date", 7: "csv"}
 
     def init(self):
         # we can't append on unknown items, so INIT the Array or find an other Solution
-        self.message_IDs = [[], [], [], [], [], [], [], [], []]
+        self.message_IDs = [[], [], [], [], [], [], [], []]
         self.query_string = ''
 
     # Searches through all the Replys we are waiting on if we are waiting on a reply to "reply_to_id".
@@ -48,9 +48,9 @@ class ForceReplyJobs(Singleton):
 
 # depending on the type of Reply, call a handler function
 def handle_reply(bot, update):
-    call_library = {"auth": auth, "game_title": game_title, "game_players": default, "expansion_for": default,
+    call_library = {"auth": auth, "game_title": game_title, "game_players": game_players, "expansion_for": default,
                     "expansion_title": default, "expansion_poll_game": default,
-                    "date": date, "game_max": game_max, "csv": csv}
+                    "date": date, "csv": csv}
 
     try:
         which = ForceReplyJobs().is_set(update.message.reply_to_message.message_id)
@@ -96,11 +96,11 @@ def game_title(update):
                                         'kann.\n '
                                         'Antworte mit /stop, um abzubrechen.',
                                         reply_markup=ForceReply())
-        ForceReplyJobs().add_with_query(msg.message_id, "game_max", update.message.text)
+        ForceReplyJobs().add_with_query(msg.message_id, "game_players", update.message.text)
 
 
 # Provided the game title and maximum player count, the new game is added into the games table of testdb.
-def game_max(update):
+def game_players(update):
     if update.message.text == "/stop":
         ForceReplyJobs().clear_query()
         update.message.reply_text('Okay, hier ist nichts passiert.',

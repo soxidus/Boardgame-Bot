@@ -20,7 +20,8 @@ Commands registered with BotFather:
     erweiterungen       - Ich sage dir, welche Erweiterungen du bei mir angemeldet hast.
     neues_spiel         - Trag dein neues Spiel ein!
     neue_erweiterung    - Trag deine neue Erweiterung ein.
-    leeren              - Lösche alle laufenden Pläne und Abstimmungen (laufende Spiel-Eintragungen etc. sind davon nicht betroffen)
+    leeren              - Lösche alle laufenden Pläne und Abstimmungen (laufende Spiel-Eintragungen etc. sind davon 
+                            nicht betroffen)
     help                - Was kann ich alles tun?
 """
 
@@ -88,6 +89,7 @@ def ich(bot, update):
     else:
         update.message.reply_text('Bitte authentifiziere dich zunächst mit /key.')
 
+
 def nichtich(bot, update):
     if check_user(update.message.chat_id):
         if update.message.chat.type == "group":
@@ -96,7 +98,8 @@ def nichtich(bot, update):
             if check < 0:
                 update.message.reply_text('Das war leider nichts. Du warst nicht angemeldet.')
             else:
-                update.message.reply_text('Schade, dass du doch nicht teilnehmen kannst, ' + update.message.from_user.first_name)
+                update.message.reply_text(
+                    'Schade, dass du doch nicht teilnehmen kannst, ' + update.message.from_user.first_name)
         if update.message.chat.type == "private":
             update.message.reply_text('Stopp, das hat hier nichts zu suchen.\n'
                                       'Bitte versuche es im Gruppenchat...')
@@ -157,14 +160,17 @@ def ende_umfrage(bot, update):
             try:
                 check = plan.poll.end(update.message.from_user.username)
             except AttributeError:
-                update.message.reply_text('Das hat leider nicht funktioniert. Scheinbar gibt es keine Umfrage, die ich beenden könnte.')
+                update.message.reply_text(
+                    'Das hat leider nicht funktioniert. Scheinbar gibt es keine Umfrage, die ich beenden könnte.')
             else:
                 if check < 0:
-                    update.message.reply_text('Das hat leider nicht funktioniert. Du hast wohl nicht das Recht zu dieser Aktion.')
+                    update.message.reply_text(
+                        'Das hat leider nicht funktioniert. Du hast wohl nicht das Recht zu dieser Aktion.')
                 else:
                     plan.clear()
-                    update.message.reply_text('Die Umfrage ist beendet. Mit /ergebnis könnt ihr sehen, wie sie ausgegangen ist.',
-                                              reply_markup=ReplyKeyboardRemove())
+                    update.message.reply_text(
+                        'Die Umfrage ist beendet. Mit /ergebnis könnt ihr sehen, wie sie ausgegangen ist.',
+                        reply_markup=ReplyKeyboardRemove())
         if update.message.chat.type == "private":
             update.message.reply_text('Stopp, das hat hier nichts zu suchen.\n'
                                       'Bitte versuche es im Gruppenchat...')
@@ -177,9 +183,9 @@ def ergebnis(bot, update):
         plan = GameNight()
         try:
             votes = plan.poll.print_votes()
-        except AttributeError: # poll doesn't exist
+        except AttributeError:  # poll doesn't exist
             try:
-                votes = plan.old_poll.print_votes() # poll was ended
+                votes = plan.old_poll.print_votes()  # poll was ended
             except AttributeError:
                 update.message.reply_text('Leider gibt es derzeit kein Ergebnis, was ich dir zeigen kann.')
             else:
@@ -227,7 +233,7 @@ def neues_spiel(bot, update):
                                    reply_markup=ForceReply())
             user_or_household_id = check_household(update.message.from_user.username)
             ForceReplyJobs().add_with_query(msg.message_id, "game_title",
-                                                    "new_game," + user_or_household_id + ",")
+                                            "new_game," + user_or_household_id + ",")
     else:
         update.message.reply_text('Bitte authentifiziere dich zunächst mit /key.')
 
@@ -243,7 +249,7 @@ def neue_erweiterung(bot, update):
                                    reply_markup=ForceReply())
             user_or_household_id = check_household(update.message.from_user.username)
             ForceReplyJobs().add_with_query(msg.message_id, "expansion_for",
-                                                    "new_expansion," + user_or_household_id)
+                                            "new_expansion," + user_or_household_id)
     else:
         update.message.reply_text('Bitte authentifiziere dich zunächst mit /key.')
 
