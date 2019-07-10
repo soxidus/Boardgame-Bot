@@ -117,6 +117,12 @@ def game_players(update):
         query = ForceReplyJobs().get_query(update.message.reply_to_message.message_id) + "," + update.message.text + "," + generate_uuid_32()
 
         if parse_csv(query)[0] == "new_game":
+            known_games = search_entries_by_user(choose_database("testdb"), 'games', update.message.from_user.username)
+            for _ in range(len(known_games)):
+                if known_games[_][0] == parse_csv(query)[2]: # check whether this title has already been added for this user
+                    update.message.reply_text("Wusste ich doch: Das Spiel hast du schon einmal eingetragen. Viel Spaß noch damit!",
+                                              reply_markup=ReplyKeyboardRemove())
+                    return
             add_game_into_db(parse_values_from_array(remove_first_string(query)))
             update.message.reply_text("Okay, das Spiel wurde hinzugefügt \\o/",
                                       reply_markup=ReplyKeyboardRemove())
