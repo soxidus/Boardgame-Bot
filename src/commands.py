@@ -269,11 +269,6 @@ def leeren(bot, update):
         update.message.reply_text('Bitte authentifiziere dich zunächst mit /key.')
 
 
-def stop(bot, update):
-    ForceReplyJobs().clear_query()
-    update.message.reply_text("Okay, hier ist nichts passiert.")
-
-
 def help(bot, update):
     if check_user(update.message.chat_id):
         if update.message.chat.type == "private":

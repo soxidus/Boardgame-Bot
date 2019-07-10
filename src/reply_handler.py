@@ -11,13 +11,13 @@ from singleton import Singleton
 # TODO: At some point, we should implement periodic deletion of old message_ID entries!!
 class ForceReplyJobs(Singleton):
     types_to_indices = {"auth": 0, "game_title": 1, "game_players": 2, "expansion_for": 3, "expansion_title": 4,
-                        "expansion_poll_game": 5, "date": 6, "csv": 7}
+                        "expansion_poll_game": 5, "date": 6, "csv": 7, "household": 8}
     indices_to_types = {0: "auth", 1: "game_title", 2: "game_players", 3: "expansion_for", 4: "expansion_title",
-                        5: "expansion_poll_game", 6: "date", 7: "csv"}
+                        5: "expansion_poll_game", 6: "date", 7: "csv", 8: "household"}
 
     def init(self):
         # we can't append on unknown items, so INIT the Array or find an other Solution
-        self.message_IDs = [[], [], [], [], [], [], [], []]
+        self.message_IDs = [[], [], [], [], [], [], [], [], []]
         # self.queries is a table of mid's we're waiting on, and the query that has been collected so far (used for neues_spiel and neue_erweiterung)
         self.queries = []
 
@@ -56,7 +56,7 @@ class ForceReplyJobs(Singleton):
 def handle_reply(bot, update):
     call_library = {"auth": auth, "game_title": game_title, "game_players": game_players, "expansion_for": default,
                     "expansion_title": default, "expansion_poll_game": default,
-                    "date": date, "csv": csv}
+                    "date": date, "csv": csv, "household": household}
 
     try:
         which = ForceReplyJobs().is_set(update.message.reply_to_message.message_id)
@@ -76,8 +76,16 @@ def auth(update):
     if update.message.text == passphrase:
         if not check_user(update.message.chat_id):
             add_user_auth(update.message.chat_id)
-            update.message.reply_text("Super! Wir dürfen jetzt miteinander reden.",
-                                      reply_markup=ReplyKeyboardRemove())
+            if update.message.chat_id > 0:
+                msg = update.message.reply_text('Super! Wir dürfen jetzt miteinander reden.'
+                                        'Noch eine Frage: Wohnst du vielleicht mit einem der Gruppenmitglieder zusammen? '
+                                        'Wenn ja, verrate mir doch bitte den entsprechenden Alias! '
+                                        'Wenn nicht, dann antworte bitte mit /stop.',
+                                        reply_markup=ForceReply())
+                ForceReplyJobs().add(msg.message_id, "household")
+            else:
+                update.message.reply_text('Super! Wir dürfen jetzt miteinander reden.',
+                                          reply_markup=ReplyKeyboardRemove())
         else:
             update.message.reply_text("Du musst das Passwort nicht nochmal eingeben... Rede einfach mit mir!",
                                       reply_markup=ReplyKeyboardRemove())
@@ -85,6 +93,15 @@ def auth(update):
         update.message.reply_text("Schade, das hat leider nicht funktioniert. Mach es gut!",
                                   reply_markup=ReplyKeyboardRemove())
         update.message.chat.leave()
+
+def household(update):
+    if update.message.text == "/stop":
+        update.message.reply_text('Okay, ich weiß Bescheid.',
+                                  reply_markup=ReplyKeyboardRemove())
+    else:
+        add_household(update.message.from_user.username, update.message.text)
+        update.message.reply_text('Okay, ich weiß Bescheid.',
+                                  reply_markup=ReplyKeyboardRemove())
 
 
 # Provided the game title, the bot asks for the maximum player count.

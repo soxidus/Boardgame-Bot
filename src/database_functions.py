@@ -33,9 +33,12 @@ def add_entry(db, table, entry, values):
         mycursor.execute(sql)
     else:
         valcountstr = "VALUES (%s"
+        print(values)
+        print(len(values))
         for _ in range(len(values) - 1):
             valcountstr += ",%s "
         sql = "INSERT INTO " + table + " " + entry + " " + valcountstr + ")"
+        print(sql)
         mycursor.execute(sql, values)
 
     db.commit()
@@ -123,6 +126,11 @@ def add_user_auth(user):
     entry = "(id)"
     add_entry(choose_database("auth"), "users", entry, user)
 
+# FIXME: valcount gets generated from length of string, not amount of words. Find out which format should be used!
+def add_household(user1, user2):
+    entry = "(user_ids)"
+    household = user1 + " " + user2
+    add_entry(choose_database("testdb"), "households", entry, household)
 
 # Is the user authenticated?
 def check_user(user):
