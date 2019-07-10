@@ -15,9 +15,9 @@ def main():
     # Create the EventHandler and pass it your bot's token.
 
     # Kara Webhook
-    # updater = Updater("702260882:AAF3VcoDbf3sSRVDht5xM3JYu-QNywEpgZg")
+    updater = Updater("702260882:AAF3VcoDbf3sSRVDht5xM3JYu-QNywEpgZg")
     # Chris Webhook
-    updater = Updater("745861447:AAFgmej56K8weT-dpaxe97A6Ak-pTOptk-s")
+    # updater = Updater("745861447:AAFgmej56K8weT-dpaxe97A6Ak-pTOptk-s")
 
     # Get the dispatcher to register handlers
     dp = updater.dispatcher

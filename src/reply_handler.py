@@ -8,6 +8,7 @@ from singleton import Singleton
 
 # keeps track of ForceReplys not being answered
 # dictionaries types_to_indices and indices_to_types exist for readability
+# TODO: At some point, we should implement periodic deletion of old message_ID entries!!
 class ForceReplyJobs(Singleton):
     types_to_indices = {"auth": 0, "game_title": 1, "game_players": 2, "expansion_for": 3, "expansion_title": 4,
                         "expansion_poll_game": 5, "date": 6, "csv": 7}
@@ -17,7 +18,8 @@ class ForceReplyJobs(Singleton):
     def init(self):
         # we can't append on unknown items, so INIT the Array or find an other Solution
         self.message_IDs = [[], [], [], [], [], [], [], []]
-        self.query_string = ''
+        # self.queries is a table of mid's we're waiting on, and the query that has been collected so far (used for neues_spiel and neue_erweiterung)
+        self.queries = []
 
     # Searches through all the Replys we are waiting on if we are waiting on a reply to "reply_to_id".
     # If found, it returns the type of ForceReplyJob and removes the message from the ForceReplyJobs object.
@@ -37,13 +39,17 @@ class ForceReplyJobs(Singleton):
     def add_with_query(self, reply_to_id, reply_type, query):
         where = self.types_to_indices[reply_type]
         self.message_IDs[where].append(reply_to_id)
-        self.query_string += query
+        self.queries.append([reply_to_id, query])
 
-    def get_query(self):
-        return self.query_string
+    def get_query(self, reply_to_id):
+        for entry in self.queries:
+            if entry[0] == reply_to_id:
+                return entry[1]
 
-    def clear_query(self):
-        self.query_string = ''
+    def clear_query(self, reply_to_id):
+        for entry in self.queries:
+            if entry[0] == reply_to_id:
+                self.queries.remove(entry)
 
 
 # depending on the type of Reply, call a handler function
@@ -84,7 +90,7 @@ def auth(update):
 # Provided the game title, the bot asks for the maximum player count.
 def game_title(update):
     if update.message.text == "/stop":
-        ForceReplyJobs().clear_query()
+        ForceReplyJobs().clear_query(update.message.reply_to_message.message_id)
         update.message.reply_text('Okay, hier ist nichts passiert.',
                                   reply_markup=ReplyKeyboardRemove())
     else:
@@ -96,25 +102,27 @@ def game_title(update):
                                         'kann.\n '
                                         'Antworte mit /stop, um abzubrechen.',
                                         reply_markup=ForceReply())
-        ForceReplyJobs().add_with_query(msg.message_id, "game_players", update.message.text)
+        query = ForceReplyJobs().get_query(update.message.reply_to_message.message_id) + update.message.text
+        ForceReplyJobs().clear_query(update.message.reply_to_message.message_id)
+        ForceReplyJobs().add_with_query(msg.message_id, "game_players", query)
 
 
 # Provided the game title and maximum player count, the new game is added into the games table of testdb.
 def game_players(update):
     if update.message.text == "/stop":
-        ForceReplyJobs().clear_query()
+        ForceReplyJobs().clear_query(update.message.reply_to_message.message_id)
         update.message.reply_text('Okay, hier ist nichts passiert.',
                                   reply_markup=ReplyKeyboardRemove())
     else:
-        query = ForceReplyJobs().get_query() + "," + update.message.text + "," + generate_uuid_32()
+        query = ForceReplyJobs().get_query(update.message.reply_to_message.message_id) + "," + update.message.text + "," + generate_uuid_32()
 
         if parse_csv(query)[0] == "new_game":
             add_game_into_db(parse_values_from_array(remove_first_string(query)))
-            update.message.reply_text("Okay, das Spiel wurde hinzugefügt  \o/",
+            update.message.reply_text("Okay, das Spiel wurde hinzugefügt \\o/",
                                       reply_markup=ReplyKeyboardRemove())
         else:
             pass
-        ForceReplyJobs().clear_query()
+        ForceReplyJobs().clear_query(update.message.reply_to_message.message_id)
 
 
 # Parses csv data into the games table of testdb.
