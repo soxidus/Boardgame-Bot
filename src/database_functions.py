@@ -24,7 +24,7 @@ def choose_database(db):
     return db
 
 
-def add_entry(db, table, entry, values):
+def add_entry(db, table, entry, values, valuecnt=None):
     mycursor = db.cursor()
 
     if isinstance(values, int):
@@ -33,12 +33,9 @@ def add_entry(db, table, entry, values):
         mycursor.execute(sql)
     else:
         valcountstr = "VALUES (%s"
-        print(values)
-        print(len(values))
-        for _ in range(len(values) - 1):
+        for _ in range(valuecnt - 1):
             valcountstr += ",%s "
         sql = "INSERT INTO " + table + " " + entry + " " + valcountstr + ")"
-        print(sql)
         mycursor.execute(sql, values)
 
     db.commit()
@@ -119,18 +116,18 @@ def add_multiple_games_into_db(csv_string):
 
 def add_expansion_into_db(values):
     entry = "(owner, title, basegame_uuid)"
-    add_entry(choose_database("testdb"), "games", entry, values)
+    add_entry(choose_database("testdb"), "games", entry, values, 3)
 
 
 def add_user_auth(user):
     entry = "(id)"
-    add_entry(choose_database("auth"), "users", entry, user)
+    add_entry(choose_database("auth"), "users", entry, user, 1)
 
-# FIXME: valcount gets generated from length of string, not amount of words. Find out which format should be used!
+
 def add_household(user1, user2):
-    entry = "(user_ids)"
-    household = user1 + " " + user2
-    add_entry(choose_database("testdb"), "households", entry, household)
+    entry = '(user_ids)'
+    household = user1 + ' ' + user2
+    add_entry(choose_database("testdb"), "households", entry, household, 1)
 
 # Is the user authenticated?
 def check_user(user):

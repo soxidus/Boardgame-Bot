@@ -1,11 +1,11 @@
 from database_functions import *
 
 def main():
-    parsed = parse_values_from_array()
-    print(parsed)
-    print(len(parsed))
-
-    #add_household('a', 'b')
+    db = choose_database('testdb')
+    mycursor = db.cursor()
+    household = 'a b'
+    mycursor.execute("INSERT INTO households (user_ids) VALUES (%s)", household)
+    db.commit()
 
 if __name__ == '__main__':
     main()
