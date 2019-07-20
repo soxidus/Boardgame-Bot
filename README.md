@@ -97,8 +97,10 @@ Have a closer look at it if you jsut copy-pasted the queries above and are not e
 ### Get your own Telegram Bot!
 
 Have a chat with the BotFather and create your own bot. 
-If you don't know what I mean by that, have a look here: [Bots: An introduction for developers](https://core.telegram.org/bots#botfather)
+If you don't know what I mean by that, have a look here: [Bots: An introduction for developers](https://core.telegram.org/bots#botfather).
 The Botfather is going to give you a token for your bot. Hold on to that, you're going to need it!
+
+You can also register the commands your bot should know with the Botfather (use /setcommands). This is not necessary, but useful if you want to see autocomplete options while typing commands. You can copy-paste the list of commands from the top of [src/commands.py](src/commands.py).
 
 ### Configuration
 
