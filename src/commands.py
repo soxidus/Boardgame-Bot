@@ -35,10 +35,15 @@ def key(bot, update):
     if check_user(update.message.chat_id):
         update.message.reply_text('Du musst dich nicht authentifizieren. Ich weiß schon, wer du bist!')
     else:
-        msg = bot.send_message(update.message.chat_id,
-                               'Wie lautet das Passwort?',
-                               reply_markup=ForceReply())
-        ForceReplyJobs().add(msg.message_id, "auth")
+        if not update.message.from_user.username:
+            bot.send_message('So wird das mit uns nichts. '
+                             'Bitte lege zunächst deinen Alias unter Einstellungen > Username fest!\n'
+                             'Authentifiziere dich dann mit /key.')
+        else:
+            msg = bot.send_message(update.message.chat_id,
+                                'Wie lautet das Passwort?',
+                                reply_markup=ForceReply())
+            ForceReplyJobs().add(msg.message_id, "auth")
 
 
 def csv_import(bot, update):
