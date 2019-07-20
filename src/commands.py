@@ -82,7 +82,9 @@ def ich(bot, update):
                 update.message.reply_text(
                     'Das war leider nichts. Vereinbart erst einmal einen Termin mit /neuertermin.')
             else:
-                update.message.reply_text('Okay ' + update.message.from_user.first_name + ', du hast zugesagt!')
+                bot.send_message(update.message.from_user.id, 'Danke für deine Zusage zum Spieleabend '
+                                                         + plan.date + ', '
+                                                         + update.message.from_user.first_name + '!')
                 bot.set_chat_description(update.message.chat_id, plan.get_participants())
         if update.message.chat.type == "private":
             update.message.reply_text('Stopp, das hat hier nichts zu suchen.\n'
