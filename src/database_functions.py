@@ -92,6 +92,16 @@ def search_entries_by_user(db, table, owner):
 
     return result
 
+def search_expansions_by_game(db, table, owner, title):
+    mycursor = db.cursor()
+    uuid = search_uuid(owner, title)
+    if uuid:
+        sql = "SELECT * FROM " + table + " WHERE owner LIKE \'%" + owner + "%\' AND basegame_uuid=\'" + uuid + "\'"
+        mycursor.execute(sql)
+        result = mycursor.fetchall()
+
+    return result
+
 def search_uuid(owner, title):
     db = choose_database("testdb")
     mycursor = db.cursor()

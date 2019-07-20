@@ -11,13 +11,13 @@ from singleton import Singleton
 # TODO: At some point, we should implement periodic deletion of old message_ID entries!!
 class ForceReplyJobs(Singleton):
     types_to_indices = {"auth": 0, "game_title": 1, "game_players": 2, "expansion_for": 3, "expansion_title": 4,
-                        "expansion_poll_game": 5, "date": 6, "csv": 7, "household": 8}
+                        "expansion_poll_game": 5, "date": 6, "csv": 7, "household": 8, "expansions_list": 9}
     indices_to_types = {0: "auth", 1: "game_title", 2: "game_players", 3: "expansion_for", 4: "expansion_title",
-                        5: "expansion_poll_game", 6: "date", 7: "csv", 8: "household"}
+                        5: "expansion_poll_game", 6: "date", 7: "csv", 8: "household", 9: "expansions_list"}
 
     def init(self):
         # we can't append on unknown items, so INIT the Array or find an other Solution
-        self.message_IDs = [[], [], [], [], [], [], [], [], []]
+        self.message_IDs = [[], [], [], [], [], [], [], [], [], []]
         # self.queries is a table of mid's we're waiting on, and the query that has been collected so far (used for neues_spiel and neue_erweiterung)
         self.queries = []
 
@@ -56,7 +56,7 @@ class ForceReplyJobs(Singleton):
 def handle_reply(bot, update):
     call_library = {"auth": auth, "game_title": game_title, "game_players": game_players, "expansion_for": expansion_for,
                     "expansion_title": expansion_title, "expansion_poll_game": default,
-                    "date": date, "csv": csv, "household": household}
+                    "date": date, "csv": csv, "household": household, "expansions_list": expansions_list}
 
     try:
         which = ForceReplyJobs().is_set(update.message.reply_to_message.message_id)
@@ -197,6 +197,15 @@ def expansion_title(update):
         else:
             pass # no idea how we got here...
         ForceReplyJobs().clear_query(update.message.reply_to_message.message_id)
+
+def expansions_list(update):
+    msgtext='Du hast folgende Erweiterungen:\n'
+    gamestring = to_messagestring(
+        search_expansions_by_game(choose_database("testdb"), 'expansions', update.message.from_user.username, update.message.text))
+    msgtext += gamestring
+    print(msgtext)
+    update.message.reply_text(msgtext)
+
 
 # Parses csv data into the games table of testdb.
 # Be careful with this, it could mess up the entire database if someone gets confused with a komma.

@@ -214,10 +214,11 @@ def erweiterungen(bot, update):
         if update.message.chat.type == "group":
             pass
         if update.message.chat.type == "private":
-            update.message.reply_text('Du hast folgende Erweiterungen:')
-            gamestring = to_messagestring(
-                search_entries_by_user(choose_database("testdb"), 'expansions', update.message.from_user.username))
-            bot.send_message(update.message.chat_id, text=gamestring)
+            msg = bot.send_message(update.message.chat_id,
+                                   'Um welches Grundspiel geht es dir gerade?\n'
+                                   'Antwort mit /stop, um abzubrechen.', 
+                                   reply_markup=ForceReply())
+            ForceReplyJobs().add(msg.message_id, "expansions_list")
     else:
         update.message.reply_text('Bitte authentifiziere dich zunächst mit /key.')
 
