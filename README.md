@@ -5,16 +5,16 @@ This is a Boardgame Bot under construction.
 It allows a group of friends who like to play boardgames to (potentially) over-engineer their organization: Users can tell the bot which boardgames (and expansions) they own, they can set up a date for game night and then sign up for it. And the best part: You'll never have to discuss what to play again! When everyone feels ready, the bot can randomly select four games from everyone attending game night (making sure that you're not too many people for it) and generate a poll where every participant gets one vote.
 We are planning on implementing a smarter game selection algorithm, but for now, we've been quite happy with this.
 
-This is already version 2 of this idea: Our first boardgame bot was based on a GoogleSpreadsheet structure with gscript code. That old Code can be found in the OLD-GScript folder, so if for some reason you prefer that to a database and Python... Go for it. If you need any help understanding the structure, feel free to ask.
+This is already version 2 of this idea: Our first boardgame bot was based on a Google Spreadsheet structure with gscript code. That old Code can be found in the OLD-GScript folder, so if for some reason you prefer that to a database and Python... go for it. If you need any help understanding the structure, feel free to ask.
 
 The current code can be found in [src](src/). The structure should be quite obvious, but just a few hints:
 
 * [test.py](src/test.py) is not an actual test file, it is used for isolating code that needs debugging.
-* [filters.py](src/filters.py) holds our own filters inherited by the BaseFilter class in the python-telegram-bot library
+* [filters.py](src/filters.py) holds our own filters inherited by the BaseFilter class in the python-telegram-bot library.
 
 ## Prerequisites
 
-If you want to test the code locally feel free to do so but you have to meet the requirements:
+If you want to test the code locally, feel free to do so, but you have to meet the requirements:
 
     - Python 3.xx 
     - python-telegram-bot
@@ -92,7 +92,7 @@ CREATE TABLE users (id BIGINT AUTO_INCREMENT PRIMARY KEY);
 quit
 ```
 If that didn't throw any errors like "User not found" or "Database not found", you have just created the database structure described in [database_structure.md](database_structure.md).
-Have a closer look at it if you jsut copy-pasted the queries above and are not entirely sure what you just did!
+Have a closer look at it if you just copy-pasted the queries above and are not entirely sure what you just did!
 
 ### Get your own Telegram Bot!
 
