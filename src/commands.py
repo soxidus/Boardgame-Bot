@@ -6,22 +6,21 @@ from reply_handler import ForceReplyJobs
 from planning_functions import GameNight
 
 """
-Commands registered with BotFather:
+Commands registered with BotFather: [DO NOT PRETTIFY THIS FORMAT, OTHERWISE IT CAN'T BE COPY-PASTED TO BOTFATHER!]
     key                 - Authentifiziere dich!
     neuertermin         - Wir wollen spielen! (nur in Gruppen)
     ich                 - Nimm am nächsten Spieleabend teil!
     nichtich            - Melde dich vom Spieleabend ab.
-    wer                 - Finde heraus, wer alles am Spieleabend teilnimmt
+    wer                 - Finde heraus, wer alles am Spieleabend teilnimmt (nur im Privatchat)
     start_umfrage_spiel - Wähle, welches Spiel du spielen möchtest! (nur in Gruppen)
     start_erweiterung   - Stimmt ab, welche Erweiterung eines Spiels ihr spielen wollt. (nur in Gruppen)
     ende_umfrage        - Beende die Abstimmung. (nur in Gruppen)
     ergebnis            - Lass dir die bisher abgegebenen Stimmen anzeigen.
-    spiele              - Ich sage dir, welche Spiele du bei mir angemeldet hast.
-    erweiterungen       - Ich sage dir, welche Erweiterungen du bei mir angemeldet hast.
-    neues_spiel         - Trag dein neues Spiel ein!
-    neue_erweiterung    - Trag deine neue Erweiterung ein.
-    leeren              - Lösche alle laufenden Pläne und Abstimmungen (laufende Spiel-Eintragungen etc. sind davon 
-                            nicht betroffen)
+    spiele              - Ich sage dir, welche Spiele du bei mir angemeldet hast. (nur im Privatchat)
+    erweiterungen       - Ich sage dir, welche Erweiterungen du bei mir angemeldet hast. (nur im Privatchat)
+    neues_spiel         - Trag dein neues Spiel ein! (nur im Privatchat)
+    neue_erweiterung    - Trag deine neue Erweiterung ein. (nur im Privatchat)
+    leeren              - Lösche alle laufenden Pläne und Abstimmungen (laufende Spiel-Eintragungen etc. sind davon nicht betroffen) (nur in Gruppen)
     help                - Was kann ich alles tun?
 """
 
@@ -110,11 +109,11 @@ def nichtich(bot, update):
 
 def wer(bot, update):
     if check_user(update.message.chat_id):
-        participants = GameNight().get_participants()
-        if participants == "":
-            update.message.reply_text("Bisher nimmt niemand am Spieleabend teil.")
+        if "group" in update.message.chat.type:
+            pass
         else:
-            update.message.reply_text(participants + 'nehmen teil.')
+            participants = GameNight().get_participants()
+            update.message.reply_text(participants)
     else:
         update.message.reply_text('Bitte authentifiziere dich zunächst mit /key.')
 
@@ -285,7 +284,8 @@ def help(bot, update):
                              '/erweiterungen - Ich sage dir, welche Erweiterungen du bei mir angemeldet hast.\n'
                              '/neues_spiel - Trag dein neues Spiel ein!\n'
                              '/neue_erweiterung - Trag deine neue Erweiterung ein.\n'
-                             '/help - Was kann ich alles tun?')
+                             '/help - Was kann ich alles tun?\n'
+                             'Weitere Funktionen stehen dir im Gruppenchat zur Verfügung.')
         if "group" in update.message.chat.type:
             bot.send_message(update.message.chat_id,
                              'Folgende Funktionen stehen dir im Gruppenchat zur Verfügung:\n'
@@ -293,7 +293,6 @@ def help(bot, update):
                              '/neuertermin - Wir wollen spielen! (nur in Gruppen)\n'
                              '/ich - Nimm am nächsten Spieleabend teil! (nur in Gruppen)\n'
                              '/nichtich - Melde dich vom Spieleabend ab (nur in Gruppen)\n'
-                             '/wer - Finde heraus, wer alles am Spieleabend teilnimmt\n'
                              '/start_umfrage_spiel - Wähle, welches Spiel du spielen möchtest! (nur in Gruppen)\n'
                              '/start_erweiterung - Stimmt ab, welche Erweiterung eines Spiels ihr spielen wollt. (nur '
                              'in Gruppen)\n '
@@ -301,6 +300,7 @@ def help(bot, update):
                              '/ergebnis - Lass dir die bisher abgegebenen Stimmen anzeigen.\n'
                              '/leeren - Lösche alle laufenden Pläne und Abstimmungen (laufende Spiel-Eintragungen '
                              'etc. sind davon nicht betroffen)\n '
-                             '/help - Was kann ich alles tun?')
+                             '/help - Was kann ich alles tun?\n'
+                             'Weitere Funktionen stehen dir im Privatchat zur Verfügung.')
     else:
         update.message.reply_text('Bitte authentifiziere dich zunächst mit /key.')

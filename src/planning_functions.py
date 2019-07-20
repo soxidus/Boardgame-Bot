@@ -26,9 +26,12 @@ class GameNight(Singleton):
         self.participants = []
 
     def get_participants(self):
-        result = "Am " + self.date + " nehmen teil:\n"
-        for p in self.participants:
-            result = result + p + "\n"
+        if self.date:
+            result = "Beim Spieleabend " + self.date + " nehmen teil:\n"
+            for p in self.participants:
+                result = result + p + "\n"
+        else:
+            result = "Derzeit ist kein Spieleabend geplant. Das kannst du mit /neuertermin ändern!"
         return result
 
     def set_date(self, date):

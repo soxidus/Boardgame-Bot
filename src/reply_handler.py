@@ -222,7 +222,7 @@ def date(update):
         update.message.reply_text("Melde dich doch einfach mit /ich beim festgelegten Termin an.",
                                   reply_markup=ReplyKeyboardRemove())
     else:
-        update.message.bot.set_chat_title(update.message.chat.id, 'Spielwiese am ' + update.message.text)
+        update.message.bot.set_chat_title(update.message.chat.id, 'Spielwiese: ' + update.message.text)
         update.message.reply_text("Okay, schrei einfach /ich, wenn du teilnehmen willst!",
                                   reply_markup=ReplyKeyboardRemove())
 
