@@ -54,8 +54,8 @@ class ForceReplyJobs(Singleton):
 
 # depending on the type of Reply, call a handler function
 def handle_reply(bot, update):
-    call_library = {"auth": auth, "game_title": game_title, "game_players": game_players, "expansion_for": default,
-                    "expansion_title": default, "expansion_poll_game": default,
+    call_library = {"auth": auth, "game_title": game_title, "game_players": game_players, "expansion_for": expansion_for,
+                    "expansion_title": expansion_title, "expansion_poll_game": default,
                     "date": date, "csv": csv, "household": household}
 
     try:
@@ -147,6 +147,56 @@ def game_players(update):
             pass
         ForceReplyJobs().clear_query(update.message.reply_to_message.message_id)
 
+# given the title of the boardgame, find out the boardgame_uuid
+def expansion_for(update):
+    if update.message.text == "/stop":
+        ForceReplyJobs().clear_query(update.message.reply_to_message.message_id)
+        update.message.reply_text('Okay, hier ist nichts passiert.',
+                                  reply_markup=ReplyKeyboardRemove())
+    # find uuid, if owner does not have this game, return
+    else:
+        query = ForceReplyJobs().get_query(update.message.reply_to_message.message_id)
+        uuid = search_uuid(update.message.from_user.username, update.message.text)
+        if uuid:
+            msg = update.message.reply_text('Wie heißt deine Erweiterung für ' +
+                                        update.message.text +
+                                        '?\n'
+                                        'Antworte mit /stop, um abzubrechen.',
+                                        reply_markup=ForceReply())
+            query += "," + uuid # query now has structure new_expansion, <owner>, <uuid>
+            ForceReplyJobs().clear_query(update.message.reply_to_message.message_id)
+            ForceReplyJobs().add_with_query(msg.message_id, "expansion_title", query)
+        else:
+            update.message.reply_text('Mir ist nicht bekannt, dass du dieses Spiel hast.'
+                                      'Du kannst es gerne mit /neuesspiel hinzufügen.',
+                                      reply_markup=ReplyKeyboardRemove())
+            ForceReplyJobs().clear_query(update.message.reply_to_message.message_id)
+
+
+def expansion_title(update):
+    print("\n HIER\n")
+    if update.message.text == "/stop":
+        ForceReplyJobs().clear_query(update.message.reply_to_message.message_id)
+        update.message.reply_text('Okay, hier ist nichts passiert.',
+                                  reply_markup=ReplyKeyboardRemove())
+    else:
+        query = ForceReplyJobs().get_query(update.message.reply_to_message.message_id) + "," + update.message.text
+        # query has now structure new_expansion, <owner>, <uuid>, <exp_title>
+
+        if parse_csv(query)[0] == "new_expansion":
+            # the probability of one person having the two expansions of the same title for different games is close to 0, so... just check for owner-exp combination
+            known_exp = search_entries_by_user(choose_database("testdb"), 'expansions', update.message.from_user.username)
+            for _ in range(len(known_exp)):
+                if known_exp[_][0] == update.message.text: # check whether this title has already been added for this user
+                    update.message.reply_text("Wusste ich doch: Diese Erweiterung hast du schon einmal eingetragen. Viel Spaß noch damit!",
+                                              reply_markup=ReplyKeyboardRemove())
+                    return
+            add_expansion_into_db(parse_values_from_array(remove_first_string(query)))
+            update.message.reply_text("Okay, die Erweiterung wurde hinzugefügt \\o/",
+                                      reply_markup=ReplyKeyboardRemove())
+        else:
+            pass # no idea how we got here...
+        ForceReplyJobs().clear_query(update.message.reply_to_message.message_id)
 
 # Parses csv data into the games table of testdb.
 # Be careful with this, it could mess up the entire database if someone gets confused with a komma.

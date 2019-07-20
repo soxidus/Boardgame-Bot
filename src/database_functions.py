@@ -92,6 +92,17 @@ def search_entries_by_user(db, table, owner):
 
     return result
 
+def search_uuid(owner, title):
+    db = choose_database("testdb")
+    mycursor = db.cursor()
+    sql = "SELECT game_uuid FROM games WHERE owner LIKE \'%" + owner + "%\' AND title=\'" + title + "\'"
+    mycursor.execute(sql)
+    result = mycursor.fetchall()
+    if len(result) > 0:
+        return result[0][0]
+    else:
+        return None
+
 # Selects entries from column in table where owner is owner and the playercount is >= the participants
 # as of now, this is used for boardgames only, but it could be useful for expansions as well
 def get_playable_entries(db, table, column, owner, no_participants):
@@ -115,8 +126,8 @@ def add_multiple_games_into_db(csv_string):
 
 
 def add_expansion_into_db(values):
-    entry = "(owner, title, basegame_uuid)"
-    add_entry(choose_database("testdb"), "games", entry, values, 3)
+    entry = "(owner, basegame_uuid, title)"
+    add_game(choose_database("testdb"), "expansions", entry, values) # using add_game because add_entry does not work...
 
 
 def add_user_auth(user):
