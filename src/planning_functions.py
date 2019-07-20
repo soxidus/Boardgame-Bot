@@ -26,7 +26,7 @@ class GameNight(Singleton):
         self.participants = []
 
     def get_participants(self):
-        result = ""
+        result = "Am " + self.date + " nehmen teil:\n"
         for p in self.participants:
             result = result + p + "\n"
         return result

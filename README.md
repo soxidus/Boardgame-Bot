@@ -76,7 +76,7 @@ CREATE TABLE games (title VARCHAR(255), owner VARCHAR(255), playercount VARCHAR(
 CREATE TABLE households (user_ids VARCHAR(255));
 CREATE TABLE expansions (title VARCHAR(255), owner VARCHAR(255), basegame_uuid VARCHAR(255));
 USE auth;
-CREATE TABLE users (id INT AUTO_INCREMENT PRIMARY KEY);
+CREATE TABLE users (id BIGINT AUTO_INCREMENT PRIMARY KEY);
 quit
 ```
 
