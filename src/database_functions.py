@@ -1,24 +1,28 @@
 # coding=utf-8
 
 import mysql.connector
+import configparser
 from parse_strings import *
 
 
 def choose_database(db):
+    config = configparser.ConfigParser()
+    config.read('config.ini')
+
     if db == 'auth':
         db = mysql.connector.connect(
-            host="localhost",
-            user="testuser",
-            passwd="password",
-            database="auth"
+            host=config['MySQL Auth']['host'],
+            user=config['MySQL Auth']['user'],
+            passwd=config['MySQL Auth']['passwd'],
+            database=config['MySQL Auth']['database']
         )
 
     if db == 'testdb':
         db = mysql.connector.connect(
-            host="localhost",
-            user="testuser",
-            passwd="password",
-            database="testdb"
+            host=config['MySQL Data']['host'],
+            user=config['MySQL Data']['user'],
+            passwd=config['MySQL Data']['passwd'],
+            database=config['MySQL Data']['database']
         )
 
     return db

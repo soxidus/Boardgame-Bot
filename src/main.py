@@ -1,6 +1,7 @@
 # coding=utf-8
 
 import logging
+import configparser
 from telegram.ext import (Updater, CommandHandler, Filters, MessageHandler)
 from reply_handler import handle_reply
 from commands import *
@@ -14,9 +15,12 @@ def main():
 
     # Create the EventHandler and pass it your bot's token.
 
-    # Kara Webhook
-    updater = Updater("702260882:AAF3VcoDbf3sSRVDht5xM3JYu-QNywEpgZg")
-    # Chris Webhook
+    config = configparser.ConfigParser()
+    config.read('config.ini')
+
+    # Set up updater with your bot's token
+    updater = Updater(config['Bot']['token'])
+    # Chris Token
     # updater = Updater("745861447:AAFgmej56K8weT-dpaxe97A6Ak-pTOptk-s")
 
     # Get the dispatcher to register handlers

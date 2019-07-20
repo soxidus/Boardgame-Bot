@@ -1,5 +1,6 @@
 # coding=utf-8
 
+import configparser
 from telegram import (ReplyKeyboardRemove, ForceReply)
 from database_functions import *
 from planning_functions import GameNight
@@ -71,13 +72,16 @@ def handle_reply(bot, update):
 
 # Checks the passphrase and adds the user's chat id into the auth-db if correct.
 def auth(update):
-    passphrase = "Minze"
+    config = configparser.ConfigParser()
+    config.read('config.ini')
+    passphrase = config['Authentication']['password']
 
     if update.message.text == passphrase:
+        update.message.bot.delete_message(update.message.chat_id, update.message.message_id)
         if not check_user(update.message.chat_id):
             add_user_auth(update.message.chat_id)
             if update.message.chat_id > 0:
-                msg = update.message.reply_text('Super! Wir dürfen jetzt miteinander reden.'
+                msg = update.message.reply_text('Super! Wir dürfen jetzt miteinander reden. '
                                         'Noch eine Frage: Wohnst du vielleicht mit einem der Gruppenmitglieder zusammen? '
                                         'Wenn ja, verrate mir doch bitte den entsprechenden Alias! '
                                         'Wenn nicht, dann antworte bitte mit /stop.',

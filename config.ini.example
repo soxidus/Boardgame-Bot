@@ -1,0 +1,17 @@
+[Bot]
+webhook = <insert your token here>
+
+[Authentication]
+password = <insert your password here>
+
+[MySQL Auth]
+host = localhost
+user = <insert username here>
+passwd = <insert your password here>
+database = auth
+
+[MySQL Data]
+host = localhost
+user = <insert username here>
+passwd = <insert your password here>
+database = testdb
