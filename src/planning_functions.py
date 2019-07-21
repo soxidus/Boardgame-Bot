@@ -43,7 +43,11 @@ class GameNight(Singleton):
     def set_poll(self, user_id, game=None):
         if self.poll is None and self.date is not None:
             if user_id in self.participants:
-                self.poll = Poll(self.participants, game)
+                try:
+                    self.poll = Poll(self.participants, game)
+                except ValueError:
+                    self.poll = None
+                    return -1
                 self.old_poll = None
                 return 0
         return -1
@@ -91,6 +95,8 @@ class Poll(object):
         self.running = True
         if game:
             self.options = self.generate_options_exp(participants, game)
+            if self.options==None:
+                raise ValueError
         else:
             self.options = self.generate_options(participants)
         self.current_votes = []
@@ -142,11 +148,14 @@ class Poll(object):
         exp = set() # use a set because it takes care of duplicates immediately
         for p in participants:
             uuid = search_uuid(p, game)
-            entries = get_playable_entries(choose_database("testdb"), 'expansions', 'title', p, uuid=uuid)
-            for e in entries:
-                exp.add(single_db_entry_to_string(e))
+            if uuid:
+                entries = get_playable_entries(choose_database("testdb"), 'expansions', 'title', p, uuid=uuid)
+                for e in entries:
+                    exp.add(single_db_entry_to_string(e))
         exp = list(exp) # convert to list so we can index it randomly
 
+        if len(exp) == 0: # no participant owns an expansion for this game
+            return None
         options = []
         no_opts = len(exp)
 

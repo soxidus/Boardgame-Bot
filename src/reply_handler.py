@@ -214,9 +214,11 @@ def expansion_poll_game(update):
     plan = GameNight()
     check = plan.set_poll(update.message.from_user.username, game=update.message.text)
     if check < 0:
-        update.message.reply_text('Das war leider nichts. \n'
-                                    'Habt ihr kein Datum festgelegt? Holt das mit /neuertermin nach.\n'
-                                    'Vielleicht hast du dich auch einfach nicht angemeldet? Hole das mit /ich nach.')
+        update.message.reply_text('Das war leider nichts. Dies könnte verschiedene Gründe haben:\n\n'
+                                    '(1) Ihr habt kein Datum festgelegt. Holt das mit /neuertermin nach.\n'
+                                    '(2) Du bist nicht zum Spieleabend angemeldet. Hole das mit /ich nach.\n'
+                                    '(3) Mir ist nicht bekannt, dass einer der Teilnehmenden eine Erweiterung für dieses Spiel hat.'
+                                    'Wenn das jedoch der Fall ist, sagt mir mit /neue_erweiterung Bescheid (natürlich im Privatchat!')
     else:
         keys = []
         for o in plan.poll.options:
