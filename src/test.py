@@ -1,4 +1,4 @@
-from database_functions import *
+from database_functions import choose_database
 
 def main():
     db = choose_database('testdb')

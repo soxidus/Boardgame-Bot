@@ -2,7 +2,7 @@
 
 import mysql.connector
 import configparser
-from parse_strings import *
+from parse_strings import (generate_query_string)
 
 
 def choose_database(db):

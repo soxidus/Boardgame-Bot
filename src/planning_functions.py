@@ -1,6 +1,7 @@
 from random import randrange
-from database_functions import *
+from database_functions import (get_playable_entries, choose_database, search_uuid)
 from singleton import Singleton
+from parse_strings import single_db_entry_to_string
 
 def handle_vote(bot, update):
     plan = GameNight()

@@ -2,9 +2,9 @@
 
 import logging
 import configparser
+import commands
 from telegram.ext import (Updater, CommandHandler, Filters, MessageHandler)
 from reply_handler import handle_reply
-from commands import *
 from filters import Vote
 from planning_functions import handle_vote
 
@@ -34,24 +34,24 @@ def main():
     dp.add_handler(MessageHandler(Filters.reply, handle_reply))
 
     # on different commands - answer in Telegram
-    dp.add_handler(CommandHandler("start", start))
-    dp.add_handler(CommandHandler("key", key))
-    dp.add_handler(CommandHandler("neuertermin", neuertermin))
-    dp.add_handler(CommandHandler("endetermin", endetermin))
-    dp.add_handler(CommandHandler("csv_import", csv_import))
-    dp.add_handler(CommandHandler("ich", ich))
-    dp.add_handler(CommandHandler("nichtich", nichtich))
-    dp.add_handler(CommandHandler("wer", wer))
-    dp.add_handler(CommandHandler("start_umfrage_spiel", start_umfrage_spiel))
-    dp.add_handler(CommandHandler("start_erweiterung", start_erweiterung))
-    dp.add_handler(CommandHandler("ende_umfrage", ende_umfrage))
-    dp.add_handler(CommandHandler("ergebnis", ergebnis))
-    dp.add_handler(CommandHandler("spiele", spiele))
-    dp.add_handler(CommandHandler("erweiterungen", erweiterungen))
-    dp.add_handler(CommandHandler("neues_spiel", neues_spiel))
-    dp.add_handler(CommandHandler("neue_erweiterung", neue_erweiterung))
-    dp.add_handler(CommandHandler("leeren", leeren))
-    dp.add_handler(CommandHandler("help", help))
+    dp.add_handler(CommandHandler("start", commands.start))
+    dp.add_handler(CommandHandler("key", commands.key))
+    dp.add_handler(CommandHandler("neuertermin", commands.neuertermin))
+    dp.add_handler(CommandHandler("endetermin", commands.endetermin))
+    dp.add_handler(CommandHandler("csv_import", commands.csv_import))
+    dp.add_handler(CommandHandler("ich", commands.ich))
+    dp.add_handler(CommandHandler("nichtich", commands.nichtich))
+    dp.add_handler(CommandHandler("wer", commands.wer))
+    dp.add_handler(CommandHandler("start_umfrage_spiel", commands.start_umfrage_spiel))
+    dp.add_handler(CommandHandler("start_erweiterung", commands.start_erweiterung))
+    dp.add_handler(CommandHandler("ende_umfrage", commands.ende_umfrage))
+    dp.add_handler(CommandHandler("ergebnis", commands.ergebnis))
+    dp.add_handler(CommandHandler("spiele", commands.spiele))
+    dp.add_handler(CommandHandler("erweiterungen", commands.erweiterungen))
+    dp.add_handler(CommandHandler("neues_spiel", commands.neues_spiel))
+    dp.add_handler(CommandHandler("neue_erweiterung", commands.neue_erweiterung))
+    dp.add_handler(CommandHandler("leeren", commands.leeren))
+    dp.add_handler(CommandHandler("help", commands.help))
     # Start the Bot
     updater.start_polling()
     updater.idle()

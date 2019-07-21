@@ -1,8 +1,9 @@
 # coding=utf-8
 
 import configparser
+import database_functions as dbf
+import parse_strings as ps
 from telegram import (ReplyKeyboardRemove, ForceReply, ReplyKeyboardMarkup, KeyboardButton)
-from database_functions import *
 from planning_functions import GameNight
 from singleton import Singleton
 
@@ -78,8 +79,8 @@ def auth(update):
 
     if update.message.text == passphrase:
         update.message.bot.delete_message(update.message.chat_id, update.message.message_id)
-        if not check_user(update.message.chat_id):
-            add_user_auth(update.message.chat_id)
+        if not dbf.check_user(update.message.chat_id):
+            dbf.add_user_auth(update.message.chat_id)
             if update.message.chat_id > 0:
                 msg = update.message.reply_text('Super! Wir dürfen jetzt miteinander reden. '
                                         'Noch eine Frage: Wohnst du vielleicht mit einem der Gruppenmitglieder zusammen? '
@@ -103,7 +104,7 @@ def household(update):
         update.message.reply_text('Okay, ich weiß Bescheid.',
                                   reply_markup=ReplyKeyboardRemove())
     else:
-        add_household(update.message.from_user.username, update.message.text)
+        dbf.add_household(update.message.from_user.username, update.message.text)
         update.message.reply_text('Okay, ich weiß Bescheid.',
                                   reply_markup=ReplyKeyboardRemove())
 
@@ -135,16 +136,16 @@ def game_players(update):
         update.message.reply_text('Okay, hier ist nichts passiert.',
                                   reply_markup=ReplyKeyboardRemove())
     else:
-        query = ForceReplyJobs().get_query(update.message.reply_to_message.message_id) + "," + update.message.text + "," + generate_uuid_32()
+        query = ForceReplyJobs().get_query(update.message.reply_to_message.message_id) + "," + update.message.text + "," + ps.generate_uuid_32()
 
-        if parse_csv(query)[0] == "new_game":
-            known_games = search_entries_by_user(choose_database("testdb"), 'games', update.message.from_user.username)
+        if ps.parse_csv(query)[0] == "new_game":
+            known_games = dbf.search_entries_by_user(dbf.choose_database("testdb"), 'games', update.message.from_user.username)
             for _ in range(len(known_games)):
-                if known_games[_][0] == parse_csv(query)[2]: # check whether this title has already been added for this user
+                if known_games[_][0] == ps.parse_csv(query)[2]: # check whether this title has already been added for this user
                     update.message.reply_text("Wusste ich doch: Das Spiel hast du schon einmal eingetragen. Viel Spaß noch damit!",
                                               reply_markup=ReplyKeyboardRemove())
                     return
-            add_game_into_db(parse_values_from_array(remove_first_string(query)))
+            dbf.add_game_into_db(ps.parse_values_from_array(ps.remove_first_string(query)))
             update.message.reply_text("Okay, das Spiel wurde hinzugefügt \\o/",
                                       reply_markup=ReplyKeyboardRemove())
         else:
@@ -160,7 +161,7 @@ def expansion_for(update):
     # find uuid, if owner does not have this game, return
     else:
         query = ForceReplyJobs().get_query(update.message.reply_to_message.message_id)
-        uuid = search_uuid(update.message.from_user.username, update.message.text)
+        uuid = dbf.search_uuid(update.message.from_user.username, update.message.text)
         if uuid:
             msg = update.message.reply_text('Wie heißt deine Erweiterung für ' +
                                         update.message.text +
@@ -187,15 +188,15 @@ def expansion_title(update):
         query = ForceReplyJobs().get_query(update.message.reply_to_message.message_id) + "," + update.message.text
         # query has now structure new_expansion, <owner>, <uuid>, <exp_title>
 
-        if parse_csv(query)[0] == "new_expansion":
+        if ps.parse_csv(query)[0] == "new_expansion":
             # the probability of one person having the two expansions of the same title for different games is close to 0, so... just check for owner-exp combination
-            known_exp = search_entries_by_user(choose_database("testdb"), 'expansions', update.message.from_user.username)
+            known_exp = dbf.search_entries_by_user(dbf.choose_database("testdb"), 'expansions', update.message.from_user.username)
             for _ in range(len(known_exp)):
                 if known_exp[_][0] == update.message.text: # check whether this title has already been added for this user
                     update.message.reply_text("Wusste ich doch: Diese Erweiterung hast du schon einmal eingetragen. Viel Spaß noch damit!",
                                               reply_markup=ReplyKeyboardRemove())
                     return
-            add_expansion_into_db(parse_values_from_array(remove_first_string(query)))
+            dbf.add_expansion_into_db(ps.parse_values_from_array(ps.remove_first_string(query)))
             update.message.reply_text("Okay, die Erweiterung wurde hinzugefügt \\o/",
                                       reply_markup=ReplyKeyboardRemove())
         else:
@@ -204,8 +205,8 @@ def expansion_title(update):
 
 def expansions_list(update):
     msgtext='Du hast folgende Erweiterungen:\n'
-    gamestring = to_messagestring(
-        search_expansions_by_game(choose_database("testdb"), 'expansions', update.message.from_user.username, update.message.text))
+    gamestring = ps.to_messagestring(
+        dbf.search_expansions_by_game(dbf.choose_database("testdb"), 'expansions', update.message.from_user.username, update.message.text))
     msgtext += gamestring
     print(msgtext)
     update.message.reply_text(msgtext)
@@ -230,7 +231,7 @@ def expansion_poll_game(update):
 # Parses csv data into the games table of testdb.
 # Be careful with this, it could mess up the entire database if someone gets confused with a komma.
 def csv(update):
-    add_multiple_games_into_db(parse_csv_import(update.message.text))
+    dbf.add_multiple_games_into_db(ps.parse_csv_import(update.message.text))
 
     update.message.reply_text('OKAY, ich habe die Spiele alle eingetragen.',
                               reply_markup=ReplyKeyboardRemove())
