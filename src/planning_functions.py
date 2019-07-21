@@ -48,8 +48,17 @@ class GameNight(Singleton):
                 return 0
         return -1
 
-    def clear(self):
+    def end_poll(self, user_id):
+        check = self.poll.end(user_id)
+        if check < 0:
+            return check
         self.old_poll = self.poll
+        self.poll = None
+        return 0
+
+    def clear(self):
+        if self.poll:
+            self.old_poll = self.poll
         try:
             self.old_poll.running = False # this is important for flushing command
         except AttributeError:

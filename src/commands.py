@@ -78,7 +78,10 @@ def neuertermin(bot, update):
     else:
         update.message.reply_text('Bitte authentifiziere dich zunächst mit /key.')
 
-# The bot does not respond to this message - the user can still see a reaction since the bot changes the title.
+# The bot does not really respond to this message:
+# the user can still see a reaction since the bot changes the title.
+# However, it does send a message because a poll's keyboard cannot be reset otherwise
+# this message is deleted immediately
 def endetermin(bot, update):
     if check_user(update.message.chat_id):
         if "group" in update.message.chat.type:
@@ -86,6 +89,10 @@ def endetermin(bot, update):
             plan.clear()
             bot.set_chat_description(update.message.chat_id, "")
             bot.set_chat_title(update.message.chat.id, 'Spielwiese')
+            msg = update.message.reply_text(
+                        'Ich habe alles zurückgesetzt.',
+                        reply_markup=ReplyKeyboardRemove())
+            bot.delete_message(update.message.chat_id, msg.message_id)
         if update.message.chat.type == "private":
             update.message.reply_text('Stopp, das hat hier nichts zu suchen.\n'
                                       'Bitte versuche es im Gruppenchat...')
@@ -183,7 +190,7 @@ def ende_umfrage(bot, update):
         if "group" in update.message.chat.type:
             plan = GameNight()
             try:
-                check = plan.poll.end(update.message.from_user.username)
+                check = plan.end_poll(update.message.from_user.username)
             except AttributeError:
                 update.message.reply_text(
                     'Das hat leider nicht funktioniert. Scheinbar gibt es keine Umfrage, die ich beenden könnte.')
