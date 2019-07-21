@@ -1,7 +1,7 @@
 # coding=utf-8
 
 import configparser
-from telegram import (ReplyKeyboardRemove, ForceReply)
+from telegram import (ReplyKeyboardRemove, ForceReply, ReplyKeyboardMarkup, KeyboardButton)
 from database_functions import *
 from planning_functions import GameNight
 from singleton import Singleton
@@ -56,7 +56,7 @@ class ForceReplyJobs(Singleton):
 # depending on the type of Reply, call a handler function
 def handle_reply(bot, update):
     call_library = {"auth": auth, "game_title": game_title, "game_players": game_players, "expansion_for": expansion_for,
-                    "expansion_title": expansion_title, "expansion_poll_game": default,
+                    "expansion_title": expansion_title, "expansion_poll_game": expansion_poll_game,
                     "date": date, "csv": csv, "household": household, "expansions_list": expansions_list}
 
     try:
@@ -209,6 +209,20 @@ def expansions_list(update):
     msgtext += gamestring
     print(msgtext)
     update.message.reply_text(msgtext)
+
+def expansion_poll_game(update):
+    plan = GameNight()
+    check = plan.set_poll(update.message.from_user.username, game=update.message.text)
+    if check < 0:
+        update.message.reply_text('Das war leider nichts. \n'
+                                    'Habt ihr kein Datum festgelegt? Holt das mit /neuertermin nach.\n'
+                                    'Vielleicht hast du dich auch einfach nicht angemeldet? Hole das mit /ich nach.')
+    else:
+        keys = []
+        for o in plan.poll.options:
+            keys.append([KeyboardButton(o)])
+        update.message.reply_text('Welche Erweiterung wollt ihr spielen?',
+                                    reply_markup=ReplyKeyboardMarkup(keys, one_time_keyboard=True))
 
 
 # Parses csv data into the games table of testdb.

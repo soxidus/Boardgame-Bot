@@ -9,6 +9,7 @@ from planning_functions import GameNight
 Commands registered with BotFather: [DO NOT PRETTIFY THIS FORMAT, OTHERWISE IT CAN'T BE COPY-PASTED TO BOTFATHER!]
     key                 - Authentifiziere dich!
     neuertermin         - Wir wollen spielen! (nur in Gruppen)
+    endetermin          - Der Spieleabend ist vorbei, alle Planung verschwindet. (nur in Gruppen)
     ich                 - Nimm am nächsten Spieleabend teil!
     nichtich            - Melde dich vom Spieleabend ab.
     wer                 - Finde heraus, wer alles am Spieleabend teilnimmt (nur im Privatchat)
@@ -71,6 +72,20 @@ def neuertermin(bot, update):
             msg = update.message.reply_text('Okay, wann wollt ihr spielen?',
                                             reply_markup=ForceReply())
             ForceReplyJobs().add(msg.message_id, "date")
+        if update.message.chat.type == "private":
+            update.message.reply_text('Stopp, das hat hier nichts zu suchen.\n'
+                                      'Bitte versuche es im Gruppenchat...')
+    else:
+        update.message.reply_text('Bitte authentifiziere dich zunächst mit /key.')
+
+# The bot does not respond to this message - the user can still see a reaction since the bot changes the title.
+def endetermin(bot, update):
+    if check_user(update.message.chat_id):
+        if "group" in update.message.chat.type:
+            plan = GameNight()
+            plan.clear()
+            bot.set_chat_description(update.message.chat_id, "")
+            bot.set_chat_title(update.message.chat.id, 'Spielwiese')
         if update.message.chat.type == "private":
             update.message.reply_text('Stopp, das hat hier nichts zu suchen.\n'
                                       'Bitte versuche es im Gruppenchat...')
@@ -153,8 +168,6 @@ def start_umfrage_spiel(bot, update):
 def start_erweiterung(bot, update):
     if check_user(update.message.chat_id):
         if "group" in update.message.chat.type:
-            plan = GameNight()
-            check = plan.set_poll(update.message.from_user.username)
             msg = update.message.reply_text('Für welches Spiel soll über Erweiterungen abgestimmt werden?',
                                             reply_markup=ForceReply())
             ForceReplyJobs().add(msg.message_id, "expansion_poll_game")
@@ -179,8 +192,6 @@ def ende_umfrage(bot, update):
                     update.message.reply_text(
                         'Das hat leider nicht funktioniert. Du hast wohl nicht das Recht zu dieser Aktion.')
                 else:
-                    plan.clear()
-                    bot.set_chat_description(update.message.chat_id, "")
                     update.message.reply_text(
                         'Die Umfrage ist beendet. Mit /ergebnis könnt ihr sehen, wie sie ausgegangen ist.',
                         reply_markup=ReplyKeyboardRemove())

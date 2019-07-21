@@ -119,15 +119,19 @@ def search_uuid(owner, title):
 
 # Selects entries from column in table where owner is owner and the playercount is >= the participants
 # as of now, this is used for boardgames only, but it could be useful for expansions as well
-def get_playable_entries(db, table, column, owner, no_participants):
+def get_playable_entries(db, table, column, owner, no_participants=None, uuid=None):
     mycursor = db.cursor()
 
-    sql = "SELECT " + column + " FROM " + table + " WHERE owner LIKE \'%" + owner + "%\' AND playercount>=" + str(no_participants)
+    if table=="games":
+        where = "owner LIKE \'%" + owner + "%\' AND playercount>=" + str(no_participants)
+    elif table=="expansions":
+        where = "owner LIKE \'%" + owner + "%\' AND basegame_uuid=\'" + uuid + "\'"
+    sql = "SELECT " + column + " FROM " + table + " WHERE " + where
+    print(sql)
     mycursor.execute(sql)
     result = mycursor.fetchall()
 
     return result
-
 
 def add_game_into_db(values):
     entry = "(owner, title, playercount, game_uuid)"

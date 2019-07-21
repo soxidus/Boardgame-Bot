@@ -1,6 +1,5 @@
 from random import randrange
 from database_functions import *
-from database_functions import single_db_entry_to_string
 from singleton import Singleton
 
 def handle_vote(bot, update):
@@ -41,10 +40,10 @@ class GameNight(Singleton):
             return 0
         return -1
 
-    def set_poll(self, user_id):
+    def set_poll(self, user_id, game=None):
         if self.poll is None and self.date is not None:
             if user_id in self.participants:
-                self.poll = Poll(self.participants)
+                self.poll = Poll(self.participants, game)
                 self.old_poll = None
                 return 0
         return -1
@@ -79,9 +78,12 @@ class GameNight(Singleton):
 
 
 class Poll(object):
-    def __init__(self, participants):
+    def __init__(self, participants, game):
         self.running = True
-        self.options = self.generate_options(participants)
+        if game:
+            self.options = self.generate_options_exp(participants, game)
+        else:
+            self.options = self.generate_options(participants)
         self.current_votes = []
         for p in participants:
             self.current_votes.append([p, None])
@@ -107,7 +109,7 @@ class Poll(object):
     def generate_options(self, participants):
         games = set() # use a set because it takes care of duplicates immediately
         for p in participants:
-            entries = get_playable_entries(choose_database("testdb"), 'games', 'title', p, len(participants))
+            entries = get_playable_entries(choose_database("testdb"), 'games', 'title', p, no_participants=len(participants))
             for e in entries:
                 games.add(single_db_entry_to_string(e))
         games = list(games) # convert to list so we can index it randomly
@@ -126,6 +128,27 @@ class Poll(object):
                 i += 1
 
         return options
+
+    def generate_options_exp(self, participants, game):
+        exp = set() # use a set because it takes care of duplicates immediately
+        for p in participants:
+            uuid = search_uuid(p, game)
+            entries = get_playable_entries(choose_database("testdb"), 'expansions', 'title', p, uuid=uuid)
+            for e in entries:
+                exp.add(single_db_entry_to_string(e))
+        exp = list(exp) # convert to list so we can index it randomly
+
+        options = []
+        no_opts = len(exp)
+
+        i = 0
+        while i < no_opts:
+            opt = exp[randrange(len(exp))]
+            if opt not in options:
+                options.append(opt)
+                i += 1
+
+        return options        
 
     # who is the username, what is the option they voted for (i.e. text)
     # returns -1 if voter wasn't allowed to vote, 0 if they voted for the same, else 1
