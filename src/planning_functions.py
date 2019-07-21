@@ -8,14 +8,14 @@ def handle_vote(bot, update):
     if plan.poll is not None:
         check = plan.poll.register_vote(update.message.from_user.username, update.message.text)
         if check == 0:
-            update.message.reply_text("Okay " + update.message.from_user.first_name +
+            bot.send_message(update.message.from_user.id, "Okay " + update.message.from_user.first_name +
                                       ", du hast erneut für " + update.message.text +
                                       " gestimmt. Du musst mir das nicht mehrmals sagen, ich bin fähig ;)")
         elif check < 0:
-            update.message.reply_text("Das hat nicht funktioniert. Vielleicht darfst du gar nicht abstimmen, "
+            bot.send_message(update.message.from_user.id, "Das hat nicht funktioniert. Vielleicht darfst du gar nicht abstimmen, "
                                       + update.message.from_user.first_name + "?")
         else:
-            update.message.reply_text("Okay " + update.message.from_user.first_name +
+            bot.send_message(update.message.from_user.id, "Okay " + update.message.from_user.first_name +
                                       ", du hast für " + update.message.text + " gestimmt.")
 
 class GameNight(Singleton):

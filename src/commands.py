@@ -153,6 +153,8 @@ def start_umfrage_spiel(bot, update):
 def start_erweiterung(bot, update):
     if check_user(update.message.chat_id):
         if "group" in update.message.chat.type:
+            plan = GameNight()
+            check = plan.set_poll(update.message.from_user.username)
             msg = update.message.reply_text('Für welches Spiel soll über Erweiterungen abgestimmt werden?',
                                             reply_markup=ForceReply())
             ForceReplyJobs().add(msg.message_id, "expansion_poll_game")
