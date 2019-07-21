@@ -8,22 +8,22 @@ from planning_functions import GameNight
 
 """
 Commands registered with BotFather: [DO NOT PRETTIFY THIS FORMAT, OTHERWISE IT CAN'T BE COPY-PASTED TO BOTFATHER!]
-    key                 - Authentifiziere dich!
-    neuertermin         - Wir wollen spielen! (nur in Gruppen)
-    endetermin          - Der Spieleabend ist vorbei, alle Planung verschwindet. (nur in Gruppen)
-    ich                 - Nimm am nächsten Spieleabend teil!
-    nichtich            - Melde dich vom Spieleabend ab.
-    wer                 - Finde heraus, wer alles am Spieleabend teilnimmt (nur im Privatchat)
-    start_umfrage_spiel - Wähle, welches Spiel du spielen möchtest! (nur in Gruppen)
-    start_erweiterung   - Stimmt ab, welche Erweiterung eines Spiels ihr spielen wollt. (nur in Gruppen)
-    ende_umfrage        - Beende die Abstimmung. (nur in Gruppen)
-    ergebnis            - Lass dir die bisher abgegebenen Stimmen anzeigen.
-    spiele              - Ich sage dir, welche Spiele du bei mir angemeldet hast. (nur im Privatchat)
-    erweiterungen       - Ich sage dir, welche Erweiterungen du bei mir angemeldet hast. (nur im Privatchat)
-    neues_spiel         - Trag dein neues Spiel ein! (nur im Privatchat)
-    neue_erweiterung    - Trag deine neue Erweiterung ein. (nur im Privatchat)
-    leeren              - Lösche alle laufenden Pläne und Abstimmungen (laufende Spiel-Eintragungen etc. sind davon nicht betroffen) (nur in Gruppen)
-    help                - Was kann ich alles tun?
+    key                         - Authentifiziere dich!
+    neuer_termin                - Wir wollen spielen! (nur in Gruppen)
+    ende_termin                 - Der Spieleabend ist vorbei, alle Planung verschwindet. (nur in Gruppen)
+    ich                         - Nimm am nächsten Spieleabend teil!
+    nichtich                    - Melde dich vom Spieleabend ab.
+    wer                         - Finde heraus, wer alles am Spieleabend teilnimmt (nur im Privatchat)
+    start_umfrage_spiel         - Wähle, welches Spiel du spielen möchtest! (nur in Gruppen)
+    start_umfrage_erweiterung   - Stimmt ab, welche Erweiterung eines Spiels ihr spielen wollt. (nur in Gruppen)
+    ende_umfrage                - Beende die Abstimmung. (nur in Gruppen)
+    ergebnis                    - Lass dir die bisher abgegebenen Stimmen anzeigen.
+    spiele                      - Ich sage dir, welche Spiele du bei mir angemeldet hast. (nur im Privatchat)
+    erweiterungen               - Ich sage dir, welche Erweiterungen du bei mir angemeldet hast. (nur im Privatchat)
+    neues_spiel                 - Trag dein neues Spiel ein! (nur im Privatchat)
+    neue_erweiterung            - Trag deine neue Erweiterung ein. (nur im Privatchat)
+    leeren                      - Lösche alle laufenden Pläne und Abstimmungen (laufende Spiel-Eintragungen etc. sind davon nicht betroffen) (nur in Gruppen)
+    help                        - Was kann ich alles tun?
 """
 
 
