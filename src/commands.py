@@ -6,6 +6,8 @@ from parse_strings import (to_messagestring)
 from reply_handler import ForceReplyJobs
 from planning_functions import GameNight
 
+import telegramcalendar
+
 """
 Commands registered with BotFather: [DO NOT PRETTIFY THIS FORMAT, OTHERWISE IT CAN'T BE COPY-PASTED TO BOTFATHER!]
     key                         - Authentifiziere dich!
@@ -70,8 +72,9 @@ def csv_import(bot, update):
 def neuertermin(bot, update):
     if check_user(update.message.chat_id):
         if "group" in update.message.chat.type:
+
             msg = update.message.reply_text('Okay, wann wollt ihr spielen?',
-                                            reply_markup=ForceReply())
+                                            reply_markup=telegramcalendar.create_calendar())
             ForceReplyJobs().add(msg.message_id, "date")
         if update.message.chat.type == "private":
             update.message.reply_text('Stopp, das hat hier nichts zu suchen.\n'
