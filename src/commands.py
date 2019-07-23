@@ -1,12 +1,12 @@
 # coding=utf-8
 
 from telegram import (ForceReply, ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove)
+from telegram.error import BadRequest
+from telegramcalendar import telegramcalendar
 from database_functions import (choose_database, check_user, search_entries_by_user, check_household)
 from parse_strings import (to_messagestring)
 from reply_handler import ForceReplyJobs
 from planning_functions import GameNight
-
-import telegramcalendar
 
 """
 Commands registered with BotFather: [DO NOT PRETTIFY THIS FORMAT, OTHERWISE IT CAN'T BE COPY-PASTED TO BOTFATHER!]
@@ -72,10 +72,9 @@ def csv_import(bot, update):
 def neuertermin(bot, update):
     if check_user(update.message.chat_id):
         if "group" in update.message.chat.type:
-
             msg = update.message.reply_text('Okay, wann wollt ihr spielen?',
                                             reply_markup=telegramcalendar.create_calendar())
-            ForceReplyJobs().add(msg.message_id, "date")
+            #ForceReplyJobs().add(msg.message_id, "date")
         if update.message.chat.type == "private":
             update.message.reply_text('Stopp, das hat hier nichts zu suchen.\n'
                                       'Bitte versuche es im Gruppenchat...')
@@ -91,7 +90,10 @@ def endetermin(bot, update):
         if "group" in update.message.chat.type:
             plan = GameNight()
             plan.clear()
-            bot.set_chat_description(update.message.chat_id, "")
+            try:
+                bot.set_chat_description(update.message.chat_id, "")
+            except BadRequest:
+                pass
             bot.set_chat_title(update.message.chat.id, 'Spielwiese')
             msg = update.message.reply_text(
                         'Ich habe alles zurückgesetzt.',
@@ -300,7 +302,10 @@ def leeren(bot, update):
         if "group" in update.message.chat.type:
             plan = GameNight()
             plan.clear()
-            bot.set_chat_description(update.message.chat_id, "")
+            try: # raises error when no modification
+                bot.set_chat_description(update.message.chat_id, "")
+            except BadRequest:
+                pass
             bot.set_chat_title(update.message.chat.id, 'Spielwiese')
             update.message.reply_text('Ich habe alle Termine und Umfragen zurückgesetzt.',
                                       reply_markup=ReplyKeyboardRemove())

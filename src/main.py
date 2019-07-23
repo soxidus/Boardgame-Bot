@@ -3,8 +3,8 @@
 import logging
 import configparser
 import commands
-from telegram.ext import (Updater, CommandHandler, Filters, MessageHandler)
-from reply_handler import handle_reply
+from telegram.ext import (Updater, CommandHandler, Filters, MessageHandler, CallbackQueryHandler)
+from reply_handler import (handle_reply, handle_inline)
 from filters import Vote
 from planning_functions import handle_vote
 
@@ -52,6 +52,7 @@ def main():
     dp.add_handler(CommandHandler("neue_erweiterung", commands.neue_erweiterung))
     dp.add_handler(CommandHandler("leeren", commands.leeren))
     dp.add_handler(CommandHandler("help", commands.help))
+    dp.add_handler(CallbackQueryHandler(handle_inline))
     # Start the Bot
     updater.start_polling()
     updater.idle()
