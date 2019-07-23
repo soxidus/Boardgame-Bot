@@ -1,3 +1,3 @@
-[submodule "telegramcalendar"]
-	path = src/telegramcalendar
-	url = https://github.com/unmonoqueteclea/calendar-telegram
+[submodule "src/calendarkeyboard"]
+	path = src/calendarkeyboard
+	url = https://github.com/Karacolmar/calendar-telegram

@@ -4,7 +4,7 @@ import configparser
 import database_functions as dbf
 import parse_strings as ps
 from telegram import (ReplyKeyboardRemove, ForceReply, ReplyKeyboardMarkup, KeyboardButton)
-from telegramcalendar import telegramcalendar
+from calendarkeyboard import telegramcalendar
 from planning_functions import GameNight
 from singleton import Singleton
 

@@ -2,7 +2,7 @@
 
 from telegram import (ForceReply, ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove)
 from telegram.error import BadRequest
-from telegramcalendar import telegramcalendar
+from calendarkeyboard import telegramcalendar
 from database_functions import (choose_database, check_user, search_entries_by_user, check_household)
 from parse_strings import (to_messagestring)
 from reply_handler import ForceReplyJobs
