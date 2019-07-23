@@ -1,0 +1,3 @@
+[submodule "src/calendarkeyboard"]
+	path = src/telegramcalendarkeyboard
+	url = https://github.com/unmonoqueteclea/calendar-telegram
