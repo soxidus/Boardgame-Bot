@@ -132,6 +132,7 @@ def nichtich(bot, update):
             else:
                 bot.send_message(update.message.from_user.id,
                     'Schade, dass du doch nicht teilnehmen kannst, ' + update.message.from_user.first_name + '.')
+                bot.set_chat_description(update.message.chat_id, plan.get_participants())
         if update.message.chat.type == "private":
             update.message.reply_text('Stopp, das hat hier nichts zu suchen.\n'
                                       'Bitte versuche es im Gruppenchat...')
