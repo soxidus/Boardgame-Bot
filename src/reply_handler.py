@@ -263,15 +263,21 @@ def default(update):
 # as of now, we only have the calendar as an inline feature
 # if that changes, we need to distinguish the kind of inline callback!
 def handle_inline(bot, update): 
-    selected,date = telegramcalendar.process_calendar_selection(bot, update)
+    selected, date, user_inp_req = telegramcalendar.process_calendar_selection(bot, update)
     if selected:
-        check = GameNight().set_date(date.strftime("%d/%m/%Y"))
-        if check < 0:
-            bot.send_message(chat_id=update.callback_query.message.chat_id, 
-                             text="Melde dich doch einfach mit /ich beim festgelegten Termin an.",
-                             reply_markup=ReplyKeyboardRemove())
-        else:
-            bot.set_chat_title(update.callback_query.message.chat_id, 'Spielwiese: ' + date.strftime("%d/%m/%Y"))
-            bot.send_message(chat_id=update.callback_query.message.chat_id,
-                             text="Okay, schrei einfach /ich, wenn du teilnehmen willst!",
-                             reply_markup=ReplyKeyboardRemove())
+        if user_inp_req:
+            msg = bot.send_message(chat_id=update.callback_query.message.chat_id,
+                                   text='Okay, wann wollt ihr spielen?',
+                                   reply_markup=ForceReply())
+            ForceReplyJobs().add(msg.message_id, "date")
+        elif date: 
+            check = GameNight().set_date(date.strftime("%d/%m/%Y"))
+            if check < 0:
+                bot.send_message(chat_id=update.callback_query.message.chat_id, 
+                                text="Melde dich doch einfach mit /ich beim festgelegten Termin an.",
+                                reply_markup=ReplyKeyboardRemove())
+            else:
+                bot.set_chat_title(update.callback_query.message.chat_id, 'Spielwiese: ' + date.strftime("%d/%m/%Y"))
+                bot.send_message(chat_id=update.callback_query.message.chat_id,
+                                text="Okay, schrei einfach /ich, wenn du teilnehmen willst!",
+                                reply_markup=ReplyKeyboardRemove())
