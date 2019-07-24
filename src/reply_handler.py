@@ -37,11 +37,17 @@ class ForceReplyJobs(Singleton):
     # If bot sends a ForceReply, register the message ID because we are waiting on an answer.
     def add(self, reply_to_id, reply_type):
         where = self.types_to_indices[reply_type]
+        if len(self.message_IDs[where]) >= 100: # maybe a 100x100 matrix is too big? no idea...
+            self.message_IDs[where] = self.message_IDs[where][50:]
         self.message_IDs[where].append(reply_to_id)
 
     def add_with_query(self, reply_to_id, reply_type, query):
         where = self.types_to_indices[reply_type]
+        if len(self.message_IDs[where]) >= 100: # maybe a 100x100 matrix is too big? no idea...
+            self.message_IDs[where] = self.message_IDs[where][50:]
         self.message_IDs[where].append(reply_to_id)
+        if len(self.queries) >= 100:
+            self.queries = self.queries[50:]
         self.queries.append([reply_to_id, query])
 
     def get_query(self, reply_to_id):
