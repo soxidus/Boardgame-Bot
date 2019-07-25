@@ -1,3 +1,5 @@
+import datetime
+import re
 from random import randrange
 from database_functions import (get_playable_entries, choose_database,
                                 search_uuid)
@@ -28,12 +30,34 @@ def handle_vote(bot, update):
                              " gestimmt.")
 
 
+def test_termin(bot):
+    now = datetime.datetime.now()
+    plan = GameNight()
+    if plan:
+        r = re.compile('.{2}/.{2}/.{4}')
+        if r.match(plan.date) is not None:
+            d = datetime.datetime.strptime(plan.date, '%d/%m/%Y')
+            if d < now:
+                plan = GameNight()
+                try:
+                    bot.set_chat_description(plan.chat_id, "")
+                except BadRequest:
+                    pass
+                bot.set_chat_title(plan.chat_id, 'Spielwiese')
+                plan.clear()
+                # it would be great to reset the chat title as well,
+                # but we don't have the group's chat id for that.
+                # Maybe pass it through the config?
+                # Or through game night object?
+
+
 class GameNight(Singleton):
-    def init(self):
+    def init(self, chat_id=None):
         self.date = None
         self.poll = None
         self.old_poll = None
         self.participants = []
+        self.chat_id = chat_id
 
     def get_participants(self):
         if self.date:
@@ -81,6 +105,7 @@ class GameNight(Singleton):
         self.date = None
         self.poll = None
         self.participants = []
+        self.chat_id = None
 
     def add_participant(self, user_id):
         if self.date is not None:

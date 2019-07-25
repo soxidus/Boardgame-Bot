@@ -2,12 +2,13 @@
 
 import logging
 import configparser
+import schedule
 import commands
 from telegram.ext import (Updater, CommandHandler, Filters, MessageHandler,
                           CallbackQueryHandler)
 from reply_handler import (handle_reply, handle_inline)
 from filters import Vote
-from planning_functions import handle_vote
+from planning_functions import (handle_vote, test_termin)
 
 
 def main():
@@ -57,6 +58,8 @@ def main():
     # Start the Bot
     updater.start_polling()
     updater.idle()
+
+    schedule.every().day.at("12:00:00").do(test_termin, dp.bot)
 
 
 if __name__ == '__main__':

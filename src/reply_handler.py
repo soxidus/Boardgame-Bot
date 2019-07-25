@@ -207,7 +207,7 @@ def expansion_for(update):
     else:
         query = ForceReplyJobs().get_query(
             update.message.reply_to_message.message_id)
-        uuid = dbf.search_uuid(update.message.from_user.username
+        uuid = dbf.search_uuid(update.message.from_user.username,
                                update.message.text)
         if uuid:
             msg = update.message.reply_text(
@@ -312,7 +312,7 @@ def csv(update):
 
 
 def date(update):
-    check = GameNight().set_date(update.message.text)
+    check = GameNight(update.message.chat.id).set_date(update.message.text)
     if check < 0:
         update.message.reply_text("Melde dich doch einfach mit /ich "
                                   "beim festgelegten Termin an.",
@@ -342,7 +342,7 @@ def handle_inline(bot, update):
                 reply_markup=ForceReply())
             ForceReplyJobs().add(msg.message_id, "date")
         elif date:
-            check = GameNight().set_date(date.strftime("%d/%m/%Y"))
+            check = GameNight(chat_id=update.callback_query.message.chat_id).set_date(date.strftime("%d/%m/%Y"))
             if check < 0:
                 bot.send_message(
                     chat_id=update.callback_query.message.chat_id,
