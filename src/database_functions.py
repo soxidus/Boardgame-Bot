@@ -117,14 +117,17 @@ def search_uuid(owner, title):
     else:
         return None
 
-# Selects entries from column in table where owner is owner and the playercount is >= the participants
-# as of now, this is used for boardgames only, but it could be useful for expansions as well
+
+# Selects entries from column in table where owner is owner
+# and the playercount is >= the participants
+# as of now, this is used for boardgames only,
+# but it could be useful for expansions as well
 def get_playable_entries(db, table, column, owner, no_participants=None, uuid=None):
     mycursor = db.cursor()
 
-    if table=="games":
+    if table == "games":
         where = "owner LIKE \'%" + owner + "%\' AND playercount>=" + str(no_participants)
-    elif table=="expansions":
+    elif table == "expansions":
         where = "owner LIKE \'%" + owner + "%\' AND basegame_uuid=\'" + uuid + "\'"
     sql = "SELECT " + column + " FROM " + table + " WHERE " + where
     print(sql)
@@ -132,6 +135,7 @@ def get_playable_entries(db, table, column, owner, no_participants=None, uuid=No
     result = mycursor.fetchall()
 
     return result
+
 
 def add_game_into_db(values):
     entry = "(owner, title, playercount, game_uuid)"
@@ -158,6 +162,7 @@ def add_household(user1, user2):
     household = user1 + ' ' + user2
     add_entry(choose_database("testdb"), "households", entry, household, 1)
 
+
 # Is the user authenticated?
 def check_user(user):
     result_user = search_single_entry(choose_database("auth"), "users", "id", user)
@@ -168,7 +173,8 @@ def check_user(user):
         return 1
 
 
-# Does the user live together with another one? Either both or only his name is returned
+# Does the user live together with another one?
+# Either both or only his name is returned
 def check_household(user):
     users_string = search_single_entry_substring(choose_database("testdb"), "households", "user_ids", user)
 

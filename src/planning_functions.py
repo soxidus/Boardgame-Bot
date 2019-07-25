@@ -1,22 +1,32 @@
 from random import randrange
-from database_functions import (get_playable_entries, choose_database, search_uuid)
+from database_functions import (get_playable_entries, choose_database,
+                                search_uuid)
 from singleton import Singleton
 from parse_strings import single_db_entry_to_string
+
 
 def handle_vote(bot, update):
     plan = GameNight()
     if plan.poll is not None:
-        check = plan.poll.register_vote(update.message.from_user.username, update.message.text)
+        check = plan.poll.register_vote(
+            update.message.from_user.username, update.message.text)
         if check == 0:
-            bot.send_message(update.message.from_user.id, "Okay " + update.message.from_user.first_name +
-                                      ", du hast erneut für " + update.message.text +
-                                      " gestimmt. Du musst mir das nicht mehrmals sagen, ich bin fähig ;)")
+            bot.send_message(update.message.from_user.id,
+                             "Okay " + update.message.from_user.first_name +
+                             ", du hast erneut für " + update.message.text +
+                             " gestimmt. Du musst mir das nicht mehrmals "
+                             "sagen, ich bin fähig ;)")
         elif check < 0:
-            bot.send_message(update.message.from_user.id, "Das hat nicht funktioniert. Vielleicht darfst du gar nicht abstimmen, "
-                                      + update.message.from_user.first_name + "?")
+            bot.send_message(update.message.from_user.id,
+                             "Das hat nicht funktioniert. "
+                             "Vielleicht darfst du gar nicht abstimmen, " +
+                             update.message.from_user.first_name + "?")
         else:
-            bot.send_message(update.message.from_user.id, "Okay " + update.message.from_user.first_name +
-                                      ", du hast für " + update.message.text + " gestimmt.")
+            bot.send_message(update.message.from_user.id,
+                             "Okay " + update.message.from_user.first_name +
+                             ", du hast für " + update.message.text +
+                             " gestimmt.")
+
 
 class GameNight(Singleton):
     def init(self):
@@ -65,7 +75,7 @@ class GameNight(Singleton):
         if self.poll:
             self.old_poll = self.poll
         try:
-            self.old_poll.running = False # this is important for flushing command
+            self.old_poll.running = False  # this is important for /leeren
         except AttributeError:
             pass
         self.date = None
@@ -80,7 +90,8 @@ class GameNight(Singleton):
             return 0
         return -1
 
-    # Caution: the player only gets removed from game night. He can still vote because it's too much overhead
+    # Caution: the player only gets removed from game night.
+    # He can still vote because it's too much overhead
     # to handle it differently.
     def remove_participant(self, user_id):
         try:
@@ -96,7 +107,7 @@ class Poll(object):
         self.running = True
         if game:
             self.options = self.generate_options_exp(participants, game)
-            if self.options==None:
+            if self.options is None:
                 raise ValueError
         else:
             self.options = self.generate_options(participants)
@@ -123,12 +134,14 @@ class Poll(object):
                     o[1] -= 1
 
     def generate_options(self, participants):
-        games = set() # use a set because it takes care of duplicates immediately
+        games = set()  # use a set because it takes care of duplicates
         for p in participants:
-            entries = get_playable_entries(choose_database("testdb"), 'games', 'title', p, no_participants=len(participants))
+            entries = get_playable_entries(
+                choose_database("testdb"), 'games', 'title', p,
+                no_participants=len(participants))
             for e in entries:
                 games.add(single_db_entry_to_string(e))
-        games = list(games) # convert to list so we can index it randomly
+        games = list(games)  # convert to list so we can index it randomly
 
         options = []
         if len(games) < 4:
@@ -146,16 +159,18 @@ class Poll(object):
         return options
 
     def generate_options_exp(self, participants, game):
-        exp = set() # use a set because it takes care of duplicates immediately
+        exp = set()  # use a set because it takes care of duplicates
         for p in participants:
             uuid = search_uuid(p, game)
             if uuid:
-                entries = get_playable_entries(choose_database("testdb"), 'expansions', 'title', p, uuid=uuid)
+                entries = get_playable_entries(
+                    choose_database("testdb"), 'expansions', 'title',
+                    p, uuid=uuid)
                 for e in entries:
                     exp.add(single_db_entry_to_string(e))
-        exp = list(exp) # convert to list so we can index it randomly
+        exp = list(exp)  # convert to list so we can index it randomly
 
-        if len(exp) == 0: # no participant owns an expansion for this game
+        if len(exp) == 0:  # no participant owns an expansion for this game
             return None
         options = []
         no_opts = len(exp)
@@ -167,10 +182,11 @@ class Poll(object):
                 options.append(opt)
                 i += 1
 
-        return options        
+        return options
 
     # who is the username, what is the option they voted for (i.e. text)
-    # returns -1 if voter wasn't allowed to vote, 0 if they voted for the same, else 1
+    # returns -1 if voter wasn't allowed to vote,
+    # 0 if they voted for the same, else 1
     def register_vote(self, who, what):
         if not self.running:
             return -1

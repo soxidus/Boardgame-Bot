@@ -3,7 +3,8 @@
 import logging
 import configparser
 import commands
-from telegram.ext import (Updater, CommandHandler, Filters, MessageHandler, CallbackQueryHandler)
+from telegram.ext import (Updater, CommandHandler, Filters, MessageHandler,
+                          CallbackQueryHandler)
 from reply_handler import (handle_reply, handle_inline)
 from filters import Vote
 from planning_functions import handle_vote
