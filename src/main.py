@@ -22,8 +22,6 @@ def main():
 
     # Set up updater with your bot's token
     updater = Updater(config['Bot']['token'])
-    # Chris Token
-    # updater = Updater("745861447:AAFgmej56K8weT-dpaxe97A6Ak-pTOptk-s")
 
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
