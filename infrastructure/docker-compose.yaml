@@ -2,22 +2,29 @@ version: '3.1'
 
 services:
 
-  mysql1:
+  auth_db:
       image: mariadb:latest
+      container_name: auth_db
       ports:
         - 3333:3306
       environment:
         MYSQL_ROOT_PASSWORD: 'test'
-        MYSQL_DATABASE: 'test'
+        MYSQL_DATABASE: 'auth'
         MYSQL_USER: 'test'
         MYSQL_PASSWORD: 'test'
+      volumes:
 
-  mysql2:
+        - ./init_auth.sql:/docker-entrypoint-initdb.d/init_auth.sql:ro
+
+  data_db:
     image: mariadb:latest
+    container_name: data_db
     ports:
       - 4444:3306
     environment:
       MYSQL_ROOT_PASSWORD: 'test'
-      MYSQL_DATABASE: 'test'
+      MYSQL_DATABASE: 'testdb'
       MYSQL_USER: 'test'
       MYSQL_PASSWORD: 'test'
+    volumes:
+      - ./init_data.sql:/docker-entrypoint-initdb.d/init_data.sql:ro
