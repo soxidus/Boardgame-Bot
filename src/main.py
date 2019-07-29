@@ -1,14 +1,16 @@
 # coding=utf-8
 
-import logging
 import configparser
+import logging
+
 import schedule
-import commands
 from telegram.ext import (Updater, CommandHandler, Filters, MessageHandler,
                           CallbackQueryHandler)
-from reply_handler import (handle_reply, handle_inline)
+
+import commands
 from filters import Vote
 from planning_functions import (handle_vote, test_termin)
+from reply_handler import (handle_reply, handle_inline)
 
 
 def main():
@@ -18,7 +20,7 @@ def main():
     # Create the EventHandler and pass it your bot's token.
 
     config = configparser.ConfigParser()
-    config.read('config.ini')
+    config.read("config.ini")
 
     # Set up updater with your bot's token
     updater = Updater(config['Bot']['token'])
