@@ -2,12 +2,12 @@
 
 ## docker init
 ```
-sudo apt install docker
+sudo apt install docker.io
 sudo apt install docker-compose
 cd infrastructure
 docker-compose up -d
 ```
-
+if you want you can install docker by snap: ``snap install docker``
 ## test docker configs
 after init execute: ``docker ps``
 
