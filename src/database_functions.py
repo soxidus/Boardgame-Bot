@@ -40,10 +40,8 @@ def add_entry(db, table, entry, values, valuecnt=None):
         sql = "INSERT INTO " + table + " " + entry + " " + valcountstr + str(values) + ")"
         mycursor.execute(sql)
     else:
-        valcountstr = "VALUES (%s"
-        for _ in range(valuecnt - 1):
-            valcountstr += ",%s "
-        sql = "INSERT INTO " + table + " " + entry + " " + valcountstr + ")"
+        sql = "INSERT INTO " + table + " " + entry + " " + "VALUES ('" + str(values) + "')"
+        print(sql)
         mycursor.execute(sql, values)
 
     db.commit()
