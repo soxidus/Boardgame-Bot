@@ -103,9 +103,8 @@ def auth(update):
     passphrase = config['Authentication']['password']
 
     if update.message.text == passphrase:
-        if update.message.chat_type == 'private':
-            update.message.bot.delete_message(update.message.chat_id,
-                                              update.message.message_id)
+        update.message.bot.delete_message(update.message.chat_id,
+                                          update.message.message_id)
         if not dbf.check_user(update.message.chat_id):
             dbf.add_user_auth(update.message.chat_id)
             if update.message.chat_id > 0:
