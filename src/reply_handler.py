@@ -1,10 +1,12 @@
 # coding=utf-8
 
 import configparser
-import database_functions as dbf
-import parse_strings as ps
+
 from telegram import (ReplyKeyboardRemove, ForceReply, ReplyKeyboardMarkup,
                       KeyboardButton)
+
+import database_functions as dbf
+import parse_strings as ps
 from calendarkeyboard import telegramcalendar
 from planning_functions import GameNight
 from singleton import Singleton
@@ -101,8 +103,9 @@ def auth(update):
     passphrase = config['Authentication']['password']
 
     if update.message.text == passphrase:
-        update.message.bot.delete_message(update.message.chat_id,
-                                          update.message.message_id)
+        if update.message.chat_type == 'private':
+            update.message.bot.delete_message(update.message.chat_id,
+                                              update.message.message_id)
         if not dbf.check_user(update.message.chat_id):
             dbf.add_user_auth(update.message.chat_id)
             if update.message.chat_id > 0:
