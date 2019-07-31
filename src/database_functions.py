@@ -41,7 +41,6 @@ def add_entry(db, table, entry, values, valuecnt=None):
         mycursor.execute(sql)
     else:
         sql = "INSERT INTO " + table + " " + entry + " " + "VALUES ('" + str(values) + "')"
-        print(sql)
         mycursor.execute(sql, values)
 
     db.commit()
