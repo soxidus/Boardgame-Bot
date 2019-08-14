@@ -39,6 +39,27 @@ echo MYSQL_ROOT_PASSWORD=$rootpassvar > infrastructure/.env
 echo MYSQL_USER=$uservar >> infrastructure/.env
 echo MYSQL_PASSWORD=$userpassvar >> infrastructure/.env
 
+read -p "Enter port for authentication database (defaults to 3333): " port_inp
+if [[ -z "$port_inp" ]]
+then
+    authport=3333
+else
+    authport=$port_inp
+fi
+
+
+read -p "Enter port for data database (defaults to 4444): " port_inp
+if [[ -z "$port_inp" ]]
+then
+    dataport=4444
+else
+    dataport=$port_inp
+fi
+
+echo AUTH_PORT=$authport >> infrastructure/.env
+echo DATA_PORT=$dataport >> infrastructure/.env
+
+
 echo Docker-compose environment variables set
 
 read -p "Enter database host (defaults to localhost): " host_inp
@@ -48,38 +69,24 @@ then
 else
     host=$host_inp
 fi
-read -p "Enter port for authentication database (defaults to 3333): " port_inp
-if [[ -z "$port_inp" ]]
-then
-    port=3333
-else
-    port=$port_inp
-fi
 
 echo ...
 
 echo [MySQL Auth] > config.ini
 echo host = $host >> config.ini
 echo user = $uservar >> config.ini
-echo port = $port >> config.ini
+echo port = $authport >> config.ini
 echo passwd = $userpassvar >> config.ini
 echo database = auth >> config.ini
 echo >> config.ini
 
-read -p "Enter port for authentication database (defaults to 4444): " port_inp
-if [[ -z "$port_inp" ]]
-then
-    port=4444
-else
-    port=$port_inp
-fi
 
 echo ...
 
 echo [MySQL Data] >> config.ini
 echo host = $host >> config.ini
 echo user = $uservar >> config.ini
-echo port = $port >> config.ini
+echo port = $dataport >> config.ini
 echo passwd = $userpassvar >> config.ini
 echo database = testdb >> config.ini
 echo >> config.ini

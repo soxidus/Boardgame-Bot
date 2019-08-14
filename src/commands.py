@@ -276,6 +276,7 @@ def ergebnis(bot, update):
 
 
 def spiele(bot, update):
+    print("I'M HEREEEEEEEE")
     if check_user(update.message.chat_id):
         if "group" in update.message.chat.type:
             bot.delete_message(update.message.chat_id,
