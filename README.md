@@ -1,6 +1,7 @@
 # Boardgame-Bot
 
-[Meeple-Bot](meeple-bot.png)
+<img align="right" width="205" height="228" src="meeple-bot.png">
+
 
 This is a Boardgame Bot under construction.
 
