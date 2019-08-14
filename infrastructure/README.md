@@ -53,22 +53,23 @@ Otherwise, check your config.ini file and make sure the host and port settings a
  there are different levels of purging you can do.
  
  ### 1. Containers
- Just kill the containers with ``docker kill <containerID>``
+ Just kill the containers with ``docker kill <containerID>``.
  
  OR if you know what you're doing you can kill **ALL** containers with the command 
  
- ``docker kill $(docker ps -q) `` 
+ ``docker kill $(docker ps -q) ``.
  
  ### 2. Volumes
  Delete malicious or broken volumes with
 
- ``docker volume rm <Volume>``
+ ``docker volume rm <Volume>``.
  
  OR again **ALL** Volumes:
  
- `` docker volume rm $(docker volume ls -qf dangling=true)`` 
+ `` docker volume rm $(docker volume ls -qf dangling=true)``.
  
 ### 3. EVERYTHING
- Do this only as last resort. Kill both containers as described [above](#1-containers), and then purge **ALL** Docker setings/data:  ``docker system prune``
+ Do this only as last resort. Kill both containers as described [above](#1-containers), and then purge **ALL** Docker setings/data:  
+ ``docker system prune``.
 
  After that you should have a clean Docker install and can start again with the [init part](#Docker-up).
