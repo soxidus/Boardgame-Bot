@@ -1,0 +1,114 @@
+#!/bin/bash
+
+echo Prepare database configuration...
+
+touch infrastructure/.env
+touch config.ini
+
+read -sp "Set root password: " rootpassvar
+echo
+read -sp "Repeat root password: " rootpasscmp
+echo
+
+if [ "$rootpassvar" != "$rootpasscmp" ]
+then
+    echo root passwords not equal
+    exit 1
+fi
+
+read -p "Username: " uservar
+if [[ -z "$uservar" ]]
+then
+    echo no username set
+    exit 1
+fi
+read -sp "Set password for user $uservar: " userpassvar
+echo
+read -sp "Repeat password for user $uservar: " userpasscmp
+echo
+
+if [ "$userpassvar" != "$userpasscmp" ]
+then 
+    echo user passwords not equal
+    exit 1
+fi
+
+echo ...
+
+echo MYSQL_ROOT_PASSWORD=$rootpassvar > infrastructure/.env
+echo MYSQL_USER=$uservar >> infrastructure/.env
+echo MYSQL_PASSWORD=$userpassvar >> infrastructure/.env
+
+echo Docker-compose environment variables set
+
+read -p "Enter database host (defaults to localhost): " host_inp
+if [[ -z "$host_inp" ]]
+then
+    host="localhost"
+else
+    host=$host_inp
+fi
+read -p "Enter port for authentication database (defaults to 3333): " port_inp
+if [[ -z "$port_inp" ]]
+then
+    port=3333
+else
+    port=$port_inp
+fi
+
+echo ...
+
+echo [MySQL Auth] > config.ini
+echo host = $host >> config.ini
+echo user = $uservar >> config.ini
+echo port = $port >> config.ini
+echo passwd = $userpassvar >> config.ini
+echo database = auth >> config.ini
+echo >> config.ini
+
+read -p "Enter port for authentication database (defaults to 4444): " port_inp
+if [[ -z "$port_inp" ]]
+then
+    port=4444
+else
+    port=$port_inp
+fi
+
+echo ...
+
+echo [MySQL Data] >> config.ini
+echo host = $host >> config.ini
+echo user = $uservar >> config.ini
+echo port = $port >> config.ini
+echo passwd = $userpassvar >> config.ini
+echo database = testdb >> config.ini
+echo >> config.ini
+
+echo database configuration finished.
+
+read -p "Enter bot token: " token
+if [[ -z "$token" ]]
+then
+    echo no token provided
+    exit 1
+fi
+
+read -sp "Enter password for bot: " botpassvar
+echo 
+read -sp "Repeat password for bot: " botpasscmp
+if [ "$botpassvar" != "$botpasscmp" ]
+then 
+    echo bot passwords not equal
+    exit 1
+fi
+
+echo ...
+
+echo [Bot] >> config.ini
+echo token = $token >> config.ini
+echo >> config.ini
+
+echo [Authentication] >> config.ini
+echo password = $botpassvar >> config.ini
+
+echo bot configuration finished

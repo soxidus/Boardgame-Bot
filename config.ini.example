@@ -1,5 +1,5 @@
 [Bot]
-webhook = <insert your token here>
+token = <insert your token here>
 
 [Authentication]
 password = <insert your password here>

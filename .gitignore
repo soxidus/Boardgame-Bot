@@ -108,3 +108,4 @@ venv.bak/
 
 # personal config files
 config.ini
+infrastructure/.env
