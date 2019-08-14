@@ -1,15 +1,39 @@
 #### Configuration to deploy and or test the bot
 
-## docker init
+## Docker Setup
+
+### Installation
 ```
 sudo apt install docker.io
 sudo apt install docker-compose
+```
+
+Instead of ``sudo apt``, you can also use snap: 
+``snap install docker``. Sometimes, this works better. If you face problems setting it up, you could also have a look at [the official docker installation guidelines](https://docs.docker.com/install/).
+
+### Prepare your docker configuration
+If you previously ran ``./configure`` when following our guide at [README.md](../README.md), just continue with the next section.
+Otherwise, you'll have to set some variables first. 
+
+Find [.env.example](.env.example) and rename your local copy of it to '.env'. Then, modify the values held within:
+
+- MYSQL_ROOT_PASSWORD will the root password for both the authentication and the data database
+- MYSQL_USER has to be the same as the user in the MySQL field of your config.ini
+- MYSQL_PASSWORD has to be the same as the password in the MySQL field of your config.ini
+- AUTH_PORT has to be the same as the port in the MySQL Auth field of your config.ini
+- DATA_PORT has to be the same as the port in the MySQL Data field of your config.ini
+
+The values in .env will be read by docker-compose and make sure you have everything you need to access your databases once they are running.
+
+### Docker, up!
+
+```
 cd infrastructure
 docker-compose up -d
 ```
-if you want you can install docker by snap: ``snap install docker``
-## test docker configs
-after init execute: ``docker ps``
+
+## Docker, are you there?
+After the previous init execute: ``docker ps``
 
 example output:
 ```
@@ -18,41 +42,33 @@ CONTAINER ID        IMAGE               COMMAND                  CREATED        
 7d6f6327b4f2        mariadb:latest      "docker-entrypoint.s…"   13 hours ago        Up 2 seconds        0.0.0.0:3333->3306/tcp   auth_db
 ```
 
-if you see this then your database containers should be up and running.
+If you see this, your database containers should be up and running.
 
-## connect app to docker 
-in the config file you can now connect to the database by setting host and ports
-according to the ones of the container.
+## Connect app to docker 
+If you ran ``./configure``, skip this section.
+Otherwise, check your config.ini file and make sure the host and port settings are the same as in your .env file. 
 
-##maintenance
- if you think your DB is broken or docker is doing something it shouldn't do
+## Maintenance
+ If you think your DB is broken or docker is doing something it shouldn't do,
  there are different levels of purging you can do.
  
- #1. Containers
- just kill the containers with ``docker kill <containerID>``
+ ### 1. Containers
+ Just kill the containers with ``docker kill <containerID>``
  
  OR if you know what you're doing you can kill **ALL** containers with the command 
  
  ``docker kill $(docker ps -q) `` 
  
- #2. Volumes
- delete malicious or broken volumes:
+ ### 2. Volumes
+ Delete malicious or broken volumes with
 
  ``docker volume rm <Volume>``
  
- or again **ALL** Volumes:
+ OR again **ALL** Volumes:
  
  `` docker volume rm $(docker volume ls -qf dangling=true)`` 
  
-#3. EVERYTHING
- Do this only as last resort.
- 
- This purges **ALL** Docker Setings/Data:  ``docker system prune``
+### 3. EVERYTHING
+ Do this only as last resort. Kill both containers as described [above](#1-containers), and then purge **ALL** Docker setings/data:  ``docker system prune``
 
- after that you should have a clean Docker install and can start again with the init part 
- excluding the installs, so:
- 
-```
-cd infrastructure
-docker-compose up -d
-```
+ After that you should have a clean Docker install and can start again with the [init part](#Docker-up).

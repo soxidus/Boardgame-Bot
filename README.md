@@ -27,9 +27,9 @@ Instructions can be found below.
 To get started locally I recommend not just installing python3
 but also to use an IDE that helps with formatting and testing.
 
-For this reason I use [**PyCharm**](https://www.jetbrains.com/pycharm/)
+For this reason I use [**PyCharm**](https://www.jetbrains.com/pycharm/).
 
-The Coding-Style is [**PEP8**](https://www.python.org/dev/peps/pep-0008/)
+The Coding-Style is [**PEP8**](https://www.python.org/dev/peps/pep-0008/).
 
 ### Dependencies
 
@@ -52,47 +52,6 @@ Almost... for the integration of the database you need mysql connector:
 ```
 pip3 install mysql-connector
 ```
-### Database Setup
-
-First install Mariadb:
-
-```apt install mariadb-server``` 
-
-```sudo mysql_secure_installation```
-
-You may now set a password for your DB Root user,
- iirc. this defaults to either nothing or root pw.
- 
-Afterwards log in to mariadb to create the two databases and the user (namely 'testuser')...
-
-```sudo mysql -u root -p```
-
-... and execute the following querys (feel free to change username or password):
-
-```
-CREATE DATABASE testdb;
-CREATE DATABASE auth;
-CREATE USER 'testuser' IDENTIFIED BY '<YOUR_PASSWORD>';
-GRANT ALL PRIVILEGES ON testdb.* TO testuser;
-GRANT ALL PRIVILEGES ON auth.* TO testuser;
-FLUSH PRIVILEGES;
-quit
-```  
-After that, switch to your user (configured above):
-
-```mysql -u testuser -p```
-
-```
-USE testdb;
-CREATE TABLE games (title VARCHAR(255), owner VARCHAR(255), playercount VARCHAR(255), game_uuid VARCHAR(255));
-CREATE TABLE households (user_ids VARCHAR(255));
-CREATE TABLE expansions (title VARCHAR(255), owner VARCHAR(255), basegame_uuid VARCHAR(255));
-USE auth;
-CREATE TABLE users (id BIGINT AUTO_INCREMENT PRIMARY KEY);
-quit
-```
-If that didn't throw any errors like "User not found" or "Database not found", you have just created the database structure described in [database_structure.md](database_structure.md).
-Have a closer look at it if you jsut copy-pasted the queries above and are not entirely sure what you just did!
 
 ### Get your own Telegram Bot!
 
@@ -102,7 +61,11 @@ The Botfather is going to give you a token for your bot. Hold on to that, you're
 
 ### Configuration
 
-Find [config.ini.example](config.ini.example) and rename your local copy of it to 'config.ini'. 
+Enjoy the comfort of an interactive approach on configuration by running ``./configure``.
+Or, if you don't like being asked helpful questions by your CLI, here's your guide to DIY:
+
+There is two configuration files you will need to take care of: [config.ini](config.ini.example) and [infrastructure/.env](infrastructure/.env.example). The latter is important for the Docker setup and will be dealt with later. For now,
+find [config.ini.example](config.ini.example) and rename your local copy of it to 'config.ini'. 
 Then, modify the values held within:
 
 #### Bot
@@ -112,7 +75,15 @@ This is where you enter the token the Botfather gave you.
 Think of a nice password. When other people try to talk to your bot (it's publicly visible in the Telegram Botverse), they'll have to know this password in order to do anything useful with it - including accessing your databases.
 
 #### MySQL
-All these are values that you configured when setting up the database. Just complete/modify them!
+All these are values that you will need to access the database(s). Just complete/modify them!
+
+### Docker setup
+
+Our databases run in Docker containers. To set them up, please refer to [infrastructure/README.md](infrastructure/README.md). 
+
+If that didn't throw any errors, you now have a database structure like the one described in [database_structure.md](database_structure.md).
+Have a closer look at it if you are not entirely sure what you just did!
+
 
 ### Your Telegram Group
 You will need a group to use the full functionality of this bot. While creating a group in Telegram is quite straight-forward, there are a few things to keep in mind:
