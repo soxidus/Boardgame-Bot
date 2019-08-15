@@ -108,8 +108,9 @@ def auth(update):
         if not dbf.check_user(update.message.chat_id):
             dbf.add_user_auth(update.message.chat_id)
             if update.message.chat_id > 0:
-                msg = update.message.reply_text(
-                        'Super! Wir dürfen jetzt miteinander reden. '
+                msg = bot.send_message(
+                        chat_id=update.message.chat_id,
+                        text='Super! Wir dürfen jetzt miteinander reden. '
                         'Noch eine Frage: Wohnst du vielleicht mit einem '
                         'der Gruppenmitglieder zusammen? '
                         'Wenn ja, verrate mir doch bitte den '
@@ -118,9 +119,10 @@ def auth(update):
                         reply_markup=ForceReply())
                 ForceReplyJobs().add(msg.message_id, "household")
             else:
-                update.message.reply_text('Super! Wir dürfen jetzt '
-                                          'miteinander reden.',
-                                          reply_markup=ReplyKeyboardRemove())
+                bot.send_message(chat_id=update.message.chat_id,
+                                 text='Super! Wir dürfen jetzt '
+                                 'miteinander reden.',
+                                 reply_markup=ReplyKeyboardRemove())
         else:
             update.message.reply_text("Du musst das Passwort nicht nochmal "
                                       "eingeben... Rede einfach mit mir!",
