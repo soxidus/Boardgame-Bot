@@ -5,14 +5,14 @@ token = <insert your token here>
 password = <insert your password here>
 
 [MySQL Auth]
-host = localhost
+host = auth_db
 user = <insert username here>
 port = <3333 or your container port>
 passwd = <insert your password here>
 database = auth
 
 [MySQL Data]
-host = localhost
+host = data_db
 port = <4444 or your container port>
 user = <insert username here>
 passwd = <insert your password here>

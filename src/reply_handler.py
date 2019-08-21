@@ -1,6 +1,7 @@
 # coding=utf-8
 
 import configparser
+import os
 
 from telegram import (ReplyKeyboardRemove, ForceReply, ReplyKeyboardMarkup,
                       KeyboardButton)
@@ -99,7 +100,8 @@ def handle_reply(bot, update):
 # into the auth-db if correct.
 def auth(update):
     config = configparser.ConfigParser()
-    config.read('config.ini')
+    config_path = os.path.dirname(os.path.realpath(__file__))
+    config.read(os.path.join(config_path, "config.ini"))
     passphrase = config['Authentication']['password']
 
     if update.message.text == passphrase:

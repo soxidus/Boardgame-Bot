@@ -1,6 +1,7 @@
 # coding=utf-8
 
 import configparser
+import os
 
 import mysql.connector
 
@@ -9,7 +10,8 @@ from parse_strings import (generate_query_string)
 
 def choose_database(db):
     config = configparser.ConfigParser()
-    config.read('config.ini')
+    config_path = os.path.dirname(os.path.realpath(__file__))
+    config.read(os.path.join(config_path, "config.ini"))
 
     if db == 'auth':
         db = mysql.connector.connect(
