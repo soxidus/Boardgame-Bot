@@ -3,7 +3,7 @@
 echo Prepare database configuration...
 
 touch infrastructure/.env
-touch config.ini
+touch src/config.ini
 
 read -sp "Set root password: " rootpassvar
 echo
@@ -72,24 +72,24 @@ fi
 
 echo ...
 
-echo [MySQL Auth] > config.ini
-echo host = $host >> config.ini
-echo user = $uservar >> config.ini
-echo port = $authport >> config.ini
-echo passwd = $userpassvar >> config.ini
-echo database = auth >> config.ini
+echo [MySQL Auth] > src/config.ini
+echo host = $host >> src/config.ini
+echo user = $uservar >> src/config.ini
+echo port = $authport >> src/config.ini
+echo passwd = $userpassvar >> src/config.ini
+echo database = auth >> src/config.ini
 echo >> config.ini
 
 
 echo ...
 
-echo [MySQL Data] >> config.ini
-echo host = $host >> config.ini
-echo user = $uservar >> config.ini
-echo port = $dataport >> config.ini
-echo passwd = $userpassvar >> config.ini
-echo database = testdb >> config.ini
-echo >> config.ini
+echo [MySQL Data] >> src/config.ini
+echo host = $host >> src/config.ini
+echo user = $uservar >> src/config.ini
+echo port = $dataport >> src/config.ini
+echo passwd = $userpassvar >> src/config.ini
+echo database = testdb >> src/config.ini
+echo >> src/config.ini
 
 echo database configuration finished.
 
@@ -111,11 +111,11 @@ fi
 
 echo ...
 
-echo [Bot] >> config.ini
-echo token = $token >> config.ini
+echo [Bot] >> src/config.ini
+echo token = $token >> src/config.ini
 echo >> config.ini
 
-echo [Authentication] >> config.ini
-echo password = $botpassvar >> config.ini
+echo [Authentication] >> src/config.ini
+echo password = $botpassvar >> src/config.ini
 
 echo bot configuration finished

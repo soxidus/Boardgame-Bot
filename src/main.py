@@ -2,6 +2,7 @@
 
 import configparser
 import logging
+import os
 
 import schedule
 from telegram.ext import (Updater, CommandHandler, Filters, MessageHandler,
@@ -20,7 +21,8 @@ def main():
     # Create the EventHandler and pass it your bot's token.
 
     config = configparser.ConfigParser()
-    config.read("config.ini")
+    config_path = os.path.dirname(os.path.realpath(__file__))
+    config.read(os.path.join(config_path, "config.ini"))
 
     # Set up updater with your bot's token
     updater = Updater(config['Bot']['token'])

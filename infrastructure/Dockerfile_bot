@@ -1,0 +1,7 @@
+FROM ubuntu:latest
+
+RUN apt-get update
+RUN apt-get install -y python3-pip
+RUN pip3 install python-telegram-bot
+RUN pip3 install mysql-connector
+RUN pip3 install schedule
