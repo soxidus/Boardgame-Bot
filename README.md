@@ -12,7 +12,6 @@ This is already version 2 of this idea: Our first boardgame bot was based on a G
 
 The current code can be found in [src](src/). The structure should be quite obvious, but just a few hints:
 
-* [test.py](src/test.py) is not an actual test file, it is used for isolating code that needs debugging.
 * [filters.py](src/filters.py) holds our own filters inherited by the BaseFilter class in the python-telegram-bot library
 
 ## Prerequisites
@@ -67,8 +66,8 @@ The Botfather is going to give you a token for your bot. Hold on to that, you're
 Enjoy the comfort of an interactive approach on configuration by running ``./configure``.
 Or, if you don't like being asked helpful questions by your CLI, here's your guide to DIY:
 
-There is two configuration files you will need to take care of: [config.ini](config.ini.example) and [infrastructure/.env](infrastructure/.env.example). The latter is important for the Docker setup and will be dealt with later. For now,
-find [config.ini.example](config.ini.example) and rename your local copy of it to 'config.ini'. 
+There is two configuration files you will need to take care of: [src/config.ini](src/config.ini.example) and [infrastructure/.env](infrastructure/.env.example). The latter is important for the Docker setup and will be dealt with later. For now,
+find [src/config.ini.example](src/config.ini.example) and rename your local copy of it to 'src/config.ini'. 
 Then, modify the values held within:
 
 #### Bot
