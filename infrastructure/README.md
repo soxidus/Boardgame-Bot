@@ -20,8 +20,6 @@ Find [.env.example](.env.example) and rename your local copy of it to '.env'. Th
 - MYSQL_ROOT_PASSWORD will the root password for both the authentication and the data database
 - MYSQL_USER has to be the same as the user in the MySQL field of your config.ini
 - MYSQL_PASSWORD has to be the same as the password in the MySQL field of your config.ini
-- AUTH_PORT has to be the same as the port in the MySQL Auth field of your config.ini
-- DATA_PORT has to be the same as the port in the MySQL Data field of your config.ini
 
 The values in .env will be read by docker-compose and make sure you have everything you need to access your databases once they are running.
 
