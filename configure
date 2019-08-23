@@ -39,19 +39,19 @@ echo MYSQL_ROOT_PASSWORD=$rootpassvar > infrastructure/.env
 echo MYSQL_USER=$uservar >> infrastructure/.env
 echo MYSQL_PASSWORD=$userpassvar >> infrastructure/.env
 
-read -p "Enter port for authentication database (defaults to 3333): " port_inp
+read -p "Enter port for authentication database (defaults to 3306): " port_inp
 if [[ -z "$port_inp" ]]
 then
-    authport=3333
+    authport=3306
 else
     authport=$port_inp
 fi
 
 
-read -p "Enter port for data database (defaults to 4444): " port_inp
+read -p "Enter port for data database (defaults to 3306): " port_inp
 if [[ -z "$port_inp" ]]
 then
-    dataport=4444
+    dataport=3306
 else
     dataport=$port_inp
 fi
