@@ -16,7 +16,8 @@ from reply_handler import (handle_reply, handle_inline)
 
 def main():
     logging.basicConfig(level=logging.DEBUG,
-                        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+                        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                        filename='tg_bot_log.txt')
 
     # Create the EventHandler and pass it your bot's token.
 
