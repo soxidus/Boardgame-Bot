@@ -27,7 +27,7 @@ The values in .env will be read by docker-compose and make sure you have everyth
 
 ```
 cd infrastructure
-docker-compose up -d
+docker-compose up -d --build
 ```
 
 ## Docker, are you there?
@@ -38,9 +38,16 @@ example output:
 CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                    NAMES
 4a7cfd860a4d        mariadb:latest      "docker-entrypoint.s…"   13 hours ago        Up 1 second         0.0.0.0:4444->3306/tcp   data_db
 7d6f6327b4f2        mariadb:latest      "docker-entrypoint.s…"   13 hours ago        Up 2 seconds        0.0.0.0:3333->3306/tcp   auth_db
+1036fc1d2ee1        infrastructure_bot   "/bin/bash"              6 minutes ago       Up About a minute                             bot
 ```
 
 If you see this, your database containers should be up and running.
+Now, execute 
+```
+docker exec -it bot /bin/bash
+python3 /src/main.py
+```
+and you're done.
 
 ## Connect app to docker 
 If you ran ``./configure``, skip this section.
