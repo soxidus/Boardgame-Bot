@@ -45,7 +45,7 @@ services:
     volumes:
       - ../src:/src
     tty: true
-    command: python3 /src/main.py
+#    command: python3 /src/main.py
 
 
 
