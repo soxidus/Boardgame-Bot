@@ -41,18 +41,10 @@ echo MYSQL_PASSWORD=$userpassvar >> infrastructure/.env
 
 echo Docker-compose environment variables set
 
-read -p "Enter database host (defaults to localhost): " host_inp
-if [[ -z "$host_inp" ]]
-then
-    host="localhost"
-else
-    host=$host_inp
-fi
-
 echo ...
 
 echo [MySQL Auth] > src/config.ini
-echo host = $host >> src/config.ini
+echo host = auth_db >> src/config.ini
 echo user = $uservar >> src/config.ini
 echo port = 3306 >> src/config.ini
 echo passwd = $userpassvar >> src/config.ini
@@ -63,7 +55,7 @@ echo >> config.ini
 echo ...
 
 echo [MySQL Data] >> src/config.ini
-echo host = $host >> src/config.ini
+echo host = data_db >> src/config.ini
 echo user = $uservar >> src/config.ini
 echo port = 3306 >> src/config.ini
 echo passwd = $userpassvar >> src/config.ini

@@ -1,3 +1,5 @@
+# coding=utf-8
+
 import datetime
 import re
 from random import randrange

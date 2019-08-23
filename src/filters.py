@@ -1,3 +1,5 @@
+# coding=utf-8
+
 from telegram.ext import BaseFilter
 from planning_functions import GameNight
 
