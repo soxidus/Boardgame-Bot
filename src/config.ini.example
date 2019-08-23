@@ -7,13 +7,13 @@ password = <insert your password here>
 [MySQL Auth]
 host = auth_db
 user = <insert username here>
-port = <3333 or your container port>
+port = <3006 or your container port>
 passwd = <insert your password here>
 database = auth
 
 [MySQL Data]
 host = data_db
-port = <4444 or your container port>
+port = <3006 or your container port>
 user = <insert username here>
 passwd = <insert your password here>
 database = testdb
