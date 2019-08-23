@@ -54,6 +54,7 @@ echo ...
 echo [MySQL Auth] > src/config.ini
 echo host = $host >> src/config.ini
 echo user = $uservar >> src/config.ini
+echo port = 3306 >> src/config.ini
 echo passwd = $userpassvar >> src/config.ini
 echo database = auth >> src/config.ini
 echo >> config.ini
@@ -64,6 +65,7 @@ echo ...
 echo [MySQL Data] >> src/config.ini
 echo host = $host >> src/config.ini
 echo user = $uservar >> src/config.ini
+echo port = 3306 >> src/config.ini
 echo passwd = $userpassvar >> src/config.ini
 echo database = testdb >> src/config.ini
 echo >> src/config.ini
