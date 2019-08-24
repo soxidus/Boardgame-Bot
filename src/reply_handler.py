@@ -147,12 +147,12 @@ def household(update):
             update.message.reply_text('Okay, ich weiß Bescheid.',
                                       reply_markup=ReplyKeyboardRemove())
         else:
-            update.messsage.reply_text('Irgendwas ist hier komisch. '
-                                       'Ich habe hier schon den Eintrag: ' +
-                                       check + '. '
-                                       'Das Problem muss an der Datenbank '
-                                       'selbst gelöst werden.',
-                                       reply_markup=ReplyKeyboardRemove())
+            update.message.reply_text('Irgendwas ist hier komisch. '
+                                      'Ich habe schon einen anderen Eintrag: ' +
+                                      check + '. '
+                                      'Das Problem muss an der Datenbank '
+                                      'selbst gelöst werden.',
+                                      reply_markup=ReplyKeyboardRemove())
 
 
 # Provided the game title, the bot asks for the maximum player count.
