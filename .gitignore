@@ -109,3 +109,7 @@ venv.bak/
 # personal config files
 src/config.ini
 infrastructure/.env
+
+# just to be sure, ignore old configs:
+config.ini
+config.ini.example
