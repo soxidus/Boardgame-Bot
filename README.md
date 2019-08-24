@@ -81,7 +81,9 @@ All these are values that you will need to access the database(s). Just complete
 
 ### Docker setup
 
-Our databases run in Docker containers. To set them up, please refer to [infrastructure/README.md](infrastructure/README.md). 
+Our databases and the bot run in Docker containers. To set them up, please refer to [infrastructure/README.md](infrastructure/README.md). 
+
+Of course, it is also possible to run the bot locally on your device (for testing purposes, for example), and the databases, too. For this, modify [infrastructure/docker-compose.yaml](infrastructure/docker-compose.yaml) to match your needs. 
 
 If that didn't throw any errors, you now have a database structure like the one described in [database_structure.md](database_structure.md).
 Have a closer look at it if you are not entirely sure what you just did!
