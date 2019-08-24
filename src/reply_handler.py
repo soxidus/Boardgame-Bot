@@ -110,7 +110,7 @@ def auth(update):
         if not dbf.check_user(update.message.chat_id):
             dbf.add_user_auth(update.message.chat_id)
             if update.message.chat_id > 0:
-                msg = bot.send_message(
+                msg = update.message.bot.send_message(
                         chat_id=update.message.chat_id,
                         text='Super! Wir dürfen jetzt miteinander reden. '
                         'Noch eine Frage: Wohnst du vielleicht mit einem '
@@ -121,9 +121,9 @@ def auth(update):
                         reply_markup=ForceReply())
                 ForceReplyJobs().add(msg.message_id, "household")
             else:
-                bot.send_message(chat_id=update.message.chat_id,
+                update.message.bot.send_message(chat_id=update.message.chat_id,
                                  text='Super! Wir dürfen jetzt '
-                                 'miteinander reden.',
+                                      'miteinander reden.',
                                  reply_markup=ReplyKeyboardRemove())
         else:
             update.message.reply_text("Du musst das Passwort nicht nochmal "
@@ -141,10 +141,18 @@ def household(update):
         update.message.reply_text('Okay, ich weiß Bescheid.',
                                   reply_markup=ReplyKeyboardRemove())
     else:
-        dbf.add_household(update.message.from_user.username,
-                          update.message.text)
-        update.message.reply_text('Okay, ich weiß Bescheid.',
-                                  reply_markup=ReplyKeyboardRemove())
+        check = dbf.add_household(update.message.from_user.username,
+                                  update.message.text)
+        if check == 0:  # everything went ok
+            update.message.reply_text('Okay, ich weiß Bescheid.',
+                                      reply_markup=ReplyKeyboardRemove())
+        else:
+            update.messsage.reply_text('Irgendwas ist hier komisch. '
+                                       'Ich habe hier schon den Eintrag: ' +
+                                       check + '. '
+                                       'Das Problem muss an der Datenbank '
+                                       'selbst gelöst werden.'
+                                       reply_markup=ReplyKeyboardRemove())
 
 
 # Provided the game title, the bot asks for the maximum player count.

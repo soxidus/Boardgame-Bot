@@ -17,8 +17,7 @@ from reply_handler import (handle_reply, handle_inline)
 def main():
     # delete filename config to get live output instead of output saved to a file
     logging.basicConfig(level=logging.DEBUG,
-                        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-			filename='tg_bot_log.txt')
+                        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
     # Create the EventHandler and pass it your bot's token.
 

@@ -276,7 +276,6 @@ def ergebnis(bot, update):
 
 
 def spiele(bot, update):
-    print("I'M HEREEEEEEEE")
     if check_user(update.message.chat_id):
         if "group" in update.message.chat.type:
             bot.delete_message(update.message.chat_id,
@@ -287,7 +286,12 @@ def spiele(bot, update):
             gamestring = to_messagestring(
                 search_entries_by_user(choose_database("testdb"), 'games',
                                        update.message.from_user.username))
-            bot.send_message(update.message.chat_id, text=gamestring)
+            if len(gamestring) == 0:
+                bot.send_message(update.message.chat_id,
+                                 text="Dass du Spiele hast, wäre mir neu."
+                                 "Wenn das der Fall ist, sag mir das mit /neuesspiel!")
+            else:
+                bot.send_message(update.message.chat_id, text=gamestring)
     else:
         update.message.reply_text('Bitte authentifiziere dich zunächst '
                                   'mit /key.')

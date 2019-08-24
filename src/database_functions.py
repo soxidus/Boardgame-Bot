@@ -59,7 +59,7 @@ def add_game(db, table, entry, values):
 
 def search_single_entry(db, table, entry, values):
     mycursor = db.cursor()
-
+    # wait, aren't these exactly the same? Do we still need this if/else?
     if isinstance(values, int):
         sql = "SELECT * FROM " + table + " WHERE " + entry + " = " + str(values)
         mycursor.execute(sql)
@@ -163,7 +163,18 @@ def add_user_auth(user):
 def add_household(user1, user2):
     entry = '(user_ids)'
     household = user1 + ' ' + user2
+    res = check_household(user1)
+    if res != user1:  # user1 already lives with someone, is it user2?
+        if user2 in res:
+            return 0  # nothings has to be done here
+        return res
+    res = check_household(user2)
+    if res != user2:  # user2 already lives with someone, is it user1?
+        if user1 in res:
+            return 0  # nothing has to be done here
+        return res
     add_entry(choose_database("testdb"), "households", entry, household, 1)
+    return 0
 
 
 # Is the user authenticated?
