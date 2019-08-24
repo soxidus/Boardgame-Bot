@@ -282,12 +282,15 @@ def expansion_title(update):
 
 def expansions_list(update):
     msgtext = 'Du hast folgende Erweiterungen:\n'
-    gamestring = ps.to_messagestring(
-        dbf.search_expansions_by_game(
-            dbf.choose_database("testdb"), 'expansions',
-            update.message.from_user.username, update.message.text))
+    search = dbf.search_expansions_by_game(
+                dbf.choose_database("testdb"), 'expansions',
+                update.message.from_user.username, update.message.text)
+    if not search:  # user doesn't own this game
+        update.message.reply_text('Du besitzt dieses Spiel nicht. '
+                                  'Falls doch, dann ist jetzt ein guter Zeitpunkt, '
+                                  'mir das mit /neuesspiel mitzuteilen!')
+    gamestring = ps.to_messagestring(dbf.search_expansions_by_game(search))
     msgtext += gamestring
-    print(msgtext)
     update.message.reply_text(msgtext)
 
 
