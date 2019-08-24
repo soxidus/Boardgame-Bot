@@ -108,7 +108,7 @@ def search_expansions_by_game(db, table, owner, title):
         mycursor.execute(sql)
         result = mycursor.fetchall()
         return result
-    return 1
+    return False
 
 
 

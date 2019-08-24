@@ -151,7 +151,7 @@ def household(update):
                                        'Ich habe hier schon den Eintrag: ' +
                                        check + '. '
                                        'Das Problem muss an der Datenbank '
-                                       'selbst gelöst werden.'
+                                       'selbst gelöst werden.',
                                        reply_markup=ReplyKeyboardRemove())
 
 
@@ -289,9 +289,10 @@ def expansions_list(update):
         update.message.reply_text('Du besitzt dieses Spiel nicht. '
                                   'Falls doch, dann ist jetzt ein guter Zeitpunkt, '
                                   'mir das mit /neuesspiel mitzuteilen!')
-    gamestring = ps.to_messagestring(dbf.search_expansions_by_game(search))
-    msgtext += gamestring
-    update.message.reply_text(msgtext)
+    else:
+        gamestring = ps.to_messagestring(search)
+        msgtext += gamestring
+        update.message.reply_text(msgtext)
 
 
 def expansion_poll_game(update):
