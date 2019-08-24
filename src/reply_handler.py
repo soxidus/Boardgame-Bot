@@ -89,7 +89,7 @@ def handle_reply(bot, update):
                     update.message.reply_to_message.message_id)
     except AttributeError:
         print("Reply Handling failed.")
-    else:
+    else:  # no exception
         try:
             call_library[which].__call__(update)
         except KeyError:  # this is what happens to normal text
@@ -244,7 +244,6 @@ def expansion_for(update):
 
 
 def expansion_title(update):
-    print("\n HIER\n")
     if update.message.text == "/stop":
         ForceReplyJobs().clear_query(
             update.message.reply_to_message.message_id)

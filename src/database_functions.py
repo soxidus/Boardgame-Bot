@@ -136,7 +136,6 @@ def get_playable_entries(db, table, column, owner, no_participants=None, uuid=No
     elif table == "expansions":
         where = "owner LIKE \'%" + owner + "%\' AND basegame_uuid=\'" + uuid + "\'"
     sql = "SELECT " + column + " FROM " + table + " WHERE " + where
-    print(sql)
     mycursor.execute(sql)
     result = mycursor.fetchall()
 
