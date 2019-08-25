@@ -32,20 +32,20 @@ services:
       - ./init_data_expansions.sql:/docker-entrypoint-initdb.d/init_data_expansions.sql
       - ./init_data_households.sql:/docker-entrypoint-initdb.d/init_data_households.sql
 
-  bot:
-    container_name: bot
-    build:
-      context: .
-      dockerfile: Dockerfile_bot
-    depends_on:
-      - auth_db
-      - data_db
-    links:
-      - auth_db
-      - data_db
-    volumes:
-      - ../src:/src
-    tty: true
+#  bot:
+#    container_name: bot
+#    build:
+#      context: .
+#      dockerfile: Dockerfile_bot
+#    depends_on:
+#      - auth_db
+#      - data_db
+#    links:
+#      - auth_db
+#      - data_db
+#    volumes:
+#      - ../src:/src
+#    tty: true
 #    command: python3 /src/main.py
 
 
