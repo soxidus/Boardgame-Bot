@@ -3,10 +3,12 @@
 from telegram import (ForceReply, ReplyKeyboardMarkup, KeyboardButton,
                       ReplyKeyboardRemove)
 from telegram.error import BadRequest
+from random import randrange
 from calendarkeyboard import telegramcalendar
 from database_functions import (choose_database, check_user,
-                                search_entries_by_user, check_household)
-from parse_strings import (to_messagestring)
+                                search_entries_by_user, check_household,
+                                get_playable_entries)
+from parse_strings import (to_messagestring, single_db_entry_to_string)
 from reply_handler import ForceReplyJobs
 from planning_functions import GameNight
 
@@ -27,6 +29,7 @@ Commands registered with BotFather:
     erweiterungen               - Ich sage dir, welche Erweiterungen du bei mir angemeldet hast. (nur im Privatchat)
     neues_spiel                 - Trag dein neues Spiel ein! (nur im Privatchat)
     neue_erweiterung            - Trag deine neue Erweiterung ein. (nur im Privatchat)
+    zufallsspiel                - Lass dir vom Bot ein Spiel vorschlagen. (nur im Privatchat)
     leeren                      - Lösche alle laufenden Pläne und Abstimmungen (laufende Spiel-Eintragungen etc. sind davon nicht betroffen) (nur in Gruppen)
     help                        - Was kann ich alles tun?
 """
@@ -357,6 +360,26 @@ def neue_erweiterung(bot, update):
                                   'mit /key.')
 
 
+def zufallsspiel(bot, update):
+    if check_user(update.message.chat_id):
+        if "group" in update.message.chat.type:
+            bot.delete_message(update.message.chat_id,
+                               update.message.message_id)
+            pass
+        if update.message.chat.type == "private":
+            opt = []
+            entries = get_playable_entries(
+                choose_database("testdb"), 'games', 'title',
+                update.message.from_user.username)
+            for e in entries:
+                opt.append(single_db_entry_to_string(e))
+            game = opt[randrange(len(opt))]
+        update.message.reply_text('Wie wäre es mit ' + game + '?')
+    else:
+        update.message.reply_text('Bitte authentifiziere dich zunächst '
+                                  'mit /key.')
+
+
 def leeren(bot, update):
     if check_user(update.message.chat_id):
         if "group" in update.message.chat.type:
@@ -396,6 +419,7 @@ def help(bot, update):
                              '/neues_spiel - Trag dein neues Spiel ein!\n'
                              '/neue_erweiterung - Trag deine neue '
                              'Erweiterung ein.\n'
+                             '/zufallsspiel - Ich schlage dir ein Spiel vor.\n'
                              '/help - Was kann ich alles tun?\n\n'
                              'Solltest du im Gruppenchat Funktionen nutzen, '
                              'die dort nicht erlaubt sind, '
