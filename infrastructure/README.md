@@ -41,7 +41,8 @@ CONTAINER ID        IMAGE               COMMAND                  CREATED        
 1036fc1d2ee1        infrastructure_bot   "/bin/bash"              6 minutes ago       Up About a minute                             bot
 ```
 
-If you see this, your database containers should be up and running.
+If you see this, your database containers should be up and running. Bear in mind that data_db and auth_db take time to set up the databases. It can be several minutes until the bot script is able to connect to the databases, so don't worry if you get a timeout error, just wait for a few more minutes. 
+
 Now, execute 
 ```
 docker exec -it bot /bin/bash
@@ -63,6 +64,15 @@ Otherwise, check your config.ini file and make sure the host and port settings a
  OR if you know what you're doing you can kill **ALL** containers with the command 
  
  ``docker kill $(docker ps -q) ``.
+
+ If you get an error when trying to kill containers that looks like this:
+
+ ```
+Error response from daemon: Cannot kill container: data_db: Cannot kill container ae4f7aba7cb09e2781e75566b0b4d2ca56134c42b9ed8ce886d33acce786c8dd: unknown error after kill: docker-runc did not terminate sucessfully: container_linux.go:393: signaling init process caused "permission denied"
+: unknown
+ ```
+
+Refer to [this stackoverflow thread](https://stackoverflow.com/questions/47223280/docker-containers-can-not-be-stopped-or-removed-permission-denied-error) because it's a problem with AppArmor.
  
  ### 2. Volumes
  Delete malicious or broken volumes with

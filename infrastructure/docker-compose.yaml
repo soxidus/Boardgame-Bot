@@ -38,7 +38,6 @@ services:
     depends_on:
       - auth_db
       - data_db
-
     links:
       - auth_db
       - data_db
@@ -46,7 +45,6 @@ services:
       - ../src:/src
     tty: true
 #    command: python3 /src/main.py
-
 
 
 
