@@ -6,7 +6,7 @@ services:
       image: mariadb:latest
       container_name: auth_db
       ports:
-        - 3306
+        - "3333:3306"
       environment:
         MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
         MYSQL_DATABASE: 'auth'
@@ -20,7 +20,7 @@ services:
     image: mariadb:latest
     container_name: data_db
     ports:
-      - 3306
+      - "4444:3306"
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: 'testdb'

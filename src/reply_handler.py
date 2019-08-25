@@ -20,15 +20,17 @@ class ForceReplyJobs(Singleton):
     types_to_indices = {"auth": 0, "game_title": 1, "game_players": 2,
                         "expansion_for": 3, "expansion_title": 4,
                         "expansion_poll_game": 5, "date": 6, "csv": 7,
-                        "household": 8, "expansions_list": 9}
+                        "household": 8, "expansions_list": 9, 
+                        "game_categories": 10}
     indices_to_types = {0: "auth", 1: "game_title", 2: "game_players",
                         3: "expansion_for", 4: "expansion_title",
                         5: "expansion_poll_game", 6: "date", 7: "csv",
-                        8: "household", 9: "expansions_list"}
+                        8: "household", 9: "expansions_list",
+                        10: "game_categories"}
 
     def init(self):
         # we can't append on unknown items, so INIT the Array
-        self.message_IDs = [[], [], [], [], [], [], [], [], [], []]
+        self.message_IDs = [[], [], [], [], [], [], [], [], [], [], []]
         # self.queries is a table of mid's we're waiting on, and the query
         # that has been collected so far
         # (used for neues_spiel and neue_erweiterung)
@@ -82,7 +84,8 @@ def handle_reply(bot, update):
                     "expansion_title": expansion_title,
                     "expansion_poll_game": expansion_poll_game, "date": date,
                     "csv": csv, "household": household,
-                    "expansions_list": expansions_list}
+                    "expansions_list": expansions_list,
+                    "game_categories": game_categories}
 
     try:
         which = ForceReplyJobs().is_set(
@@ -181,6 +184,24 @@ def game_players(update):
         update.message.reply_text('Okay, hier ist nichts passiert.',
                                   reply_markup=ReplyKeyboardRemove())
     else:
+        query = ForceReplyJobs().get_query(update.message.reply_to_message.message_id) + "," + update.message.text
+        msg = update.message.reply_text(
+                'In welche Kategorien passt ' + ps.parse_csv(query)[2] +
+                ' am besten?',
+                reply_markup=ForceReply())
+        ForceReplyJobs().clear_query(
+            update.message.reply_to_message.message_id)
+        ForceReplyJobs().add_with_query(
+            msg.message_id, "game_categories", query)
+
+
+def game_categories(update):
+    if update.message.text == "/stop":
+        ForceReplyJobs().clear_query(
+            update.message.reply_to_message.message_id)
+        update.message.reply_text('Okay, hier ist nichts passiert.',
+                                  reply_markup=ReplyKeyboardRemove())
+    else:
         query = ForceReplyJobs().get_query(update.message.reply_to_message.message_id) + "," + update.message.text + "," + ps.generate_uuid_32()
 
         if ps.parse_csv(query)[0] == "new_game":
@@ -203,7 +224,6 @@ def game_players(update):
             pass
         ForceReplyJobs().clear_query(
             update.message.reply_to_message.message_id)
-
 
 # given the title of the boardgame, find out the boardgame_uuid
 def expansion_for(update):

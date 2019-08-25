@@ -140,7 +140,7 @@ def get_playable_entries(db, table, column, owner, no_participants=0, uuid=None)
 
 
 def add_game_into_db(values):
-    entry = "(owner, title, playercount, game_uuid)"
+    entry = "(owner, title, playercount, categories, game_uuid)"
     add_game(choose_database("testdb"), "games", entry, values)
 
 
