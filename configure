@@ -49,7 +49,7 @@ echo user = $uservar >> src/config.ini
 echo port = 3306 >> src/config.ini
 echo passwd = $userpassvar >> src/config.ini
 echo database = auth >> src/config.ini
-echo >> config.ini
+echo >> src/config.ini
 
 
 echo ...
@@ -84,7 +84,7 @@ echo ...
 
 echo [Bot] >> src/config.ini
 echo token = $token >> src/config.ini
-echo >> config.ini
+echo >> src/config.ini
 
 echo [Authentication] >> src/config.ini
 echo password = $botpassvar >> src/config.ini
