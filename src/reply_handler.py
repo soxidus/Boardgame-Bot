@@ -114,9 +114,12 @@ def auth(update):
                         chat_id=update.message.chat_id,
                         text='Super! Wir dürfen jetzt miteinander reden. '
                         'Noch eine Frage: Wohnst du vielleicht mit einem '
+                        '(oder mehreren) '
                         'der Gruppenmitglieder zusammen? '
                         'Wenn ja, verrate mir doch bitte den '
-                        'entsprechenden Alias! '
+                        'entsprechenden Alias(e)! '
+                        'Bei mehr als einem Mitbewohner trenne die Aliase '
+                        'mit einem Leerzeichen. '
                         'Wenn nicht, dann antworte bitte mit /stop.',
                         reply_markup=ForceReply())
                 ForceReplyJobs().add(msg.message_id, "household")
@@ -141,18 +144,10 @@ def household(update):
         update.message.reply_text('Okay, ich weiß Bescheid.',
                                   reply_markup=ReplyKeyboardRemove())
     else:
-        check = dbf.add_household(update.message.from_user.username,
-                                  update.message.text)
-        if check == 0:  # everything went ok
-            update.message.reply_text('Okay, ich weiß Bescheid.',
-                                      reply_markup=ReplyKeyboardRemove())
-        else:
-            update.message.reply_text('Irgendwas ist hier komisch. '
-                                      'Ich habe schon einen anderen Eintrag: ' +
-                                      check + '. '
-                                      'Das Problem muss an der Datenbank '
-                                      'selbst gelöst werden.',
-                                      reply_markup=ReplyKeyboardRemove())
+        users = [update.message.from_user.username] + update.message.text.split()
+        dbf.add_household(users)
+        update.message.reply_text('Okay, ich weiß Bescheid.',
+                                  reply_markup=ReplyKeyboardRemove())
 
 
 # Provided the game title, the bot asks for the maximum player count.

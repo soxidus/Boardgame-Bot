@@ -111,7 +111,6 @@ def search_expansions_by_game(db, table, owner, title):
     return False
 
 
-
 def search_uuid(owner, title):
     db = choose_database("testdb")
     mycursor = db.cursor()
@@ -162,21 +161,35 @@ def add_user_auth(user):
     add_entry(choose_database("auth"), "users", entry, user, 1)
 
 
-def add_household(user1, user2):
+# variable names user1 and user2 are a bit arbitrary
+# user2 can hold more than one username
+def add_household(users):
     entry = '(user_ids)'
-    household = user1 + ' ' + user2
-    res = check_household(user1)
-    if res != user1:  # user1 already lives with someone, is it user2?
-        if user2 in res:
-            return 0  # nothings has to be done here
-        return res
-    res = check_household(user2)
-    if res != user2:  # user2 already lives with someone, is it user1?
-        if user1 in res:
-            return 0  # nothing has to be done here
-        return res
+    household = ' '.join(users)
+    for u in users:
+        res = check_household(u)
+        if res != u:  # user already lives with someone, delete it
+            delete_single_entry_substring(choose_database("testdb"), "households", entry, u)
     add_entry(choose_database("testdb"), "households", entry, household, 1)
-    return 0
+    update_household_games(users)
+
+
+def delete_single_entry_substring(db, table, entry, value):
+    mycursor = db.cursor()
+    sql = "DELETE FROM " + table + " WHERE " + entry + " LIKE \'%" + value + "%\'"
+    mycursor.execute(sql)
+
+    db.commit()
+
+
+def update_household_games(users):
+    household = ' '.join(users)
+    db = choose_database("testdb")
+    mycursor = db.cursor()
+    for u in users:
+        sql = "UPDATE games SET owner='" + str(household) + "' WHERE owner LIKE \'%" + str(u) + "%\' AND NOT owner='" + str(household) + "'"
+        mycursor.execute(sql)
+    db.commit()
 
 
 # Is the user authenticated?
