@@ -2,6 +2,12 @@ FROM ubuntu:latest
 
 RUN apt-get update
 RUN apt-get install -y python3-pip
+RUN apt-get install -y locales
 RUN pip3 install python-telegram-bot
 RUN pip3 install mysql-connector
 RUN pip3 install schedule
+
+RUN locale-gen en_US.utf8
+ENV LANG en_US.utf8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8

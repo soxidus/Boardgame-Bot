@@ -12,6 +12,7 @@ services:
         MYSQL_DATABASE: 'auth'
         MYSQL_USER: ${MYSQL_USER}
         MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+        LANG: 'en_US.UTF-8'
       volumes:
         - ./init_auth.sql:/docker-entrypoint-initdb.d/init_auth.sql:ro
 
@@ -25,6 +26,7 @@ services:
       MYSQL_DATABASE: 'testdb'
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      LANG: 'en_US.UTF-8'
     volumes:
       - ./init_data_games.sql:/docker-entrypoint-initdb.d/init_data_games.sql
       - ./init_data_expansions.sql:/docker-entrypoint-initdb.d/init_data_expansions.sql
