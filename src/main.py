@@ -11,7 +11,8 @@ from telegram.ext import (Updater, CommandHandler, Filters, MessageHandler,
 import commands
 from filters import Vote
 from planning_functions import (handle_vote, test_termin)
-from reply_handler import (handle_reply, handle_inline)
+from reply_handler import handle_reply
+from inline_handler import handle_inline
 
 
 def main():

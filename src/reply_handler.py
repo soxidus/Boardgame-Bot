@@ -5,12 +5,12 @@ import os
 
 from telegram import (ReplyKeyboardRemove, ForceReply, ReplyKeyboardMarkup,
                       KeyboardButton)
-
 import database_functions as dbf
 import parse_strings as ps
 from calendarkeyboard import telegramcalendar
 from planning_functions import GameNight
 from singleton import Singleton
+from inline_handler import generate_categories
 
 
 # keeps track of ForceReplys not being answered
@@ -187,8 +187,9 @@ def game_players(update):
         query = ForceReplyJobs().get_query(update.message.reply_to_message.message_id) + "," + update.message.text
         msg = update.message.reply_text(
                 'In welche Kategorien passt ' + ps.parse_csv(query)[2] +
-                ' am besten?',
-                reply_markup=ForceReply())
+                ' am besten?\n'
+                'Antworte mit /stop, um abzubrechen.',
+                reply_markup=generate_categories())
         ForceReplyJobs().clear_query(
             update.message.reply_to_message.message_id)
         ForceReplyJobs().add_with_query(
@@ -224,6 +225,7 @@ def game_categories(update):
             pass
         ForceReplyJobs().clear_query(
             update.message.reply_to_message.message_id)
+
 
 # given the title of the boardgame, find out the boardgame_uuid
 def expansion_for(update):
@@ -360,33 +362,3 @@ def date(update):
 def default(update):
     update.message.reply_text("Ja... Bald...",
                               reply_markup=ReplyKeyboardRemove())
-
-
-# as of now, we only have the calendar as an inline feature
-# if that changes, we need to distinguish the kind of inline callback!
-def handle_inline(bot, update):
-    selected, date, user_inp_req = telegramcalendar.process_calendar_selection(bot, update)
-    if selected:
-        if user_inp_req:
-            msg = bot.send_message(
-                chat_id=update.callback_query.message.chat_id,
-                text='Okay, wann wollt ihr spielen?',
-                reply_markup=ForceReply())
-            ForceReplyJobs().add(msg.message_id, "date")
-        elif date:
-            check = GameNight(chat_id=update.callback_query.message.chat_id).set_date(date.strftime("%d/%m/%Y"))
-            if check < 0:
-                bot.send_message(
-                    chat_id=update.callback_query.message.chat_id,
-                    text="Melde dich doch einfach mit /ich "
-                         "beim festgelegten Termin an.",
-                    reply_markup=ReplyKeyboardRemove())
-            else:
-                bot.set_chat_title(
-                    update.callback_query.message.chat_id,
-                    'Spielwiese: ' + date.strftime("%d/%m/%Y"))
-                bot.send_message(
-                    chat_id=update.callback_query.message.chat_id,
-                    text="Okay, schrei einfach /ich, wenn du "
-                         "teilnehmen willst!",
-                    reply_markup=ReplyKeyboardRemove())
