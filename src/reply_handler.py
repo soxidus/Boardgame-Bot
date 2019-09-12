@@ -75,6 +75,11 @@ class ForceReplyJobs(Singleton):
             if entry[0] == reply_to_id:
                 self.queries.remove(entry)
 
+    def edit_query(self, reply_to_id, query):
+        for entry in self.queries:
+            if entry[0] == reply_to_id:
+                entry[1] = query
+
 
 # depending on the type of Reply, call a handler function
 def handle_reply(bot, update):
@@ -128,9 +133,9 @@ def auth(update):
                 ForceReplyJobs().add(msg.message_id, "household")
             else:
                 update.message.bot.send_message(chat_id=update.message.chat_id,
-                                 text='Super! Wir dürfen jetzt '
-                                      'miteinander reden.',
-                                 reply_markup=ReplyKeyboardRemove())
+                                                text='Super! Wir dürfen jetzt '
+                                                    'miteinander reden.',
+                                                reply_markup=ReplyKeyboardRemove())
         else:
             update.message.reply_text("Du musst das Passwort nicht nochmal "
                                       "eingeben... Rede einfach mit mir!",
@@ -184,12 +189,12 @@ def game_players(update):
         update.message.reply_text('Okay, hier ist nichts passiert.',
                                   reply_markup=ReplyKeyboardRemove())
     else:
-        query = ForceReplyJobs().get_query(update.message.reply_to_message.message_id) + "," + update.message.text
+        query = ForceReplyJobs().get_query(update.message.reply_to_message.message_id) + "," + update.message.text + ","
         msg = update.message.reply_text(
                 'In welche Kategorien passt ' + ps.parse_csv(query)[2] +
                 ' am besten?\n'
                 'Antworte mit /stop, um abzubrechen.',
-                reply_markup=generate_categories())
+                reply_markup=generate_categories(first=True))
         ForceReplyJobs().clear_query(
             update.message.reply_to_message.message_id)
         ForceReplyJobs().add_with_query(

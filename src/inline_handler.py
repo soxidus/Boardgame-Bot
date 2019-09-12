@@ -1,5 +1,6 @@
 # coding=utf-8
 
+from telegram.error import BadRequest
 from telegram import (InlineKeyboardButton, InlineKeyboardMarkup,
                       ReplyKeyboardRemove)
 from calendarkeyboard import telegramcalendar
@@ -46,7 +47,35 @@ def handle_calendar(bot, update):
 
 def handle_category(bot, update):
     category = update.callback_query.data.split(" ")[1]
-    query = rep.ForceReplyJobs().get_query(update.callback_query.message.message_id) + "," + category + "," + ps.generate_uuid_32()
+    if category == "none":
+        end_of_categories(bot, update, no_category=True)
+    elif category == "stop":
+        rep.ForceReplyJobs().clear_query(update.callback_query.message.message_id)
+        bot.send_message(
+            chat_id=update.callback_query.message.chat_id,
+            text='Okay, hier ist nichts passiert.',
+            reply_markup=ReplyKeyboardRemove())
+    elif category == "done":
+        end_of_categories(bot, update)
+    else:  # we actually got a category, now register it
+        query = rep.ForceReplyJobs().get_query(update.callback_query.message.message_id) + category + "/"
+        rep.ForceReplyJobs().edit_query(update.callback_query.message.message_id, query)
+        # change keyboard layout
+        # REFACTOR: it's a bit of overhead that we create the keyboard again and again
+        try:
+            bot.edit_message_text(text=update.callback_query.message.text,
+                                  chat_id=update.callback_query.message.chat_id,
+                                  message_id=update.callback_query.message.message_id,
+                                  reply_markup=generate_categories())
+        except BadRequest:
+            pass
+
+
+def end_of_categories(bot, update, no_category=False):
+    if no_category:  # TODO: TEST THIS!!!
+        query = rep.ForceReplyJobs().get_query(update.callback_query.message.message_id) + " ," + ps.generate_uuid_32()
+    else:  # user pressed "Done"
+        query = rep.ForceReplyJobs().get_query(update.callback_query.message.message_id) + "," + ps.generate_uuid_32()
 
     if ps.parse_csv(query)[0] == "new_game":
         known_games = dbf.search_entries_by_user(
@@ -55,20 +84,25 @@ def handle_category(bot, update):
         for _ in range(len(known_games)):
             # check whether this title has already been added for this user
             if known_games[_][0] == ps.parse_csv(query)[2]:
-                update.callback_query.answer(
-                    "Wusste ich doch: Das Spiel hast du schon "
-                    "einmal eingetragen. Viel Spaß noch damit!")
+                bot.send_message(
+                    chat_id=update.callback_query.message.chat_id,
+                    text="Wusste ich doch: Das Spiel hast du schon "
+                         "einmal eingetragen. Viel Spaß noch damit!",
+                    reply_markup=ReplyKeyboardRemove())
                 return
         dbf.add_game_into_db(ps.parse_values_from_array(
                                 ps.remove_first_string(query)))
-        update.callback_query.answer("Okay, das Spiel wurde hinzugefügt \\o/")
+        bot.send_message(
+                    chat_id=update.callback_query.message.chat_id,
+                    text="Okay, das Spiel wurde hinzugefügt \\o/",
+                    reply_markup=ReplyKeyboardRemove())
     else:
         pass
     rep.ForceReplyJobs().clear_query(
         update.callback_query.message.message_id)
 
 
-def generate_categories():
+def generate_categories(first=False):
     keyboard = []
     categories = ['groß', 'klein', 'Würfel', 'Rollenspiel', 'Karten', 'Worker Placement']
     for cat in categories:
@@ -76,4 +110,15 @@ def generate_categories():
         data = "CATEGORY " + cat
         row.append(InlineKeyboardButton(cat, callback_data=data))
         keyboard.append(row)
+    # last row: no statement and /stop button
+    row = []
+    if first:
+        data = "CATEGORY none"
+        row.append(InlineKeyboardButton('keine Angabe', callback_data=data))
+    else:
+        data = "CATEGORY done"
+        row.append(InlineKeyboardButton('Fertig', callback_data=data))        
+    data = "CATEGORY stop"
+    row.append(InlineKeyboardButton('Abbrechen', callback_data=data))
+    keyboard.append(row)
     return InlineKeyboardMarkup(keyboard)
