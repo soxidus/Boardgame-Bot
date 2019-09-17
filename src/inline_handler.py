@@ -5,6 +5,7 @@ from telegram import (InlineKeyboardButton, InlineKeyboardMarkup,
                       ReplyKeyboardRemove)
 from calendarkeyboard import telegramcalendar
 from planning_functions import GameNight
+from query_buffer import QueryBuffer
 import reply_handler as rep
 import database_functions as dbf
 import parse_strings as ps
@@ -46,11 +47,12 @@ def handle_calendar(bot, update):
 
 
 def handle_category(bot, update):
+    update.callback_query.answer()
     category = update.callback_query.data.split(" ")[1]
     if category == "none":
         end_of_categories(bot, update, no_category=True)
     elif category == "stop":
-        rep.ForceReplyJobs().clear_query(update.callback_query.message.message_id)
+        QueryBuffer().clear_query(update.callback_query.message.message_id)
         bot.send_message(
             chat_id=update.callback_query.message.chat_id,
             text='Okay, hier ist nichts passiert.',
@@ -58,8 +60,8 @@ def handle_category(bot, update):
     elif category == "done":
         end_of_categories(bot, update)
     else:  # we actually got a category, now register it
-        query = rep.ForceReplyJobs().get_query(update.callback_query.message.message_id) + category + "/"
-        rep.ForceReplyJobs().edit_query(update.callback_query.message.message_id, query)
+        query = QueryBuffer().get_query(update.callback_query.message.message_id) + category + "/"
+        QueryBuffer().edit_query(update.callback_query.message.message_id, query)
         # change keyboard layout
         # REFACTOR: it's a bit of overhead that we create the keyboard again and again
         try:
@@ -72,10 +74,10 @@ def handle_category(bot, update):
 
 
 def end_of_categories(bot, update, no_category=False):
-    if no_category:  # TODO: TEST THIS!!!
-        query = rep.ForceReplyJobs().get_query(update.callback_query.message.message_id) + " ," + ps.generate_uuid_32()
+    if no_category:
+        query = QueryBuffer().get_query(update.callback_query.message.message_id) + " ," + ps.generate_uuid_32()
     else:  # user pressed "Done"
-        query = rep.ForceReplyJobs().get_query(update.callback_query.message.message_id) + "," + ps.generate_uuid_32()
+        query = QueryBuffer().get_query(update.callback_query.message.message_id) + "," + ps.generate_uuid_32()
 
     if ps.parse_csv(query)[0] == "new_game":
         known_games = dbf.search_entries_by_user(
@@ -98,7 +100,7 @@ def end_of_categories(bot, update, no_category=False):
                     reply_markup=ReplyKeyboardRemove())
     else:
         pass
-    rep.ForceReplyJobs().clear_query(
+    QueryBuffer().clear_query(
         update.callback_query.message.message_id)
 
 

@@ -11,6 +11,7 @@ from calendarkeyboard import telegramcalendar
 from planning_functions import GameNight
 from singleton import Singleton
 from inline_handler import generate_categories
+from query_buffer import QueryBuffer
 
 
 # keeps track of ForceReplys not being answered
@@ -20,21 +21,15 @@ class ForceReplyJobs(Singleton):
     types_to_indices = {"auth": 0, "game_title": 1, "game_players": 2,
                         "expansion_for": 3, "expansion_title": 4,
                         "expansion_poll_game": 5, "date": 6, "csv": 7,
-                        "household": 8, "expansions_list": 9, 
-                        "game_categories": 10}
+                        "household": 8, "expansions_list": 9}
     indices_to_types = {0: "auth", 1: "game_title", 2: "game_players",
                         3: "expansion_for", 4: "expansion_title",
                         5: "expansion_poll_game", 6: "date", 7: "csv",
-                        8: "household", 9: "expansions_list",
-                        10: "game_categories"}
+                        8: "household", 9: "expansions_list"}
 
     def init(self):
         # we can't append on unknown items, so INIT the Array
-        self.message_IDs = [[], [], [], [], [], [], [], [], [], [], []]
-        # self.queries is a table of mid's we're waiting on, and the query
-        # that has been collected so far
-        # (used for neues_spiel and neue_erweiterung)
-        self.queries = []
+        self.message_IDs = [[], [], [], [], [], [], [], [], [], []]
 
     # Searches through all the Replys we are waiting on if we are
     # waiting on a reply to "reply_to_id".
@@ -61,24 +56,16 @@ class ForceReplyJobs(Singleton):
         if len(self.message_IDs[where]) >= 100:  # maybe a 100x100 matrix is too big? no idea...
             self.message_IDs[where] = self.message_IDs[where][50:]
         self.message_IDs[where].append(reply_to_id)
-        if len(self.queries) >= 100:  # same as above, maybe 100 elements are too many?
-            self.queries = self.queries[50:]
-        self.queries.append([reply_to_id, query])
+        QueryBuffer().add(reply_to_id, query)
 
     def get_query(self, reply_to_id):
-        for entry in self.queries:
-            if entry[0] == reply_to_id:
-                return entry[1]
+        return QueryBuffer().get_query(reply_to_id)
 
     def clear_query(self, reply_to_id):
-        for entry in self.queries:
-            if entry[0] == reply_to_id:
-                self.queries.remove(entry)
+        QueryBuffer().clear_query(reply_to_id)
 
     def edit_query(self, reply_to_id, query):
-        for entry in self.queries:
-            if entry[0] == reply_to_id:
-                entry[1] = query
+        QueryBuffer().edit_query(reply_to_id, query)
 
 
 # depending on the type of Reply, call a handler function
@@ -89,8 +76,7 @@ def handle_reply(bot, update):
                     "expansion_title": expansion_title,
                     "expansion_poll_game": expansion_poll_game, "date": date,
                     "csv": csv, "household": household,
-                    "expansions_list": expansions_list,
-                    "game_categories": game_categories}
+                    "expansions_list": expansions_list}
 
     try:
         which = ForceReplyJobs().is_set(
@@ -193,43 +179,13 @@ def game_players(update):
         msg = update.message.reply_text(
                 'In welche Kategorien passt ' + ps.parse_csv(query)[2] +
                 ' am besten?\n'
-                'Antworte mit /stop, um abzubrechen.',
+                'Wähle so viele, wie du willst, und drücke dann '
+                'auf \'Fertig\'.',
                 reply_markup=generate_categories(first=True))
         ForceReplyJobs().clear_query(
             update.message.reply_to_message.message_id)
-        ForceReplyJobs().add_with_query(
-            msg.message_id, "game_categories", query)
-
-
-def game_categories(update):
-    if update.message.text == "/stop":
-        ForceReplyJobs().clear_query(
-            update.message.reply_to_message.message_id)
-        update.message.reply_text('Okay, hier ist nichts passiert.',
-                                  reply_markup=ReplyKeyboardRemove())
-    else:
-        query = ForceReplyJobs().get_query(update.message.reply_to_message.message_id) + "," + update.message.text + "," + ps.generate_uuid_32()
-
-        if ps.parse_csv(query)[0] == "new_game":
-            known_games = dbf.search_entries_by_user(
-                dbf.choose_database("testdb"), 'games',
-                update.message.from_user.username)
-            for _ in range(len(known_games)):
-                # check whether this title has already been added for this user
-                if known_games[_][0] == ps.parse_csv(query)[2]:
-                    update.message.reply_text(
-                        "Wusste ich doch: Das Spiel hast du schon "
-                        "einmal eingetragen. Viel Spaß noch damit!",
-                        reply_markup=ReplyKeyboardRemove())
-                    return
-            dbf.add_game_into_db(ps.parse_values_from_array(
-                                    ps.remove_first_string(query)))
-            update.message.reply_text("Okay, das Spiel wurde hinzugefügt \\o/",
-                                      reply_markup=ReplyKeyboardRemove())
-        else:
-            pass
-        ForceReplyJobs().clear_query(
-            update.message.reply_to_message.message_id)
+        # not adding a new ForceReply because this happens inline
+        QueryBuffer().add(msg.message_id, query)
 
 
 # given the title of the boardgame, find out the boardgame_uuid
