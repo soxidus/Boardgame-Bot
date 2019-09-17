@@ -62,17 +62,36 @@ def handle_category(bot, update):
     elif category == "IGNORE":
         pass
     else:  # we actually got a category, now register it
-        query = QueryBuffer().get_query(update.callback_query.message.message_id) + category + "/"
-        categories_so_far = ps.parse_csv(query)[-1].split('/')[:-1]  # last one is empty since set ends on /
-        QueryBuffer().edit_query(update.callback_query.message.message_id, query)
-        # change keyboard layout
-        try:
-            bot.edit_message_text(text=update.callback_query.message.text,
-                                  chat_id=update.callback_query.message.chat_id,
-                                  message_id=update.callback_query.message.message_id,
-                                  reply_markup=generate_categories(pressed=categories_so_far))
-        except BadRequest:
-            pass
+        if update.callback_query.data.split(" ")[2] == "SET":
+            query = QueryBuffer().get_query(update.callback_query.message.message_id) + category + "/"
+            categories_so_far = ps.parse_csv(query)[-1].split('/')[:-1]  # last one is empty since set ends on /
+            QueryBuffer().edit_query(update.callback_query.message.message_id, query)
+            # change keyboard layout
+            try:
+                bot.edit_message_text(text=update.callback_query.message.text,
+                                    chat_id=update.callback_query.message.chat_id,
+                                    message_id=update.callback_query.message.message_id,
+                                    reply_markup=generate_categories(pressed=categories_so_far))
+            except BadRequest:
+                pass
+        elif update.callback_query.data.split(" ")[2] == "UNSET":
+            query = QueryBuffer().get_query(update.callback_query.message.message_id)
+            query_csv = ps.parse_csv(query)
+            categories_so_far = query_csv[-1].split('/')[:-1]
+            categories_so_far.remove(category)
+            categories_string = '/'.join(categories_so_far)
+            if len(categories_string) > 0:
+                categories_string += '/'
+            new_query = ps.csv_to_string(query_csv[:-1]) + ',' + categories_string
+            QueryBuffer().edit_query(update.callback_query.message.message_id, new_query)
+            # change keyboard layout
+            try:
+                bot.edit_message_text(text=update.callback_query.message.text,
+                                    chat_id=update.callback_query.message.chat_id,
+                                    message_id=update.callback_query.message.message_id,
+                                    reply_markup=generate_categories(pressed=categories_so_far))
+            except BadRequest:
+                pass
 
 
 def end_of_categories(bot, update, no_category=False):
@@ -111,11 +130,12 @@ def generate_categories(first=False, pressed=None):
     categories = ['groß', 'klein', 'Würfel', 'Rollenspiel', 'Karten', 'Worker Placement']
     for cat in categories:
         row = []
-        data = "CATEGORY " + cat
         if pressed and (cat in pressed):
+            data = "CATEGORY " + cat + " UNSET"
             label = cat + " ✓"
-            row.append(InlineKeyboardButton(label, callback_data="CATEGORY IGNORE"))
+            row.append(InlineKeyboardButton(label, callback_data=data))
         else:
+            data = "CATEGORY " + cat + " SET"
             row.append(InlineKeyboardButton(cat, callback_data=data))
         keyboard.append(row)
     # last row: no statement and /stop button
