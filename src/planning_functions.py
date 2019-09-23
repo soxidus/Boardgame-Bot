@@ -155,24 +155,56 @@ class Poll(object):
                     o[1] -= 1
 
     def generate_options(self, participants):
-        games = set()  # use a set because it takes care of duplicates
+        categories = {'groß': 0, 'klein': 1, 'Würfel': 2, 'Rollenspiel': 3,
+                      'Karten': 4, 'Worker Placement': 5, 'keine': 6}
+        games_by_category = []
+        for c in categories:
+            games_by_category.append(set())  # use a set because it takes care of duplicates
         for p in participants:
             entries = get_playable_entries(
-                choose_database("testdb"), 'games', 'title', p,
+                choose_database("testdb"), 'games', 'title, categories', p,
                 no_participants=len(participants))
-            for e in entries:
-                games.add(single_db_entry_to_string(e))
-        games = list(games)  # convert to list so we can index it randomly
+            for _ in range(len(entries)):
+                cats = entries[_][1].split("/")[:-1]  # ignore last entry since it's empty
+                if cats == "":
+                    games_by_category[categories['keine']].add(single_db_entry_to_string(entries[_][0]))
+                for cat in cats:
+                    games_by_category[categories[cat]].add(single_db_entry_to_string(entries[_][0]))
+        available_games_count = 0  # TODO/CAUTION: not real count since games are duplicated across categories
+        for _ in range(len(games_by_category)):
+            games_by_category[_] = list(games_by_category[_])  # convert to list so we can index it randomly
+            available_games_count += len(games_by_category[_])
 
         options = []
-        if len(games) < 4:
-            no_opts = len(games)
+        if available_games_count < 4:
+            no_opts = available_games_count
         else:
             no_opts = 4
 
         i = 0
+        # select small game
+        small_set = games_by_category[categories['klein']]
+        if len(small_set) > 0:
+            opt = small_set[randrange(len(small_set))]
+            options.append(opt)
+            i += 1
+
+        # select big game
+        big_set = games_by_category[categories['groß']]
+        if len(big_set) > 0:
+            while i < 2:
+                opt = big_set[randrange(len(big_set))]
+                if opt not in options:
+                    options.append(opt)
+                    i += 1
+                elif len(big_set) == 1:
+                    # big game = small game already added
+                    break
+        
         while i < no_opts:
-            opt = games[randrange(len(games))]
+            category = randrange(len(games_by_category))
+            category_set = games_by_category[category]
+            opt = category_set[randrange(len(category_set))]
             if opt not in options:
                 options.append(opt)
                 i += 1

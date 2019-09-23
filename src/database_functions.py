@@ -138,6 +138,20 @@ def get_playable_entries(db, table, column, owner, no_participants=0, uuid=None)
 
     return result
 
+def get_playable_entries_by_category(db, table, column, owner, no_participants=0, uuid=None):
+    mycursor = db.cursor()
+
+    if table == "games":
+        where = "owner LIKE \'%" + owner + "%\' AND playercount>=" + str(no_participants)
+    elif table == "expansions":
+        where = "owner LIKE \'%" + owner + "%\' AND basegame_uuid=\'" + uuid + "\'"
+    sql = "SELECT " + column + " FROM " + table + " WHERE " + where
+    mycursor.execute(sql)
+    result = mycursor.fetchall()
+
+    return result
+
+
 
 def add_game_into_db(values):
     entry = "(owner, title, playercount, categories, game_uuid)"
