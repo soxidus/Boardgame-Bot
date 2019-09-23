@@ -47,10 +47,6 @@ def test_termin(bot):
                     pass
                 bot.set_chat_title(plan.chat_id, 'Spielwiese')
                 plan.clear()
-                # it would be great to reset the chat title as well,
-                # but we don't have the group's chat id for that.
-                # Maybe pass it through the config?
-                # Or through game night object?
 
 
 class GameNight(Singleton):
@@ -117,12 +113,10 @@ class GameNight(Singleton):
             return 0
         return -1
 
-    # Caution: the player only gets removed from game night.
-    # He can still vote because it's too much overhead
-    # to handle it differently.
     def remove_participant(self, user_id):
         try:
             self.participants.remove(user_id)
+            self.poll.remove_voter(user_id)
         except ValueError:
             return -1
         else:
