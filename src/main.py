@@ -29,7 +29,7 @@ def main():
     config.read(os.path.join(config_path, "config.ini"))
 
     # Set up updater with your bot's token
-    updater = Updater(config['Bot']['token'])
+    updater = Updater(config['Bot']['token'],use_context=True)
 
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
