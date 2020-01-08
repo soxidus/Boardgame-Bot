@@ -12,6 +12,7 @@ import parse_strings as ps
 
 
 def handle_inline(bot, update):
+    print(update.callback_query.data)
     if "CALENDAR" in update.callback_query.data:
         handle_calendar(bot, update)
     elif "CATEGORY" in update.callback_query.data:
