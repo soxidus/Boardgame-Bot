@@ -2,6 +2,7 @@
 
 import datetime
 import re
+from telegram.error import BadRequest
 from random import randrange
 from database_functions import (get_playable_entries, choose_database,
                                 search_uuid)
@@ -78,7 +79,8 @@ class GameNight(Singleton):
             if user_id in self.participants:
                 try:
                     self.poll = Poll(self.participants, game)
-                except ValueError:
+                except ValueError as v:
+                    print(v)
                     self.poll = None
                     return -1
                 self.old_poll = None
@@ -158,7 +160,8 @@ class Poll(object):
         categories = {'groß': 0, 'klein': 1, 'Würfel': 2, 'Rollenspiel': 3,
                       'Karten': 4, 'Worker Placement': 5, 'keine': 6}
         games_by_category = []
-        for c in categories:
+        games_general_set = set()
+        for _ in categories:
             games_by_category.append(set())  # use a set because it takes care of duplicates
         for p in participants:
             entries = get_playable_entries(
@@ -170,10 +173,13 @@ class Poll(object):
                     games_by_category[categories['keine']].add(single_db_entry_to_string(entries[_][0]))
                 for cat in cats:
                     games_by_category[categories[cat]].add(single_db_entry_to_string(entries[_][0]))
-        available_games_count = 0  # TODO/CAUTION: not real count since games are duplicated across categories
+                games_general_set.add(single_db_entry_to_string(entries[_][0]))  # keeps track of actual amount of games available this evening
+
+        available_games_count = len(games_general_set)
         for _ in range(len(games_by_category)):
             games_by_category[_] = list(games_by_category[_])  # convert to list so we can index it randomly
-            available_games_count += len(games_by_category[_])
+
+        print(games_by_category)
 
         options = []
         if available_games_count < 4:
@@ -181,8 +187,10 @@ class Poll(object):
         else:
             no_opts = 4
 
+        # TODO: handle available_games_count <2
+
         i = 0
-        # select small game
+        # select one small game
         small_set = games_by_category[categories['klein']]
         if len(small_set) > 0:
             opt = small_set[randrange(len(small_set))]
@@ -197,17 +205,19 @@ class Poll(object):
                 if opt not in options:
                     options.append(opt)
                     i += 1
+                    break  # make sure only one big game is added
                 elif len(big_set) == 1:
-                    # big game = small game already added
+                    # big game is the small game already added - does this even make sense?
                     break
         
         while i < no_opts:
             category = randrange(len(games_by_category))
             category_set = games_by_category[category]
-            opt = category_set[randrange(len(category_set))]
-            if opt not in options:
-                options.append(opt)
-                i += 1
+            if len(category_set) > 0:
+                opt = category_set[randrange(len(category_set))]
+                if opt not in options:
+                    options.append(opt)
+                    i += 1
 
         return options
 
