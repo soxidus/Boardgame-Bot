@@ -134,6 +134,8 @@ class Poll(object):
                 raise ValueError
         else:
             self.options = self.generate_options(participants)
+            if self.options is None:
+                raise ValueError
         self.current_votes = []
         for p in participants:
             self.current_votes.append([p, None])
@@ -179,45 +181,53 @@ class Poll(object):
         for _ in range(len(games_by_category)):
             games_by_category[_] = list(games_by_category[_])  # convert to list so we can index it randomly
 
-        print(games_by_category)
-
         options = []
-        if available_games_count < 4:
+        if available_games_count < 6:
             no_opts = available_games_count
         else:
-            no_opts = 4
+            no_opts = 6
 
-        # TODO: handle available_games_count <2
-
-        i = 0
-        # select one small game
-        small_set = games_by_category[categories['klein']]
-        if len(small_set) > 0:
-            opt = small_set[randrange(len(small_set))]
-            options.append(opt)
-            i += 1
-
-        # select big game
-        big_set = games_by_category[categories['groß']]
-        if len(big_set) > 0:
-            while i < 2:
-                opt = big_set[randrange(len(big_set))]
-                if opt not in options:
-                    options.append(opt)
-                    i += 1
-                    break  # make sure only one big game is added
-                elif len(big_set) == 1:
-                    # big game is the small game already added - does this even make sense?
+        if no_opts < 2:
+            if no_opts < 1:
+                # there's no games to play! Shame.
+                return None
+            # exactly one game
+            for _ in games_by_category:
+                if len(_) > 0:
+                    options.append(_[0])
                     break
-        
-        while i < no_opts:
-            category = randrange(len(games_by_category))
-            category_set = games_by_category[category]
-            if len(category_set) > 0:
-                opt = category_set[randrange(len(category_set))]
-                if opt not in options:
-                    options.append(opt)
-                    i += 1
+
+        else:            
+            i = 0
+            # select one small game
+            small_set = games_by_category[categories['klein']]
+            if len(small_set) > 0:
+                opt = small_set[randrange(len(small_set))]
+                options.append(opt)
+                i += 1
+
+            # select one big game
+            big_set = games_by_category[categories['groß']]
+            if len(big_set) > 0:
+                while i < 2:
+                    opt = big_set[randrange(len(big_set))]
+                    if opt not in options:
+                        options.append(opt)
+                        i += 1
+                        break  # make sure only one big game is added
+                    elif len(big_set) == 1:
+                        # big game is the small game already added - does this even make sense?
+                        break
+            
+            # fill the rest of options up
+            while i < no_opts:
+                category = randrange(len(games_by_category))
+                category_set = games_by_category[category]
+                if len(category_set) > 0:
+                    opt = category_set[randrange(len(category_set))]
+                    if opt not in options:
+                        options.append(opt)
+                        i += 1
 
         return options
 
