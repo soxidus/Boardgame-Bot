@@ -12,7 +12,6 @@ import parse_strings as ps
 
 
 def handle_inline(bot, update):
-    print(update.callback_query.data)
     if "CALENDAR" in update.callback_query.data:
         handle_calendar(bot, update)
     elif "CATEGORY" in update.callback_query.data:
@@ -49,7 +48,7 @@ def handle_calendar(bot, update):
 
 def handle_category(bot, update):
     update.callback_query.answer()
-    category = update.callback_query.data.split(" ")[1]
+    category = update.callback_query.data.split(";")[1]
     if category == "none":
         end_of_categories(bot, update, no_category=True)
     elif category == "stop":
@@ -63,7 +62,7 @@ def handle_category(bot, update):
     elif category == "IGNORE":
         pass
     else:  # we actually got a category, now register it
-        if update.callback_query.data.split(" ")[2] == "SET":
+        if update.callback_query.data.split(";")[2] == "SET":
             query = QueryBuffer().get_query(update.callback_query.message.message_id) + category + "/"
             categories_so_far = ps.parse_csv(query)[-1].split('/')[:-1]  # last one is empty since set ends on /
             QueryBuffer().edit_query(update.callback_query.message.message_id, query)
@@ -75,7 +74,7 @@ def handle_category(bot, update):
                                     reply_markup=generate_categories(pressed=categories_so_far))
             except BadRequest:
                 pass
-        elif update.callback_query.data.split(" ")[2] == "UNSET":
+        elif update.callback_query.data.split(";")[2] == "UNSET":
             query = QueryBuffer().get_query(update.callback_query.message.message_id)
             query_csv = ps.parse_csv(query)
             categories_so_far = query_csv[-1].split('/')[:-1]
@@ -132,22 +131,22 @@ def generate_categories(first=False, pressed=None):
     for cat in categories:
         row = []
         if pressed and (cat in pressed):
-            data = "CATEGORY " + cat + " UNSET"
+            data = ";".join(["CATEGORY",cat,"UNSET"])
             label = cat + " ✓"
             row.append(InlineKeyboardButton(label, callback_data=data))
         else:
-            data = "CATEGORY " + cat + " SET"
+            data = ";".join(["CATEGORY",cat,"SET"])
             row.append(InlineKeyboardButton(cat, callback_data=data))
         keyboard.append(row)
     # last row: no statement and /stop button
     row = []
     if first:
-        data = "CATEGORY none"
+        data = ";".join(["CATEGORY","none"])
         row.append(InlineKeyboardButton('keine Angabe', callback_data=data))
     else:
-        data = "CATEGORY done"
+        data = ";".join(["CATEGORY","done"])
         row.append(InlineKeyboardButton('Fertig', callback_data=data))        
-    data = "CATEGORY stop"
+    data = ";".join(["CATEGORY","stop"])
     row.append(InlineKeyboardButton('Abbrechen', callback_data=data))
     keyboard.append(row)
     return InlineKeyboardMarkup(keyboard)
