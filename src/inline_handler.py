@@ -2,7 +2,7 @@
 
 from telegram.error import BadRequest
 from telegram import (InlineKeyboardButton, InlineKeyboardMarkup,
-                      ReplyKeyboardRemove)
+                      ReplyKeyboardRemove, ForceReply)
 from calendarkeyboard import telegramcalendar
 from planning_functions import GameNight
 from query_buffer import QueryBuffer
