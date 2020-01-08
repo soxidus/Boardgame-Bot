@@ -91,6 +91,7 @@ class GameNight(Singleton):
         check = self.poll.end(user_id)
         if check < 0:
             return check
+        self.register_poll_winner()
         self.old_poll = self.poll
         self.poll = None
         return 0
@@ -123,6 +124,15 @@ class GameNight(Singleton):
             return -1
         else:
             return 0
+
+    def register_poll_winner(self):
+        max_votes = 0
+        winner_so_far = None
+        for row in self.poll.result:
+            if row[1] > max_votes:
+                max_votes = row[1]
+                winner_so_far = row[0]
+        # do something in the database to record this!
 
 
 class Poll(object):
