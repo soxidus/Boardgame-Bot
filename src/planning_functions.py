@@ -5,7 +5,7 @@ import re
 from telegram.error import BadRequest
 from random import randrange
 from database_functions import (get_playable_entries, choose_database,
-                                search_uuid)
+                                search_uuid, update_game_date)
 from singleton import Singleton
 from parse_strings import single_db_entry_to_string
 
@@ -128,11 +128,30 @@ class GameNight(Singleton):
     def register_poll_winner(self):
         max_votes = 0
         winner_so_far = None
+        more_than_one_winner = False
         for row in self.poll.result:
             if row[1] > max_votes:
                 max_votes = row[1]
                 winner_so_far = row[0]
-        # do something in the database to record this!
+                more_than_one_winner = False
+            elif row[1] == max_votes:
+                more_than_one_winner = True
+
+        if winner_so_far is not None:  # at least one vote was given
+            winners = []
+
+            if more_than_one_winner:
+                for row in self.poll.result:
+                    if row[1] == max_votes:
+                        winners.append(row[0])
+            else:
+                winners.append(winner_so_far)
+
+            for w in winners:
+                r = re.compile('.{2}/.{2}/.{4}')
+                if r.match(self.date) is not None:
+                    d = datetime.datetime.strptime(self.date, '%d/%m/%Y')
+                    update_game_date(w, d)
 
 
 class Poll(object):

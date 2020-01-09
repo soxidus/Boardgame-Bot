@@ -208,6 +208,15 @@ def update_household_games(users):
     db.commit()
 
 
+# date format: YYYY-MM-DD
+def update_game_date(title, last_played):
+    db = choose_database("testdb")
+    mycursor = db.cursor()
+    sql = "UPDATE games SET last_played='" + str(last_played) + "' WHERE title='" + str(title) + "'"
+    mycursor.execute(sql)
+    db.commit()
+
+
 # Is the user authenticated?
 def check_user(user):
     result_user = search_single_entry(choose_database("auth"), "users", "id", user)
