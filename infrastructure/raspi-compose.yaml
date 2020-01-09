@@ -1,0 +1,57 @@
+version: "3"
+
+services:
+
+  auth_db:
+      image: hypriot/rpi-mysql:latest
+      container_name: auth_db
+      ports:
+        - 3306
+      expose:
+        - 3306
+      environment:
+        MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+        MYSQL_DATABASE: 'auth'
+        MYSQL_USER: ${MYSQL_USER}
+        MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+        LANG: 'en_US.UTF-8'
+      volumes:
+        - ./init_auth.sql:/docker-entrypoint-initdb.d/init_auth.sql:ro
+
+  data_db:
+    image: hypriot/rpi-mysql:latest
+    container_name: data_db
+    ports:
+      - 3306
+    expose:
+      - 3306
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: 'testdb'
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      LANG: 'en_US.UTF-8'
+    volumes:
+      - ./init_data_games.sql:/docker-entrypoint-initdb.d/init_data_games.sql
+      - ./init_data_expansions.sql:/docker-entrypoint-initdb.d/init_data_expansions.sql
+      - ./init_data_households.sql:/docker-entrypoint-initdb.d/init_data_households.sql
+
+  bot:
+    container_name: bot
+    build:
+      context: .
+      dockerfile: Dockerfile_bot
+    depends_on:
+      - auth_db
+      - data_db
+    links:
+      - auth_db
+      - data_db
+    volumes:
+      - ../src:/src
+    tty: true
+#    command: python3 /src/main.py
+
+
+
+
