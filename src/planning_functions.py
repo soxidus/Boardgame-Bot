@@ -194,10 +194,16 @@ class Poll(object):
         games_general_set = set()
         for _ in categories:
             games_by_category.append(set())  # use a set because it takes care of duplicates
+        plan = GameNight()
+        if plan:
+            r = re.compile('.{2}/.{2}/.{4}')
+            if r.match(plan.date) is not None:
+                d = datetime.datetime.strptime(plan.date, '%d/%m/%Y')
+        else: d = None
         for p in participants:
             entries = get_playable_entries(
                 choose_database("testdb"), 'games', 'title, categories', p,
-                no_participants=len(participants))
+                no_participants=len(participants), planned_date=d)
             for _ in range(len(entries)):
                 cats = entries[_][1].split("/")[:-1]  # ignore last entry since it's empty
                 if cats == "":
@@ -215,6 +221,10 @@ class Poll(object):
             no_opts = available_games_count
         else:
             no_opts = 6
+
+        print(games_general_set)
+        print(games_by_category)
+        print(no_opts)
 
         if no_opts < 2:
             if no_opts < 1:
