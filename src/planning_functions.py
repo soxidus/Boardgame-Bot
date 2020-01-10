@@ -206,7 +206,7 @@ class Poll(object):
                 no_participants=len(participants), planned_date=d)
             for _ in range(len(entries)):
                 cats = entries[_][1].split("/")[:-1]  # ignore last entry since it's empty
-                if cats == "":
+                if not cats:
                     games_by_category[categories['keine']].add(single_db_entry_to_string(entries[_][0]))
                 for cat in cats:
                     games_by_category[categories[cat]].add(single_db_entry_to_string(entries[_][0]))
@@ -221,10 +221,6 @@ class Poll(object):
             no_opts = available_games_count
         else:
             no_opts = 6
-
-        print(games_general_set)
-        print(games_by_category)
-        print(no_opts)
 
         if no_opts < 2:
             if no_opts < 1:
