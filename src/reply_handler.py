@@ -167,7 +167,7 @@ def game_title(update):
 
 
 # Provided the game title and maximum player count,
-# the new game is added into the games table of testdb.
+# the bot asks for the categories it belongs into.
 def game_players(update):
     if update.message.text == "/stop":
         ForceReplyJobs().clear_query(

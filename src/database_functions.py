@@ -133,7 +133,32 @@ def get_playable_entries(db, table, column, owner, no_participants=0, uuid=None,
     mycursor = db.cursor()
 
     if table == "games":
-        where = "owner LIKE \'%" + owner + "%\' AND playercount>=" + str(no_participants)
+        where = "owner LIKE \'%" + owner + "%\' AND (playercount>=" + str(no_participants) + " OR playercount=\'X\')"
+        if planned_date:
+            delta = datetime.timedelta(weeks=2)
+            not_played_after = planned_date - delta
+            not_played_after = not_played_after.date()
+            add_to_where = " AND (last_played<\'" + str(not_played_after) + "\' OR last_played IS NULL)"
+            where += add_to_where
+    elif table == "expansions":
+        where = "owner LIKE \'%" + owner + "%\' AND basegame_uuid=\'" + uuid + "\'"
+    sql = "SELECT " + column + " FROM " + table + " WHERE " + where
+
+    mycursor.execute(sql)
+    result = mycursor.fetchall()
+
+    return result
+
+
+# Selects entries from column in table where owner is owner
+# and the playercount is >= the participants
+# and belong to category given
+# planned_date is already a datetime object
+def get_playable_entries_by_category(db, table, column, owner, category, no_participants=0, uuid=None, planned_date=None):
+    mycursor = db.cursor()
+
+    if table == "games":
+        where = "owner LIKE \'%" + owner + "%\' AND (playercount>=" + str(no_participants) + " OR playercount=\'X\') AND categories LIKE \'%" + category + "%\'"
         if planned_date:
             delta = datetime.timedelta(weeks=2)
             not_played_after = planned_date - delta

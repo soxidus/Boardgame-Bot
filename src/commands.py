@@ -11,6 +11,7 @@ from database_functions import (choose_database, check_user,
 from parse_strings import (to_messagestring, single_db_entry_to_string)
 from reply_handler import ForceReplyJobs
 from planning_functions import GameNight
+from inline_handler import generate_findbycategory
 
 """
 Commands registered with BotFather:
@@ -375,6 +376,21 @@ def zufallsspiel(bot, update):
                 opt.append(single_db_entry_to_string(e))
             game = opt[randrange(len(opt))]
             update.message.reply_text('Wie wäre es mit ' + game + '?')
+    else:
+        update.message.reply_text('Bitte authentifiziere dich zunächst '
+                                  'mit /key.')
+
+
+def genrespiel(bot, update):
+    if check_user(update.message.chat_id):
+        if "group" in update.message.chat.type:
+            bot.delete_message(update.message.chat_id,
+                               update.message.message_id)
+            pass
+        if update.message.chat.type == "private":
+            update.message.reply_text(
+                'Auf welche Kategorie hast du denn heute Lust?',
+                reply_markup=generate_findbycategory())
     else:
         update.message.reply_text('Bitte authentifiziere dich zunächst '
                                   'mit /key.')

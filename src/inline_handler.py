@@ -2,12 +2,14 @@
 
 import configparser
 import os
+from random import randrange
 from telegram.error import BadRequest
 from telegram import (InlineKeyboardButton, InlineKeyboardMarkup,
                       ReplyKeyboardRemove, ForceReply)
 from calendarkeyboard import telegramcalendar
 from planning_functions import GameNight
 from query_buffer import QueryBuffer
+from parse_strings import single_db_entry_to_string
 import reply_handler as rep
 import database_functions as dbf
 import parse_strings as ps
@@ -18,6 +20,8 @@ def handle_inline(bot, update):
         handle_calendar(bot, update)
     elif "CATEGORY" in update.callback_query.data:
         handle_category(bot, update)
+    elif "FINDBY" in update.callback_query.data:
+        handle_findbycategory(bot, update)
 
 
 def handle_calendar(bot, update):
@@ -152,6 +156,57 @@ def generate_categories(first=False, pressed=None):
         data = ";".join(["CATEGORY","done"])
         row.append(InlineKeyboardButton('Fertig', callback_data=data))        
     data = ";".join(["CATEGORY","stop"])
+    row.append(InlineKeyboardButton('Abbrechen', callback_data=data))
+    keyboard.append(row)
+    return InlineKeyboardMarkup(keyboard)
+
+
+def handle_findbycategory(bot, update):
+    update.callback_query.answer()
+    category = update.callback_query.data.split(";")[1]
+    if category == "stop":
+        bot.send_message(
+            chat_id=update.callback_query.message.chat_id,
+            text='Okay, hier ist nichts passiert.',
+            reply_markup=ReplyKeyboardRemove())
+    elif category == "IGNORE":
+        pass
+    else:  # got a category
+        opt = []
+        entries = dbf.get_playable_entries_by_category(
+            dbf.choose_database("testdb"), 'games', 'title',
+            update.callback_query.from_user.username, category)
+        for e in entries:
+            opt.append(single_db_entry_to_string(e))
+        if opt:
+            game = opt[randrange(len(opt))]
+            bot.send_message(
+                        chat_id=update.callback_query.message.chat_id,
+                        text='Wie wäre es mit ' + game + '?',
+                        reply_markup=ReplyKeyboardRemove())
+        else:
+            bot.send_message(
+                        chat_id=update.callback_query.message.chat_id,
+                        text='Du besitzt kein Spiel dieser Kategorie.',
+                        reply_markup=ReplyKeyboardRemove())
+
+
+def generate_findbycategory():
+    keyboard = []
+    config = configparser.ConfigParser(converters={'list': lambda x: [i.strip() for i in x.split(',')]})
+    config_path = os.path.dirname(os.path.realpath(__file__))
+    config.read(os.path.join(config_path, "config.ini"))
+    categories = config.getlist('GameCategories','categories')  # no, this is no error. getlist is created by converter above
+    for cat in categories:
+        row = []
+        data = ";".join(["FINDBY",cat])
+        row.append(InlineKeyboardButton(cat, callback_data=data))
+        keyboard.append(row)
+    # last row: no statement and /stop button
+    row = []      
+    data = ";".join(["FINDBY","IGNORE"])
+    row.append(InlineKeyboardButton(' ', callback_data=data))
+    data = ";".join(["FINDBY","stop"])
     row.append(InlineKeyboardButton('Abbrechen', callback_data=data))
     keyboard.append(row)
     return InlineKeyboardMarkup(keyboard)
