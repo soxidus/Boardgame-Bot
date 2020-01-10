@@ -35,27 +35,27 @@ Commands registered with BotFather:
 """
 
 
-def start(bot, update):
-    bot.send_message(update.message.chat_id,
-                     'Hi! Bitte authentifiziere dich zuerst, '
-                     'um mit mir zu reden.')
-    key(bot, update)
+def start(update, context):
+    context.bot.send_message(update.message.chat_id,
+                             'Hi! Bitte authentifiziere dich zuerst, '
+                             'um mit mir zu reden.')
+    key(update, context)
 
 
-def key(bot, update):
+def key(update, context):
     if check_user(update.message.chat_id):
         update.message.reply_text('Du musst dich nicht authentifizieren. '
                                   'Ich weiß schon, wer du bist!')
     else:
         if not update.message.from_user.username:
-            bot.send_message('So wird das mit uns nichts. '
-                             'Bitte lege zunächst deinen Alias unter '
-                             'Einstellungen > Username fest!\n'
-                             'Authentifiziere dich dann mit /key.')
+            context.bot.send_message('So wird das mit uns nichts. '
+                                     'Bitte lege zunächst deinen Alias unter '
+                                     'Einstellungen > Username fest!\n'
+                                     'Authentifiziere dich dann mit /key.')
         else:
-            msg = bot.send_message(update.message.chat_id,
-                                   'Wie lautet das Passwort?',
-                                   reply_markup=ForceReply())
+            msg = context.bot.send_message(update.message.chat_id,
+                                           'Wie lautet das Passwort?',
+                                           reply_markup=ForceReply())
             ForceReplyJobs().add(msg.message_id, "auth")
 
 
