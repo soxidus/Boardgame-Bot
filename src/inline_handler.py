@@ -1,5 +1,7 @@
 # coding=utf-8
 
+import configparser
+import os
 from telegram.error import BadRequest
 from telegram import (InlineKeyboardButton, InlineKeyboardMarkup,
                       ReplyKeyboardRemove, ForceReply)
@@ -127,7 +129,10 @@ def end_of_categories(bot, update, no_category=False):
 
 def generate_categories(first=False, pressed=None):
     keyboard = []
-    categories = ['groß', 'klein', 'Würfel', 'Rollenspiel', 'Karten', 'Worker Placement']
+    config = configparser.ConfigParser(converters={'list': lambda x: [i.strip() for i in x.split(',')]})
+    config_path = os.path.dirname(os.path.realpath(__file__))
+    config.read(os.path.join(config_path, "config.ini"))
+    categories = config.getlist('GameCategories','categories')  # no, this is no error. getlist is created by converter above
     for cat in categories:
         row = []
         if pressed and (cat in pressed):

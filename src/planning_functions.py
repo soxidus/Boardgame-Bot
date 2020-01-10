@@ -2,6 +2,8 @@
 
 import datetime
 import re
+import configparser
+import os
 from telegram.error import BadRequest
 from random import randrange
 from database_functions import (get_playable_entries, choose_database,
@@ -188,8 +190,14 @@ class Poll(object):
                     o[1] -= 1
 
     def generate_options(self, participants):
-        categories = {'groß': 0, 'klein': 1, 'Würfel': 2, 'Rollenspiel': 3,
-                      'Karten': 4, 'Worker Placement': 5, 'keine': 6}
+        # create dictionary of categories
+        config = configparser.ConfigParser(converters={'list': lambda x: [i.strip() for i in x.split(',')]})
+        config_path = os.path.dirname(os.path.realpath(__file__))
+        config.read(os.path.join(config_path, "config.ini"))
+        categories_list = config.getlist('GameCategories','categories')  # no, this is no error. getlist is created by converter above
+        categories = {categories_list[i]:i for i in range(len(categories_list))}  # {'groß' : 0, ...}
+        categories['keine'] = len(categories_list)
+        
         games_by_category = []
         games_general_set = set()
         for _ in categories:
