@@ -232,13 +232,15 @@ class Poll(object):
                     options.append(_[0])
                     break
 
-        else:            
+        else:        
+            categories_used = []  # record what kinds of games we already have    
             i = 0
             # select one small game
             small_set = games_by_category[categories['klein']]
             if len(small_set) > 0:
                 opt = small_set[randrange(len(small_set))]
                 options.append(opt)
+                categories_used.append(categories['klein'])
                 i += 1
 
             # select one big game
@@ -249,6 +251,7 @@ class Poll(object):
                     if opt not in options:
                         options.append(opt)
                         i += 1
+                        categories_used.append(categories['groß'])
                         break  # make sure only one big game is added
                     elif len(big_set) == 1:
                         # big game is the small game already added - does this even make sense?
@@ -257,12 +260,23 @@ class Poll(object):
             # fill the rest of options up
             while i < no_opts:
                 category = randrange(len(games_by_category))
-                category_set = games_by_category[category]
-                if len(category_set) > 0:
-                    opt = category_set[randrange(len(category_set))]
-                    if opt not in options:
-                        options.append(opt)
-                        i += 1
+                # already went through all categories
+                if len(categories_used) == len(categories):
+                    category_set = games_by_category[category]
+                    if len(category_set) > 0:
+                        opt = category_set[randrange(len(category_set))]
+                        if opt not in options:
+                            options.append(opt)
+                            i += 1
+                # try distributing categories as uniformly as possible
+                elif category not in categories_used:
+                    categories_used.append(category)
+                    category_set = games_by_category[category]
+                    if len(category_set) > 0:
+                        opt = category_set[randrange(len(category_set))]
+                        if opt not in options:
+                            options.append(opt)
+                            i += 1    
 
         return options
 
