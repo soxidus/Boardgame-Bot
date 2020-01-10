@@ -31,6 +31,7 @@ Commands registered with BotFather:
     neues_spiel                 - Trag dein neues Spiel ein! (nur im Privatchat)
     neue_erweiterung            - Trag deine neue Erweiterung ein. (nur im Privatchat)
     zufallsspiel                - Lass dir vom Bot ein Spiel vorschlagen. (nur im Privatchat)
+    genrespiel                  - Lass dir vom Bot ein Spiel einer bestimmten Kategorie vorschlagen. (nur im Privatchat)
     leeren                      - Lösche alle laufenden Pläne und Abstimmungen (laufende Spiel-Eintragungen etc. sind davon nicht betroffen) (nur in Gruppen)
     help                        - Was kann ich alles tun?
 """
@@ -436,6 +437,8 @@ def help(bot, update):
                              '/neue_erweiterung - Trag deine neue '
                              'Erweiterung ein.\n'
                              '/zufallsspiel - Ich schlage dir ein Spiel vor.\n'
+                             '/genrespiel - Ich schlage dir ein Spiel einer '
+                             'bestimmten Kategorie vor.\n'
                              '/help - Was kann ich alles tun?\n\n'
                              'Solltest du im Gruppenchat Funktionen nutzen, '
                              'die dort nicht erlaubt sind, '
