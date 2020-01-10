@@ -90,3 +90,26 @@ echo [Authentication] >> src/config.ini
 echo password = $botpassvar >> src/config.ini
 
 echo bot configuration finished
+
+echo [GameCategories] >> src/config.ini
+echo Default categories for games are: groß, klein, Würfel, Rollenspiel, Karten, Worker Placement.
+echo Having categories 'groß' and 'klein' is mandatory, but if you wish, you can change the rest. 
+read -p "Enter a category you want to add (press Return to stay with default values): " newcategory
+if [[ -z "$newcategory" ]]
+then
+    echo categories = [\'groß\', \'klein\', \'Würfel\', \'Rollenspiel\', \'Karten\', \'Worker Placement\'] >> src/config.ini
+else
+    echo -n categories = [\'groß\', \'klein\', \'$newcategory\' >> src/config.ini
+    while [[ -n "$newcategory" ]]
+    do
+        read -p "Add another category to add (press Return to stop): " newcategory
+        if [[ -z "$newcategory" ]]
+        then
+            echo -n ] >> src/config.ini
+			echo >> src/config.ini
+        else
+            echo -n , \'$newcategory\' >> src/config.ini
+        fi
+    done
+fi
+echo categories defined
