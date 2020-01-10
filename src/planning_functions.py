@@ -7,7 +7,8 @@ import os
 from telegram.error import BadRequest
 from random import randrange
 from database_functions import (get_playable_entries, choose_database,
-                                search_uuid, update_game_date)
+                                search_uuid, update_game_date, 
+                                get_playable_entries_by_category)
 from singleton import Singleton
 from parse_strings import single_db_entry_to_string
 
@@ -76,11 +77,11 @@ class GameNight(Singleton):
             return 0
         return -1
 
-    def set_poll(self, user_id, game=None):
+    def set_poll(self, user_id, game=None, category=None):
         if self.poll is None and self.date is not None:
             if user_id in self.participants:
                 try:
-                    self.poll = Poll(self.participants, game)
+                    self.poll = Poll(self.participants, game, category)
                 except ValueError as v:
                     print(v)
                     self.poll = None
@@ -157,13 +158,17 @@ class GameNight(Singleton):
 
 
 class Poll(object):
-    def __init__(self, participants, game):
+    def __init__(self, participants, game, category):
         self.running = True
-        if game:
+        if game:  # expansion poll
             self.options = self.generate_options_exp(participants, game)
             if self.options is None:
                 raise ValueError
-        else:
+        elif category:  # game poll by category
+            self.options = self.generate_options_cat(participants, category)
+            if self.options is None:
+                raise ValueError
+        else:  # simple game poll
             self.options = self.generate_options(participants)
             if self.options is None:
                 raise ValueError
@@ -195,9 +200,9 @@ class Poll(object):
         config_path = os.path.dirname(os.path.realpath(__file__))
         config.read(os.path.join(config_path, "config.ini"))
         categories_list = config.getlist('GameCategories','categories')  # no, this is no error. getlist is created by converter above
+        categories_list.append('keine')
         categories = {categories_list[i]:i for i in range(len(categories_list))}  # {'groß' : 0, ...}
-        categories['keine'] = len(categories_list)
-        
+
         games_by_category = []
         games_general_set = set()
         for _ in categories:
@@ -287,6 +292,42 @@ class Poll(object):
                             i += 1    
 
         return options
+
+    def generate_options_cat(self, participants, category):
+        plan = GameNight()
+        if plan:
+            r = re.compile('.{2}/.{2}/.{4}')
+            if r.match(plan.date) is not None:
+                d = datetime.datetime.strptime(plan.date, '%d/%m/%Y')
+        else: d = None
+
+        games = set()
+        for p in participants:
+            entries = get_playable_entries_by_category(
+                choose_database("testdb"), 'games', 'title', p, category,
+                no_participants=len(participants), planned_date=d)
+            for e in entries:
+                games.add(single_db_entry_to_string(e))
+
+        
+        games = list(games)  # convert to list so we can index it randomly
+        if len(games) == 0:  # no participant owns a game of this category
+            return None
+        options = []
+        if len(games) < 4:
+            no_opts = len(games)
+        else:
+            no_opts = 4
+
+        i = 0
+        while i < no_opts:
+            opt = games[randrange(len(games))]
+            if opt not in options:
+                options.append(opt)
+                i += 1
+
+        return options
+
 
     def generate_options_exp(self, participants, game):
         exp = set()  # use a set because it takes care of duplicates

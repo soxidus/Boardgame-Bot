@@ -5,7 +5,8 @@ import os
 from random import randrange
 from telegram.error import BadRequest
 from telegram import (InlineKeyboardButton, InlineKeyboardMarkup,
-                      ReplyKeyboardRemove, ForceReply)
+                      ReplyKeyboardRemove, ForceReply, 
+                      KeyboardButton, ReplyKeyboardMarkup)
 from calendarkeyboard import telegramcalendar
 from planning_functions import GameNight
 from query_buffer import QueryBuffer
@@ -22,6 +23,8 @@ def handle_inline(bot, update):
         handle_category(bot, update)
     elif "FINDBY" in update.callback_query.data:
         handle_findbycategory(bot, update)
+    elif "POLLBY" in update.callback_query.data:
+        handle_pollbycategory(bot, update)
 
 
 def handle_calendar(bot, update):
@@ -207,6 +210,62 @@ def generate_findbycategory():
     data = ";".join(["FINDBY","IGNORE"])
     row.append(InlineKeyboardButton(' ', callback_data=data))
     data = ";".join(["FINDBY","stop"])
+    row.append(InlineKeyboardButton('Abbrechen', callback_data=data))
+    keyboard.append(row)
+    return InlineKeyboardMarkup(keyboard)
+
+
+def handle_pollbycategory(bot, update):
+    update.callback_query.answer()
+    category = update.callback_query.data.split(";")[1]
+    if category == "stop":
+        bot.send_message(
+            chat_id=update.callback_query.message.chat_id,
+            text='Okay, hier ist nichts passiert.',
+            reply_markup=ReplyKeyboardRemove())
+    elif category == "IGNORE":
+        pass
+    else:  # got a category
+        plan = GameNight()
+        check = plan.set_poll(update.callback_query.from_user.username,
+                            category=category)
+        if check < 0:
+            bot.send_message(
+                        chat_id=update.callback_query.message.chat_id,
+                        text='Das war leider nichts. \n'
+                             'Habt ihr kein Datum festgelegt? '
+                             'Holt das mit /neuertermin nach.\n'
+                             'Vielleicht hast du dich auch '
+                             'einfach nicht angemeldet? Hole das '
+                             'mit /ich nach.',
+                        reply_markup=ReplyKeyboardRemove())
+        else:
+            keys = []
+            for o in plan.poll.options:
+                keys.append([KeyboardButton(o)])
+            bot.send_message(
+                        chat_id=update.callback_query.message.chat_id,
+                        text='Welches Spiel wollt ihr spielen?',
+                        reply_markup=ReplyKeyboardMarkup(
+                                        keys, one_time_keyboard=True))
+
+
+def generate_pollbycategory():
+    keyboard = []
+    config = configparser.ConfigParser(converters={'list': lambda x: [i.strip() for i in x.split(',')]})
+    config_path = os.path.dirname(os.path.realpath(__file__))
+    config.read(os.path.join(config_path, "config.ini"))
+    categories = config.getlist('GameCategories','categories')  # no, this is no error. getlist is created by converter above
+    for cat in categories:
+        row = []
+        data = ";".join(["POLLBY",cat])
+        row.append(InlineKeyboardButton(cat, callback_data=data))
+        keyboard.append(row)
+    # last row: no statement and /stop button
+    row = []      
+    data = ";".join(["POLLBY","IGNORE"])
+    row.append(InlineKeyboardButton(' ', callback_data=data))
+    data = ";".join(["POLLBY","stop"])
     row.append(InlineKeyboardButton('Abbrechen', callback_data=data))
     keyboard.append(row)
     return InlineKeyboardMarkup(keyboard)

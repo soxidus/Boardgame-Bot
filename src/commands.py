@@ -11,7 +11,7 @@ from database_functions import (choose_database, check_user,
 from parse_strings import (to_messagestring, single_db_entry_to_string)
 from reply_handler import ForceReplyJobs
 from planning_functions import GameNight
-from inline_handler import generate_findbycategory
+from inline_handler import (generate_findbycategory, generate_pollbycategory)
 
 """
 Commands registered with BotFather:
@@ -24,6 +24,7 @@ Commands registered with BotFather:
     wer                         - Finde heraus, wer alles am Spieleabend teilnimmt (nur im Privatchat)
     start_umfrage_spiel         - Wähle, welches Spiel du spielen möchtest! (nur in Gruppen)
     start_umfrage_erweiterung   - Stimmt ab, welche Erweiterung eines Spiels ihr spielen wollt. (nur in Gruppen)
+    start_umfrage_genrespiel    - Stimmt ab, welches Spiel einer bestimmten Kategorie ihr spielen wollt. (nur in Gruppen)
     ende_umfrage                - Beende die Abstimmung. (nur in Gruppen)
     ergebnis                    - Lass dir die bisher abgegebenen Stimmen anzeigen.
     spiele                      - Ich sage dir, welche Spiele du bei mir angemeldet hast. (nur im Privatchat)
@@ -223,6 +224,21 @@ def start_erweiterung(bot, update):
                                             'Erweiterungen abgestimmt werden?',
                                             reply_markup=ForceReply())
             ForceReplyJobs().add(msg.message_id, "expansion_poll_game")
+        if update.message.chat.type == "private":
+            update.message.reply_text('Wirklich?! Eine Umfrage nur für dich?\n'
+                                      'Starte doch bitte eine Umfrage '
+                                      'im Gruppenchat...')
+    else:
+        update.message.reply_text('Bitte authentifiziere dich zunächst '
+                                  'mit /key.')
+
+
+def start_umfrage_genrespiel(bot, update):
+    if check_user(update.message.chat_id):
+        if "group" in update.message.chat.type:
+            update.message.reply_text('Auf welche Kategorie habt ihr denn '
+                                      'heute Lust?',
+                                      reply_markup=generate_pollbycategory())
         if update.message.chat.type == "private":
             update.message.reply_text('Wirklich?! Eine Umfrage nur für dich?\n'
                                       'Starte doch bitte eine Umfrage '
@@ -461,6 +477,9 @@ def help(bot, update):
                              '/start_erweiterung - Stimmt ab, welche '
                              'Erweiterung eines Spiels ihr spielen wollt. '
                              '(nur in Gruppen)\n '
+                             '/start_umfrage_genrespiel - Stimmt ab, welches '
+                             'Spiel einer bestimmten Kategorie ihr '
+                             'spielen wollt.\n'
                              '/ende_umfrage - Beende die Abstimmung. '
                              '(nur in Gruppen)\n'
                              '/ergebnis - Lass dir die bisher abgegebenen '

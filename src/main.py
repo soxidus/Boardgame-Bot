@@ -54,6 +54,7 @@ def main():
     dp.add_handler(CommandHandler("wer", commands.wer))
     dp.add_handler(CommandHandler("start_umfrage_spiel", commands.start_umfrage_spiel))
     dp.add_handler(CommandHandler("start_umfrage_erweiterung", commands.start_erweiterung))
+    dp.add_handler(CommandHandler("start_umfrage_genrespiel", commands.start_umfrage_genrespiel))
     dp.add_handler(CommandHandler("zufallsspiel", commands.zufallsspiel))
     dp.add_handler(CommandHandler("genrespiel", commands.genrespiel))
     dp.add_handler(CommandHandler("ende_umfrage", commands.ende_umfrage))

@@ -154,7 +154,7 @@ def get_playable_entries(db, table, column, owner, no_participants=0, uuid=None,
 # and the playercount is >= the participants
 # and belong to category given
 # planned_date is already a datetime object
-def get_playable_entries_by_category(db, table, column, owner, category, no_participants=0, uuid=None, planned_date=None):
+def get_playable_entries_by_category(db, table, column, owner, category, no_participants=0, planned_date=None):
     mycursor = db.cursor()
 
     if table == "games":
@@ -165,8 +165,6 @@ def get_playable_entries_by_category(db, table, column, owner, category, no_part
             not_played_after = not_played_after.date()
             add_to_where = " AND (last_played<\'" + str(not_played_after) + "\' OR last_played IS NULL)"
             where += add_to_where
-    elif table == "expansions":
-        where = "owner LIKE \'%" + owner + "%\' AND basegame_uuid=\'" + uuid + "\'"
     sql = "SELECT " + column + " FROM " + table + " WHERE " + where
 
     mycursor.execute(sql)
