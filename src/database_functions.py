@@ -107,6 +107,8 @@ def search_expansions_by_game(db, table, owner, title):
         sql = "SELECT * FROM " + table + " WHERE owner LIKE \'%" + owner + "%\' AND basegame_uuid=\'" + uuid + "\'"
         mycursor.execute(sql)
         result = mycursor.fetchall()
+        if not result:  # no expansions
+            return None
         return result
     return False
 

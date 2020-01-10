@@ -374,7 +374,7 @@ def zufallsspiel(bot, update):
             for e in entries:
                 opt.append(single_db_entry_to_string(e))
             game = opt[randrange(len(opt))]
-        update.message.reply_text('Wie wäre es mit ' + game + '?')
+            update.message.reply_text('Wie wäre es mit ' + game + '?')
     else:
         update.message.reply_text('Bitte authentifiziere dich zunächst '
                                   'mit /key.')
