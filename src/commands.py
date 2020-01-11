@@ -59,15 +59,15 @@ def key(update, context):
             ForceReplyJobs().add(msg.message_id, "auth")
 
 
-def csv_import(bot, update):
+def csv_import(update, context):
     if check_user(update.message.chat_id):
         if "group" in update.message.chat.type:
             # maybe add some waiting here at some point
-            bot.delete_message(update.message.chat_id,
+            context.bot.delete_message(update.message.chat_id,
                                update.message.message_id)
             pass
         if update.message.chat.type == "private":
-            msg = bot.send_message(update.message.chat_id,
+            msg = context.bot.send_message(update.message.chat_id,
                                    'Gib die Daten ein, die du im CSV-Format '
                                    'in die Spiele-Datenbank importieren '
                                    'möchtest.\n'
@@ -82,7 +82,7 @@ def csv_import(bot, update):
                                   'mit /key.')
 
 
-def neuertermin(bot, update):
+def neuertermin(update, context):
     if check_user(update.message.chat_id):
         if "group" in update.message.chat.type:
             msg = update.message.reply_text('Okay, wann wollt ihr spielen?',
@@ -102,20 +102,20 @@ def neuertermin(bot, update):
 # be reset, otherwise this message is deleted immediately
 
 
-def endetermin(bot, update):
+def endetermin(update, context):
     if check_user(update.message.chat_id):
         if "group" in update.message.chat.type:
             plan = GameNight()
             plan.clear()
             try:
-                bot.set_chat_description(update.message.chat_id, "")
+                context.bot.set_chat_description(update.message.chat_id, "")
             except BadRequest:
                 pass
-            bot.set_chat_title(update.message.chat.id, 'Spielwiese')
+            context.bot.set_chat_title(update.message.chat.id, 'Spielwiese')
             msg = update.message.reply_text(
                         'Ich habe alles zurückgesetzt.',
                         reply_markup=ReplyKeyboardRemove())
-            bot.delete_message(update.message.chat_id, msg.message_id)
+            context.bot.delete_message(update.message.chat_id, msg.message_id)
         if update.message.chat.type == "private":
             update.message.reply_text('Stopp, das hat hier nichts zu suchen.\n'
                                       'Bitte versuche es im Gruppenchat...')
@@ -124,7 +124,7 @@ def endetermin(bot, update):
                                   'mit /key.')
 
 
-def ich(bot, update):
+def ich(update, context):
     if check_user(update.message.chat_id):
         if "group" in update.message.chat.type:
             plan = GameNight()
@@ -134,11 +134,11 @@ def ich(bot, update):
                     'Das war leider nichts. Vereinbart erst einmal einen '
                     'Termin mit /neuertermin.')
             else:
-                bot.send_message(update.message.from_user.id,
+                context.bot.send_message(update.message.from_user.id,
                                  'Danke für deine Zusage zum Spieleabend ' +
                                  plan.date + ', ' +
                                  update.message.from_user.first_name + '!')
-                bot.set_chat_description(update.message.chat_id,
+                context.bot.set_chat_description(update.message.chat_id,
                                          plan.get_participants())
         if update.message.chat.type == "private":
             update.message.reply_text('Stopp, das hat hier nichts zu suchen.\n'
@@ -149,20 +149,20 @@ def ich(bot, update):
                                   'mit /key.')
 
 
-def nichtich(bot, update):
+def nichtich(update, context):
     if check_user(update.message.chat_id):
         if "group" in update.message.chat.type:
             plan = GameNight()
             check = plan.remove_participant(update.message.from_user.username)
             if check < 0:
-                bot.send_message(update.message.from_user.id, 'Das war leider '
+                context.bot.send_message(update.message.from_user.id, 'Das war leider '
                                  'nichts. Du warst nicht angemeldet.')
             else:
-                bot.send_message(update.message.from_user.id,
+                context.bot.send_message(update.message.from_user.id,
                                  'Schade, dass du doch nicht '
                                  'teilnehmen kannst, ' +
                                  update.message.from_user.first_name + '.')
-                bot.set_chat_description(update.message.chat_id,
+                context.bot.set_chat_description(update.message.chat_id,
                                          plan.get_participants())
         if update.message.chat.type == "private":
             update.message.reply_text('Stopp, das hat hier nichts zu suchen.\n'
@@ -172,10 +172,10 @@ def nichtich(bot, update):
                                   'mit /key.')
 
 
-def wer(bot, update):
+def wer(update, context):
     if check_user(update.message.chat_id):
         if "group" in update.message.chat.type:
-            bot.delete_message(update.message.chat_id,
+            context.bot.delete_message(update.message.chat_id,
                                update.message.message_id)
             pass
         else:
@@ -186,7 +186,7 @@ def wer(bot, update):
                                   'mit /key.')
 
 
-def start_umfrage_spiel(bot, update):
+def start_umfrage_spiel(update, context):
     if check_user(update.message.chat_id):
         if "group" in update.message.chat.type:
             plan = GameNight()
@@ -214,7 +214,7 @@ def start_umfrage_spiel(bot, update):
                                   'mit /key.')
 
 
-def start_erweiterung(bot, update):
+def start_erweiterung(update, context):
     if check_user(update.message.chat_id):
         if "group" in update.message.chat.type:
             msg = update.message.reply_text('Für welches Spiel soll über '
@@ -230,7 +230,7 @@ def start_erweiterung(bot, update):
                                   'mit /key.')
 
 
-def ende_umfrage(bot, update):
+def ende_umfrage(update, context):
     if check_user(update.message.chat_id):
         if "group" in update.message.chat.type:
             plan = GameNight()
@@ -258,7 +258,7 @@ def ende_umfrage(bot, update):
                                   'mit /key.')
 
 
-def ergebnis(bot, update):
+def ergebnis(update, context):
     if check_user(update.message.chat_id):
         plan = GameNight()
         try:
@@ -278,10 +278,10 @@ def ergebnis(bot, update):
                                   'mit /key.')
 
 
-def spiele(bot, update):
+def spiele(update, context):
     if check_user(update.message.chat_id):
         if "group" in update.message.chat.type:
-            bot.delete_message(update.message.chat_id,
+            context.bot.delete_message(update.message.chat_id,
                                update.message.message_id)
             pass
         if update.message.chat.type == "private":
@@ -289,25 +289,25 @@ def spiele(bot, update):
                 search_entries_by_user(choose_database("testdb"), 'games',
                                        update.message.from_user.username))
             if len(gamestring) == 0:
-                bot.send_message(update.message.chat_id,
+                context.bot.send_message(update.message.chat_id,
                                  text="Dass du Spiele hast, wäre mir neu. "
                                  "Wenn das der Fall ist, sag mir das mit /neuesspiel!")
             else:
                 update.message.reply_text('Du hast folgende Spiele:')
-                bot.send_message(update.message.chat_id, text=gamestring)
+                context.bot.send_message(update.message.chat_id, text=gamestring)
     else:
         update.message.reply_text('Bitte authentifiziere dich zunächst '
                                   'mit /key.')
 
 
-def erweiterungen(bot, update):
+def erweiterungen(update, context):
     if check_user(update.message.chat_id):
         if "group" in update.message.chat.type:
-            bot.delete_message(update.message.chat_id,
+            context.bot.delete_message(update.message.chat_id,
                                update.message.message_id)
             pass
         if update.message.chat.type == "private":
-            msg = bot.send_message(update.message.chat_id,
+            msg = context.bot.send_message(update.message.chat_id,
                                    'Um welches Grundspiel geht es dir gerade?\n'
                                    'Antwort mit /stop, um abzubrechen.',
                                    reply_markup=ForceReply())
@@ -317,14 +317,14 @@ def erweiterungen(bot, update):
                                   'mit /key.')
 
 
-def neues_spiel(bot, update):
+def neues_spiel(update, context):
     if check_user(update.message.chat_id):
         if "group" in update.message.chat.type:
-            bot.delete_message(update.message.chat_id,
+            context.bot.delete_message(update.message.chat_id,
                                update.message.message_id)
             pass
         if update.message.chat.type == "private":
-            msg = bot.send_message(update.message.chat_id,
+            msg = context.bot.send_message(update.message.chat_id,
                                    'Wie heißt dein neues Spiel?\n'
                                    'Antworte mit /stop, um abzubrechen.',
                                    reply_markup=ForceReply())
@@ -338,14 +338,14 @@ def neues_spiel(bot, update):
                                   'mit /key.')
 
 
-def neue_erweiterung(bot, update):
+def neue_erweiterung(update, context):
     if check_user(update.message.chat_id):
         if "group" in update.message.chat.type:
-            bot.delete_message(update.message.chat_id,
+            context.bot.delete_message(update.message.chat_id,
                                update.message.message_id)
             pass
         if update.message.chat.type == "private":
-            msg = bot.send_message(update.message.chat_id,
+            msg = context.bot.send_message(update.message.chat_id,
                                    'Für welches Spiel hast du eine neue '
                                    'Erweiterung gekauft?\n'
                                    'Antworte mit /stop, um abzubrechen!!',
@@ -360,10 +360,10 @@ def neue_erweiterung(bot, update):
                                   'mit /key.')
 
 
-def zufallsspiel(bot, update):
+def zufallsspiel(update, context):
     if check_user(update.message.chat_id):
         if "group" in update.message.chat.type:
-            bot.delete_message(update.message.chat_id,
+            context.bot.delete_message(update.message.chat_id,
                                update.message.message_id)
             pass
         if update.message.chat.type == "private":
@@ -380,16 +380,16 @@ def zufallsspiel(bot, update):
                                   'mit /key.')
 
 
-def leeren(bot, update):
+def leeren(update, context):
     if check_user(update.message.chat_id):
         if "group" in update.message.chat.type:
             plan = GameNight()
             plan.clear()
             try:  # raises error when no modification
-                bot.set_chat_description(update.message.chat_id, "")
+                context.bot.set_chat_description(update.message.chat_id, "")
             except BadRequest:
                 pass
-            bot.set_chat_title(update.message.chat.id, 'Spielwiese')
+            context.bot.set_chat_title(update.message.chat.id, 'Spielwiese')
             update.message.reply_text('Ich habe alle Termine und '
                                       'Umfragen zurückgesetzt.',
                                       reply_markup=ReplyKeyboardRemove())
@@ -401,10 +401,10 @@ def leeren(bot, update):
                                   'mit /key.')
 
 
-def help(bot, update):
+def help(update, context):
     if check_user(update.message.chat_id):
         if update.message.chat.type == "private":
-            bot.send_message(update.message.chat_id,
+            context.bot.send_message(update.message.chat_id,
                              'Folgende Funktionen stehen dir im Privatchat '
                              'zur Verfügung:\n\n'
                              '/key - Authentifiziere dich!\n'
@@ -427,7 +427,7 @@ def help(bot, update):
                              'Weitere Funktionen stehen dir im Gruppenchat '
                              'zur Verfügung.')
         if "group" in update.message.chat.type:
-            bot.send_message(update.message.chat_id,
+            context.bot.send_message(update.message.chat_id,
                              'Folgende Funktionen stehen dir im Gruppenchat '
                              'zur Verfügung:\n\n'
                              '/key - Authentifiziere dich!\n'
