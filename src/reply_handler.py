@@ -75,7 +75,7 @@ class ForceReplyJobs(Singleton):
 
 
 # depending on the type of Reply, call a handler function
-def handle_reply(bot, update):
+def handle_reply(update, context):
     call_library = {"auth": auth, "game_title": game_title,
                     "game_players": game_players,
                     "expansion_for": expansion_for,
@@ -105,12 +105,12 @@ def auth(update):
     passphrase = config['Authentication']['password']
 
     if update.message.text == passphrase:
-        update.message.bot.delete_message(update.message.chat_id,
+        update.message.context.bot.delete_message(update.message.chat_id,
                                           update.message.message_id)
         if not dbf.check_user(update.message.chat_id):
             dbf.add_user_auth(update.message.chat_id)
             if update.message.chat_id > 0:
-                msg = update.message.bot.send_message(
+                msg = update.message.context.bot.send_message(
                         chat_id=update.message.chat_id,
                         text='Super! Wir dürfen jetzt miteinander reden. '
                         'Noch eine Frage: Wohnst du vielleicht mit einem '
@@ -124,7 +124,7 @@ def auth(update):
                         reply_markup=ForceReply())
                 ForceReplyJobs().add(msg.message_id, "household")
             else:
-                update.message.bot.send_message(chat_id=update.message.chat_id,
+                update.message.context.bot.send_message(chat_id=update.message.chat_id,
                                  text='Super! Wir dürfen jetzt '
                                       'miteinander reden.',
                                  reply_markup=ReplyKeyboardRemove())
@@ -334,7 +334,7 @@ def date(update):
                                   "beim festgelegten Termin an.",
                                   reply_markup=ReplyKeyboardRemove())
     else:
-        update.message.bot.set_chat_title(
+        update.message.context.bot.set_chat_title(
             update.message.chat.id, 'Spielwiese: ' + update.message.text)
         update.message.reply_text("Okay, schrei einfach /ich, "
                                   "wenn du teilnehmen willst!",
@@ -348,11 +348,11 @@ def default(update):
 
 # as of now, we only have the calendar as an inline feature
 # if that changes, we need to distinguish the kind of inline callback!
-def handle_inline(bot, update):
-    selected, date, user_inp_req = telegramcalendar.process_calendar_selection(bot, update)
+def handle_inline(update, context):
+    selected, date, user_inp_req = telegramcalendar.process_calendar_selection(update, context)
     if selected:
         if user_inp_req:
-            msg = bot.send_message(
+            msg = context.bot.send_message(
                 chat_id=update.callback_query.message.chat_id,
                 text='Okay, wann wollt ihr spielen?',
                 reply_markup=ForceReply())
@@ -360,16 +360,16 @@ def handle_inline(bot, update):
         elif date:
             check = GameNight(chat_id=update.callback_query.message.chat_id).set_date(date.strftime("%d/%m/%Y"))
             if check < 0:
-                bot.send_message(
+                context.bot.send_message(
                     chat_id=update.callback_query.message.chat_id,
                     text="Melde dich doch einfach mit /ich "
                          "beim festgelegten Termin an.",
                     reply_markup=ReplyKeyboardRemove())
             else:
-                bot.set_chat_title(
+                context.bot.set_chat_title(
                     update.callback_query.message.chat_id,
                     'Spielwiese: ' + date.strftime("%d/%m/%Y"))
-                bot.send_message(
+                context.bot.send_message(
                     chat_id=update.callback_query.message.chat_id,
                     text="Okay, schrei einfach /ich, wenn du "
                          "teilnehmen willst!",
