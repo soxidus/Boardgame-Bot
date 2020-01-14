@@ -1,0 +1,1 @@
+CREATE TABLE settings (user VARCHAR(255), notify_participation VARCHAR(255), notify_vote VARCHAR(255));

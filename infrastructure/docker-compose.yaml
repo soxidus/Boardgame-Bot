@@ -31,6 +31,7 @@ services:
       - ./init_data_games.sql:/docker-entrypoint-initdb.d/init_data_games.sql
       - ./init_data_expansions.sql:/docker-entrypoint-initdb.d/init_data_expansions.sql
       - ./init_data_households.sql:/docker-entrypoint-initdb.d/init_data_households.sql
+      - ./init_data_settings.sql:/docker-entrypoint-initdb.d/init_data_settings.sql
 
 #  bot:
 #    container_name: bot
