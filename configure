@@ -2,8 +2,8 @@
 
 echo Prepare database configuration...
 
-touch infrastructure/.env
-touch src/config.ini
+(umask 077 ; touch infrastructure/.env)
+(umask 077 ; touch src/config.ini)
 
 read -sp "Set root password: " rootpassvar
 echo
