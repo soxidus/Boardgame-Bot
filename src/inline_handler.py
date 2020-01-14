@@ -25,6 +25,8 @@ def handle_inline(bot, update):
         handle_findbycategory(bot, update)
     elif "POLLBY" in update.callback_query.data:
         handle_pollbycategory(bot, update)
+    elif "SETTING" in update.callback_query.data:
+        handle_settings(bot, update)
 
 
 def handle_calendar(bot, update):
@@ -266,6 +268,92 @@ def generate_pollbycategory():
     data = ";".join(["POLLBY","IGNORE"])
     row.append(InlineKeyboardButton(' ', callback_data=data))
     data = ";".join(["POLLBY","stop"])
+    row.append(InlineKeyboardButton('Abbrechen', callback_data=data))
+    keyboard.append(row)
+    return InlineKeyboardMarkup(keyboard)
+
+
+def handle_settings(bot, update):
+    update.callback_query.answer()
+    setting = update.callback_query.data.split(";")[1]
+    if setting == "stop":
+        QueryBuffer().clear_query(update.callback_query.message.message_id)
+        bot.send_message(
+            chat_id=update.callback_query.message.chat_id,
+            text='Okay, hier ist nichts passiert.',
+            reply_markup=ReplyKeyboardRemove())
+    elif setting == "done":
+        end_of_settings(bot, update)
+    else:  # we actually got a setting, now register it
+        if update.callback_query.data.split(";")[2] == "SET":
+            query = QueryBuffer().get_query(update.callback_query.message.message_id) + setting + "/"
+            settings_so_far = ps.parse_csv(query)[-1].split('/')[:-1]  # last one is empty since set ends on /
+            QueryBuffer().edit_query(update.callback_query.message.message_id, query)
+            # change keyboard layout
+            try:
+                bot.edit_message_text(text=update.callback_query.message.text,
+                                    chat_id=update.callback_query.message.chat_id,
+                                    message_id=update.callback_query.message.message_id,
+                                    reply_markup=generate_settings(pressed=settings_so_far))
+            except BadRequest:
+                pass
+        elif update.callback_query.data.split(";")[2] == "UNSET":
+            query = QueryBuffer().get_query(update.callback_query.message.message_id)
+            query_csv = ps.parse_csv(query)
+            settings_so_far = query_csv[-1].split('/')[:-1]
+            settings_so_far.remove(setting)
+            settings_string = '/'.join(settings_so_far)
+            if len(settings_string) > 0:
+                settings_string += '/'
+            new_query = ps.csv_to_string(query_csv[:-1]) + ',' + settings_string
+            QueryBuffer().edit_query(update.callback_query.message.message_id, new_query)
+            # change keyboard layout
+            try:
+                bot.edit_message_text(text=update.callback_query.message.text,
+                                    chat_id=update.callback_query.message.chat_id,
+                                    message_id=update.callback_query.message.message_id,
+                                    reply_markup=generate_settings(pressed=settings_so_far))
+            except BadRequest:
+                pass
+
+
+# TODO: adjust to settings instead of categories
+def end_of_settings(bot, update):
+    query = QueryBuffer().get_query(update.callback_query.message.message_id)
+    # query looks like: setting,username,notify_participation/notify_vote/
+    if ps.parse_csv(query)[0] == "setting":
+        to_set = ps.parse_csv(query)[-1].split('/')[:-1]
+        user = ps.parse_csv(query)[1]
+        dbf.update_settings(user, to_set)
+        bot.send_message(
+                    chat_id=update.callback_query.message.chat_id,
+                    text="Okay, ich habe mir deine Einstellungen vermerkt.",
+                    reply_markup=ReplyKeyboardRemove())
+    else:
+        pass
+    QueryBuffer().clear_query(
+        update.callback_query.message.message_id)
+
+
+#TODO: generate according to user's existing settings
+def generate_settings(pressed=None):
+    keyboard = []
+    settings = {'Benachrichtigung bei Teilnahme am Spieleabend' : 'notify_participation', 'Benachrichtigung bei Abstimmung' : 'notify_vote'}
+    for (key, value) in settings:
+        row = []
+        if pressed and (value in pressed):
+            data = ";".join(["SETTING",value,"UNSET"])
+            label = key + " ✓"
+            row.append(InlineKeyboardButton(label, callback_data=data))
+        else:
+            data = ";".join(["SETTING",value,"SET"])
+            row.append(InlineKeyboardButton(key, callback_data=data))
+        keyboard.append(row)
+    # last row: done and /stop button
+    row = []
+    data = ";".join(["SETTING","done"])
+    row.append(InlineKeyboardButton('Fertig', callback_data=data))        
+    data = ";".join(["SETTING","stop"])
     row.append(InlineKeyboardButton('Abbrechen', callback_data=data))
     keyboard.append(row)
     return InlineKeyboardMarkup(keyboard)

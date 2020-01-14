@@ -64,6 +64,7 @@ def main():
     dp.add_handler(CommandHandler("neues_spiel", commands.neues_spiel))
     dp.add_handler(CommandHandler("neue_erweiterung", commands.neue_erweiterung))
     dp.add_handler(CommandHandler("leeren", commands.leeren))
+    dp.add_handler(CommandHandler("einstellungen", commands.einstellungen))
     dp.add_handler(CommandHandler("help", commands.help))
     dp.add_handler(CallbackQueryHandler(handle_inline))
     # Start the Bot

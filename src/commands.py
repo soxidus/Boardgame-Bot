@@ -12,6 +12,7 @@ from parse_strings import (to_messagestring, single_db_entry_to_string)
 from reply_handler import ForceReplyJobs
 from planning_functions import GameNight
 from inline_handler import (generate_findbycategory, generate_pollbycategory)
+from query_buffer import QueryBuffer
 
 """
 Commands registered with BotFather:
@@ -432,6 +433,24 @@ def leeren(bot, update):
     else:
         update.message.reply_text('Bitte authentifiziere dich zunächst '
                                   'mit /key.')
+
+
+def einstellungen(bot, update):
+    if check_user(update.message.chat_id):
+        if "group" in update.message.chat.type:
+            bot.delete_message(update.message.chat_id,
+                               update.message.message_id)
+            pass
+        if update.message.chat.type == "private":
+            msg = bot.send_message(update.message.chat_id,
+                                   'Ändere hier deine Einstellungen.\n'
+                                   'Antworte mit /stop, um abzubrechen.',
+                                   reply_markup=ForceReply())
+            query = "setting," + update.message.from_user.username
+            QueryBuffer().add(msg.message_id, query)
+    else:
+        update.message.reply_text('Bitte authentifiziere dich zunächst '
+                                  'mit /key.')                                      
 
 
 def help(bot, update):

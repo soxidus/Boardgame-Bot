@@ -191,7 +191,9 @@ def add_expansion_into_db(values):
 def add_user_auth(user):
     entry = "(id)"
     add_entry(choose_database("auth"), "users", entry, user, 1)
-
+    settings_entry = "(user)"
+    add_entry(choose_database("testdb"), "settings", settings_entry, user, 1)
+    
 
 # variable names user1 and user2 are a bit arbitrary
 # user2 can hold more than one username
@@ -229,6 +231,21 @@ def update_game_date(title, last_played):
     db = choose_database("testdb")
     mycursor = db.cursor()
     sql = "UPDATE games SET last_played='" + str(last_played) + "' WHERE title='" + str(title) + "'"
+    mycursor.execute(sql)
+    db.commit()
+
+
+def update_settings(user, to_set):
+    db = choose_database("testdb")
+    mycursor = db.cursor()
+    entry = '('
+    values = '('
+    for s in to_set:
+        entry += s
+        values += '1'
+    entry += ')'
+    values += ')'
+    sql = "UPDATE settings SET " + entry  #TODO
     mycursor.execute(sql)
     db.commit()
 
