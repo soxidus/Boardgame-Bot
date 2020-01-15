@@ -82,8 +82,7 @@ class GameNight(Singleton):
             if user_id in self.participants:
                 try:
                     self.poll = Poll(self.participants, game, category)
-                except ValueError as v:
-                    print(v)
+                except ValueError:
                     self.poll = None
                     return -1
                 self.old_poll = None

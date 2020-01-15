@@ -82,7 +82,7 @@ def handle_reply(bot, update):
         which = ForceReplyJobs().is_set(
                     update.message.reply_to_message.message_id)
     except AttributeError:
-        print("Reply Handling failed.")
+        pass
     else:  # no exception
         try:
             call_library[which].__call__(update)

@@ -294,7 +294,7 @@ def handle_settings(bot, update):
                 bot.edit_message_text(text=update.callback_query.message.text,
                                     chat_id=update.callback_query.message.chat_id,
                                     message_id=update.callback_query.message.message_id,
-                                    reply_markup=generate_settings(pressed=settings_so_far))
+                                    reply_markup=generate_settings(to_set=settings_so_far))
             except BadRequest:
                 pass
         elif update.callback_query.data.split(";")[2] == "UNSET":
@@ -312,19 +312,23 @@ def handle_settings(bot, update):
                 bot.edit_message_text(text=update.callback_query.message.text,
                                     chat_id=update.callback_query.message.chat_id,
                                     message_id=update.callback_query.message.message_id,
-                                    reply_markup=generate_settings(pressed=settings_so_far))
+                                    reply_markup=generate_settings(to_set=settings_so_far))
             except BadRequest:
                 pass
 
 
-# TODO: adjust to settings instead of categories
 def end_of_settings(bot, update):
     query = QueryBuffer().get_query(update.callback_query.message.message_id)
     # query looks like: setting,username,notify_participation/notify_vote/
-    if ps.parse_csv(query)[0] == "setting":
+    possible_settings = ['notify_participation', 'notify_vote']
+    if ps.parse_csv(query)[0] == "settings":
         to_set = ps.parse_csv(query)[-1].split('/')[:-1]
+        to_unset = []
+        for _ in possible_settings:
+            if _ not in to_set:
+                to_unset.append(_)
         user = ps.parse_csv(query)[1]
-        dbf.update_settings(user, to_set)
+        dbf.update_settings(user, to_set, to_unset)
         bot.send_message(
                     chat_id=update.callback_query.message.chat_id,
                     text="Okay, ich habe mir deine Einstellungen vermerkt.",
@@ -335,20 +339,40 @@ def end_of_settings(bot, update):
         update.callback_query.message.message_id)
 
 
-#TODO: generate according to user's existing settings
-def generate_settings(pressed=None):
+# when generated the first time, set "first" and "user" to look up the current settings
+# also, store in init_array the settings already set to initialize query buffer
+# later, just keep track of what the user selected up until now
+def generate_settings(to_set=None, first=None, user=None, init_array=None):
+    if first:
+        current_settings = dbf.search_single_entry(dbf.choose_database("testdb"), "settings", "user", user)[0][1:]   
     keyboard = []
     settings = {'Benachrichtigung bei Teilnahme am Spieleabend' : 'notify_participation', 'Benachrichtigung bei Abstimmung' : 'notify_vote'}
-    for (key, value) in settings:
-        row = []
-        if pressed and (value in pressed):
-            data = ";".join(["SETTING",value,"UNSET"])
-            label = key + " ✓"
-            row.append(InlineKeyboardButton(label, callback_data=data))
-        else:
-            data = ";".join(["SETTING",value,"SET"])
-            row.append(InlineKeyboardButton(key, callback_data=data))
-        keyboard.append(row)
+    if first:
+        index = 0
+        for (key, value) in settings.items():
+            row = []
+            if current_settings[index]==1:
+                data = ";".join(["SETTING",value,"UNSET"])
+                label = key + " ✓"
+                row.append(InlineKeyboardButton(label, callback_data=data))
+                # init query buffer
+                init_array.append(value)
+            else:
+                data = ";".join(["SETTING",value,"SET"])
+                row.append(InlineKeyboardButton(key, callback_data=data))
+            keyboard.append(row)
+            index += 1
+    else:
+        for (key, value) in settings.items():
+            row = []
+            if to_set and (value in to_set):
+                data = ";".join(["SETTING",value,"UNSET"])
+                label = key + " ✓"
+                row.append(InlineKeyboardButton(label, callback_data=data))
+            else:
+                data = ";".join(["SETTING",value,"SET"])
+                row.append(InlineKeyboardButton(key, callback_data=data))
+            keyboard.append(row)
     # last row: done and /stop button
     row = []
     data = ";".join(["SETTING","done"])

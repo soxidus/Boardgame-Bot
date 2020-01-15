@@ -60,12 +60,11 @@ def add_game(db, table, entry, values):
 
 def search_single_entry(db, table, entry, values):
     mycursor = db.cursor()
-    # wait, aren't these exactly the same? Do we still need this if/else?
     if isinstance(values, int):
         sql = "SELECT * FROM " + table + " WHERE " + entry + " = " + str(values)
         mycursor.execute(sql)
     if isinstance(values, str):
-        sql = "SELECT * FROM " + table + " WHERE " + entry + " = " + str(values)
+        sql = "SELECT * FROM " + table + " WHERE " + entry + " = '" + str(values) + "'"
         mycursor.execute(sql)
     else:
         pass
@@ -235,17 +234,18 @@ def update_game_date(title, last_played):
     db.commit()
 
 
-def update_settings(user, to_set):
+def update_settings(user, to_set, to_unset):
     db = choose_database("testdb")
     mycursor = db.cursor()
-    entry = '('
-    values = '('
+    new_set = ''
     for s in to_set:
-        entry += s
-        values += '1'
-    entry += ')'
-    values += ')'
-    sql = "UPDATE settings SET " + entry  #TODO
+        add_to_new_set = str(s) + '=1,'
+        new_set += add_to_new_set
+    for s in to_unset:
+        add_to_new_set = str(s) + '=0,'
+        new_set += add_to_new_set
+    new_set = new_set[:-1]  # remove last comma
+    sql = "UPDATE settings SET " + new_set + " WHERE user='" + str(user) + "'"
     mycursor.execute(sql)
     db.commit()
 

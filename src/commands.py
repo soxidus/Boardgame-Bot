@@ -11,7 +11,7 @@ from database_functions import (choose_database, check_user,
 from parse_strings import (to_messagestring, single_db_entry_to_string)
 from reply_handler import ForceReplyJobs
 from planning_functions import GameNight
-from inline_handler import (generate_findbycategory, generate_pollbycategory)
+from inline_handler import (generate_findbycategory, generate_pollbycategory, generate_settings)
 from query_buffer import QueryBuffer
 
 """
@@ -442,11 +442,17 @@ def einstellungen(bot, update):
                                update.message.message_id)
             pass
         if update.message.chat.type == "private":
+            init_settings = []
             msg = bot.send_message(update.message.chat_id,
                                    'Ändere hier deine Einstellungen.\n'
                                    'Antworte mit /stop, um abzubrechen.',
-                                   reply_markup=ForceReply())
-            query = "setting," + update.message.from_user.username
+                                   reply_markup=generate_settings(
+                                       first=True,
+                                       user=update.message.from_user.username,
+                                       init_array=init_settings))
+            query = "settings," + update.message.from_user.username + ","
+            for init_val in init_settings:
+                query = query + init_val + "/"
             QueryBuffer().add(msg.message_id, query)
     else:
         update.message.reply_text('Bitte authentifiziere dich zunächst '
