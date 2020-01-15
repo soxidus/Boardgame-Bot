@@ -45,9 +45,13 @@ def parse_values_from_array(data_array):
 
 def to_messagestring(input_str):
     messagestring = ""
+    entries = []
 
     for _ in range(len(input_str)):
-        messagestring += input_str[_][0] + ",\n"
+        entries.append(input_str[_][0])
+        
+    entries.sort()
+    messagestring = ",\n".join(entries)
     return messagestring
 
 
