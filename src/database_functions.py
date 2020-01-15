@@ -58,13 +58,16 @@ def add_game(db, table, entry, values):
     db.commit()
 
 
-def search_single_entry(db, table, entry, values):
+def search_single_entry(db, table, entry, values, valuecnt=None):
     mycursor = db.cursor()
     if isinstance(values, int):
         sql = "SELECT * FROM " + table + " WHERE " + entry + " = " + str(values)
         mycursor.execute(sql)
     if isinstance(values, str):
-        sql = "SELECT * FROM " + table + " WHERE " + entry + " = '" + str(values) + "'"
+        if valuecnt and valuecnt > 1:
+            sql = "SELECT * FROM " + table + " WHERE " + entry + " = " + str(values)
+        else:
+            sql = "SELECT * FROM " + table + " WHERE " + entry + " = '" + str(values) + "'"
         mycursor.execute(sql)
     else:
         pass
@@ -90,6 +93,8 @@ def search_single_entry_substring(db, table, entry, values):
     return result
 
 
+# it might be slightly unfortunate to name this function "by_user"
+# when it's actually looking up the owner
 def search_entries_by_user(db, table, owner):
     mycursor = db.cursor()
 
@@ -269,3 +274,14 @@ def check_household(user):
         return user
     else:
         return users_string[0][0]
+
+
+def check_notify(user, which):
+    entry = "(user, " + str(which) + ")"
+    values = "('" + user + "', 1)"
+    result = search_single_entry(choose_database("testdb"), "settings", entry, values, valuecnt=2)
+
+    if len(result) == 0:
+        return 0
+    else:
+        return 1

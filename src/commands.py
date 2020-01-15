@@ -7,7 +7,8 @@ from random import randrange
 from calendarkeyboard import telegramcalendar
 from database_functions import (choose_database, check_user,
                                 search_entries_by_user, check_household,
-                                get_playable_entries)
+                                get_playable_entries,
+                                check_notify)
 from parse_strings import (to_messagestring, single_db_entry_to_string)
 from reply_handler import ForceReplyJobs
 from planning_functions import GameNight
@@ -35,6 +36,7 @@ Commands registered with BotFather:
     zufallsspiel                - Lass dir vom Bot ein Spiel vorschlagen. (nur im Privatchat)
     genrespiel                  - Lass dir vom Bot ein Spiel einer bestimmten Kategorie vorschlagen. (nur im Privatchat)
     leeren                      - Lösche alle laufenden Pläne und Abstimmungen (laufende Spiel-Eintragungen etc. sind davon nicht betroffen) (nur in Gruppen)
+    einstellungen               - Verändere deine Einstellungen (Benachrichtigungen etc.) (nur im Privatchat)
     help                        - Was kann ich alles tun?
 """
 
@@ -133,15 +135,17 @@ def ich(bot, update):
         if "group" in update.message.chat.type:
             plan = GameNight()
             check = plan.add_participant(update.message.from_user.username)
+            send_message = check_notify(update.message.from_user.username, "notify_participation")
             if check < 0:
                 update.message.reply_text(
                     'Das war leider nichts. Vereinbart erst einmal einen '
                     'Termin mit /neuertermin.')
             else:
-                bot.send_message(update.message.from_user.id,
-                                 'Danke für deine Zusage zum Spieleabend ' +
-                                 plan.date + ', ' +
-                                 update.message.from_user.first_name + '!')
+                if send_message:
+                    bot.send_message(update.message.from_user.id,
+                                    'Danke für deine Zusage zum Spieleabend ' +
+                                    plan.date + ', ' +
+                                    update.message.from_user.first_name + '!')
                 bot.set_chat_description(update.message.chat_id,
                                          plan.get_participants())
         if update.message.chat.type == "private":
@@ -480,12 +484,15 @@ def help(bot, update):
                              '/zufallsspiel - Ich schlage dir ein Spiel vor.\n'
                              '/genrespiel - Ich schlage dir ein Spiel einer '
                              'bestimmten Kategorie vor.\n'
+                             '/einstellungen - Verändere deine Einstellungen '
+                             '(Benachrichtigungen etc.)'
                              '/help - Was kann ich alles tun?\n\n'
+                             'Weitere Funktionen stehen dir im Gruppenchat '
+                             'zur Verfügung.'
                              'Solltest du im Gruppenchat Funktionen nutzen, '
                              'die dort nicht erlaubt sind, '
                              'wird deine Nachricht sofort gelöscht.\n'
-                             'Weitere Funktionen stehen dir im Gruppenchat '
-                             'zur Verfügung.')
+                             )
         if "group" in update.message.chat.type:
             bot.send_message(update.message.chat_id,
                              'Folgende Funktionen stehen dir im Gruppenchat '

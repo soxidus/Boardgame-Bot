@@ -8,7 +8,8 @@ from telegram.error import BadRequest
 from random import randrange
 from database_functions import (get_playable_entries, choose_database,
                                 search_uuid, update_game_date, 
-                                get_playable_entries_by_category)
+                                get_playable_entries_by_category,
+                                check_notify)
 from singleton import Singleton
 from parse_strings import single_db_entry_to_string
 
@@ -18,18 +19,19 @@ def handle_vote(bot, update):
     if plan.poll is not None:
         check = plan.poll.register_vote(
             update.message.from_user.username, update.message.text)
-        if check == 0:
+        send_message = check_notify(update.message.from_user.username, "notify_vote")
+        if check == 0 and send_message:
             bot.send_message(update.message.from_user.id,
                              "Okay " + update.message.from_user.first_name +
                              ", du hast erneut für " + update.message.text +
                              " gestimmt. Du musst mir das nicht mehrmals "
                              "sagen, ich bin fähig ;)")
-        elif check < 0:
+        elif check < 0 and send_message:
             bot.send_message(update.message.from_user.id,
                              "Das hat nicht funktioniert. "
                              "Vielleicht darfst du gar nicht abstimmen, " +
                              update.message.from_user.first_name + "?")
-        else:
+        elif send_message:
             bot.send_message(update.message.from_user.id,
                              "Okay " + update.message.from_user.first_name +
                              ", du hast für " + update.message.text +
