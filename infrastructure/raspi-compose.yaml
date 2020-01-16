@@ -3,7 +3,7 @@ version: "3"
 services:
 
   auth_db:
-      image: mariadb:latest
+      image: yobasystems/alpine-mariadb:latest
       container_name: auth_db
       ports:
         - 3306
@@ -19,7 +19,7 @@ services:
         - ./init_auth.sql:/docker-entrypoint-initdb.d/init_auth.sql:ro
 
   data_db:
-    image: mariadb:latest
+    image: yobasystems/alpine-mariadb:latest
     container_name: data_db
     ports:
       - 3306
@@ -35,7 +35,6 @@ services:
       - ./init_data_games.sql:/docker-entrypoint-initdb.d/init_data_games.sql
       - ./init_data_expansions.sql:/docker-entrypoint-initdb.d/init_data_expansions.sql
       - ./init_data_households.sql:/docker-entrypoint-initdb.d/init_data_households.sql
-      - ./init_data_settings.sql:/docker-entrypoint-initdb.d/init_data_settings.sql
 
   bot:
     container_name: bot

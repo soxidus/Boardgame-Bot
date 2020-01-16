@@ -4,7 +4,7 @@ import datetime
 import re
 import configparser
 import os
-from telegram.error import BadRequest
+from telegram.error import (BadRequest, Unauthorized)
 from random import randrange
 from database_functions import (get_playable_entries, choose_database,
                                 search_uuid, update_game_date, 
@@ -21,24 +21,51 @@ def handle_vote(update, context):
             update.message.from_user.username, update.message.text)
         send_message = check_notify(update.message.from_user.username, "notify_vote")
         if check == 0 and send_message:
-            context.bot.send_message(update.message.from_user.id,
-                             "Okay " + update.message.from_user.first_name +
-                             ", du hast erneut für " + update.message.text +
-                             " gestimmt. Du musst mir das nicht mehrmals "
-                             "sagen, ich bin fähig ;)")
+            try:
+                context.bot.send_message(update.message.from_user.id,
+                                         "Okay " + update.message.from_user.first_name +
+                                         ", du hast erneut für " + update.message.text +
+                                         " gestimmt. Du musst mir das nicht mehrmals "
+                                         "sagen, ich bin fähig ;)")
+            except Unauthorized:
+                context.bot.send_message(update.message.chat_id, 'OH! '
+                                            'scheinbar darf ich nicht mit dir Reden.'
+                                            'Versuche dich privat mit start oder key'
+                                            'zu authorisieren und dann probiere /'
+                                            + __name__ +
+                                            ' nochmal'
+                                            )
         elif check < 0 and send_message:
-            context.bot.send_message(update.message.from_user.id,
-                             "Das hat nicht funktioniert. "
-                             "Vielleicht darfst du gar nicht abstimmen, " +
-                             update.message.from_user.first_name + "?")
+            try:
+                context.bot.send_message(update.message.from_user.id,
+                                        "Das hat nicht funktioniert. "
+                                        "Vielleicht darfst du gar nicht abstimmen, " +
+                                        update.message.from_user.first_name + "?")
+            except Unauthorized:
+                context.bot.send_message(update.message.chat_id, 'OH! '
+                                            'scheinbar darf ich nicht mit dir Reden.'
+                                            'Versuche dich privat mit start oder key'
+                                            'zu authorisieren und dann probiere /'
+                                            + __name__ +
+                                            ' nochmal'
+                                            )
         elif send_message:
-            context.bot.send_message(update.message.from_user.id,
-                             "Okay " + update.message.from_user.first_name +
-                             ", du hast für " + update.message.text +
-                             " gestimmt.")
+            try:
+                context.bot.send_message(update.message.from_user.id,
+                                        "Okay " + update.message.from_user.first_name +
+                                        ", du hast für " + update.message.text +
+                                        " gestimmt.")
+            except Unauthorized:
+                context.bot.send_message(update.message.chat_id, 'OH! '
+                                            'scheinbar darf ich nicht mit dir Reden.'
+                                            'Versuche dich privat mit start oder key'
+                                            'zu authorisieren und dann probiere /'
+                                            + __name__ +
+                                            ' nochmal'
+                                            )
 
 
-def test_termin(bot):
+def test_termin(context):
     now = datetime.datetime.now()
     plan = GameNight()
     if plan:

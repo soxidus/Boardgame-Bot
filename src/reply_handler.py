@@ -119,9 +119,9 @@ def auth(update):
                 ForceReplyJobs().add(msg.message_id, "household")
             else:
                 update.message.bot.send_message(chat_id=update.message.chat_id,
-                                                text='Super! Wir dürfen jetzt '
-                                                    'miteinander reden.',
-                                                reply_markup=ReplyKeyboardRemove())
+                                 text='Super! Wir dürfen jetzt '
+                                      'miteinander reden.',
+                                 reply_markup=ReplyKeyboardRemove())
         else:
             update.message.reply_text("Du musst das Passwort nicht nochmal "
                                       "eingeben... Rede einfach mit mir!",
