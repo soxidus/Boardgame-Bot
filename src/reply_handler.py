@@ -69,7 +69,7 @@ class ForceReplyJobs(Singleton):
 
 
 # depending on the type of Reply, call a handler function
-def handle_reply(bot, update):
+def handle_reply(update, context):
     call_library = {"auth": auth, "game_title": game_title,
                     "game_players": game_players,
                     "expansion_for": expansion_for,

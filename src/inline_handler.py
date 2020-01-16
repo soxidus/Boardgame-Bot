@@ -16,24 +16,24 @@ import database_functions as dbf
 import parse_strings as ps
 
 
-def handle_inline(bot, update):
+def handle_inline(update, context):
     if "CALENDAR" in update.callback_query.data:
-        handle_calendar(bot, update)
+        handle_calendar(update, context)
     elif "CATEGORY" in update.callback_query.data:
-        handle_category(bot, update)
+        handle_category(update, context)
     elif "FINDBY" in update.callback_query.data:
-        handle_findbycategory(bot, update)
+        handle_findbycategory(update, context)
     elif "POLLBY" in update.callback_query.data:
-        handle_pollbycategory(bot, update)
+        handle_pollbycategory(update, context)
     elif "SETTING" in update.callback_query.data:
-        handle_settings(bot, update)
+        handle_settings(update, context)
 
 
-def handle_calendar(bot, update):
-    selected, date, user_inp_req = telegramcalendar.process_calendar_selection(bot, update)
+def handle_calendar(update, context):
+    selected, date, user_inp_req = telegramcalendar.process_calendar_selection(update, context)
     if selected:
         if user_inp_req:
-            msg = bot.send_message(
+            msg = context.bot.send_message(
                 chat_id=update.callback_query.message.chat_id,
                 text='Okay, wann wollt ihr spielen?',
                 reply_markup=ForceReply())
@@ -41,35 +41,35 @@ def handle_calendar(bot, update):
         elif date:
             check = GameNight(chat_id=update.callback_query.message.chat_id).set_date(date.strftime("%d/%m/%Y"))
             if check < 0:
-                bot.send_message(
+                context.bot.send_message(
                     chat_id=update.callback_query.message.chat_id,
                     text="Melde dich doch einfach mit /ich "
                          "beim festgelegten Termin an.",
                     reply_markup=ReplyKeyboardRemove())
             else:
-                bot.set_chat_title(
+                context.bot.set_chat_title(
                     update.callback_query.message.chat_id,
                     'Spielwiese: ' + date.strftime("%d/%m/%Y"))
-                bot.send_message(
+                context.bot.send_message(
                     chat_id=update.callback_query.message.chat_id,
                     text="Okay, schrei einfach /ich, wenn du "
                          "teilnehmen willst!",
                     reply_markup=ReplyKeyboardRemove())
 
 
-def handle_category(bot, update):
+def handle_category(update, context):
     update.callback_query.answer()
     category = update.callback_query.data.split(";")[1]
     if category == "none":
         end_of_categories(bot, update, no_category=True)
     elif category == "stop":
         QueryBuffer().clear_query(update.callback_query.message.message_id)
-        bot.send_message(
+        context.bot.send_message(
             chat_id=update.callback_query.message.chat_id,
             text='Okay, hier ist nichts passiert.',
             reply_markup=ReplyKeyboardRemove())
     elif category == "done":
-        end_of_categories(bot, update)
+        end_of_categories(update, context)
     elif category == "IGNORE":
         pass
     else:  # we actually got a category, now register it
@@ -79,7 +79,7 @@ def handle_category(bot, update):
             QueryBuffer().edit_query(update.callback_query.message.message_id, query)
             # change keyboard layout
             try:
-                bot.edit_message_text(text=update.callback_query.message.text,
+                context.bot.edit_message_text(text=update.callback_query.message.text,
                                     chat_id=update.callback_query.message.chat_id,
                                     message_id=update.callback_query.message.message_id,
                                     reply_markup=generate_categories(pressed=categories_so_far))
@@ -97,7 +97,7 @@ def handle_category(bot, update):
             QueryBuffer().edit_query(update.callback_query.message.message_id, new_query)
             # change keyboard layout
             try:
-                bot.edit_message_text(text=update.callback_query.message.text,
+                context.bot.edit_message_text(text=update.callback_query.message.text,
                                     chat_id=update.callback_query.message.chat_id,
                                     message_id=update.callback_query.message.message_id,
                                     reply_markup=generate_categories(pressed=categories_so_far))
@@ -118,7 +118,7 @@ def end_of_categories(bot, update, no_category=False):
         for _ in range(len(known_games)):
             # check whether this title has already been added for this user
             if known_games[_][0] == ps.parse_csv(query)[2]:
-                bot.send_message(
+                context.bot.send_message(
                     chat_id=update.callback_query.message.chat_id,
                     text="Wusste ich doch: Das Spiel hast du schon "
                          "einmal eingetragen. Viel Spaß noch damit!",
@@ -126,7 +126,7 @@ def end_of_categories(bot, update, no_category=False):
                 return
         dbf.add_game_into_db(ps.parse_values_from_array(
                                 ps.remove_first_string(query)))
-        bot.send_message(
+        context.bot.send_message(
                     chat_id=update.callback_query.message.chat_id,
                     text="Okay, das Spiel wurde hinzugefügt \\o/",
                     reply_markup=ReplyKeyboardRemove())
@@ -166,11 +166,11 @@ def generate_categories(first=False, pressed=None):
     return InlineKeyboardMarkup(keyboard)
 
 
-def handle_findbycategory(bot, update):
+def handle_findbycategory(update, context):
     update.callback_query.answer()
     category = update.callback_query.data.split(";")[1]
     if category == "stop":
-        bot.send_message(
+        context.bot.send_message(
             chat_id=update.callback_query.message.chat_id,
             text='Okay, hier ist nichts passiert.',
             reply_markup=ReplyKeyboardRemove())
@@ -185,12 +185,12 @@ def handle_findbycategory(bot, update):
             opt.append(single_db_entry_to_string(e))
         if opt:
             game = opt[randrange(len(opt))]
-            bot.send_message(
+            context.bot.send_message(
                         chat_id=update.callback_query.message.chat_id,
                         text='Wie wäre es mit ' + game + '?',
                         reply_markup=ReplyKeyboardRemove())
         else:
-            bot.send_message(
+            context.bot.send_message(
                         chat_id=update.callback_query.message.chat_id,
                         text='Du besitzt kein Spiel dieser Kategorie.',
                         reply_markup=ReplyKeyboardRemove())
@@ -217,11 +217,11 @@ def generate_findbycategory():
     return InlineKeyboardMarkup(keyboard)
 
 
-def handle_pollbycategory(bot, update):
+def handle_pollbycategory(update, context):
     update.callback_query.answer()
     category = update.callback_query.data.split(";")[1]
     if category == "stop":
-        bot.send_message(
+        context.bot.send_message(
             chat_id=update.callback_query.message.chat_id,
             text='Okay, hier ist nichts passiert.',
             reply_markup=ReplyKeyboardRemove())
@@ -232,7 +232,7 @@ def handle_pollbycategory(bot, update):
         check = plan.set_poll(update.callback_query.from_user.username,
                             category=category)
         if check < 0:
-            bot.send_message(
+            context.bot.send_message(
                         chat_id=update.callback_query.message.chat_id,
                         text='Das war leider nichts. \n'
                              'Habt ihr kein Datum festgelegt? '
@@ -245,7 +245,7 @@ def handle_pollbycategory(bot, update):
             keys = []
             for o in plan.poll.options:
                 keys.append([KeyboardButton(o)])
-            bot.send_message(
+            context.bot.send_message(
                         chat_id=update.callback_query.message.chat_id,
                         text='Welches Spiel wollt ihr spielen?',
                         reply_markup=ReplyKeyboardMarkup(
@@ -273,17 +273,17 @@ def generate_pollbycategory():
     return InlineKeyboardMarkup(keyboard)
 
 
-def handle_settings(bot, update):
+def handle_settings(update, context):
     update.callback_query.answer()
     setting = update.callback_query.data.split(";")[1]
     if setting == "stop":
         QueryBuffer().clear_query(update.callback_query.message.message_id)
-        bot.send_message(
+        context.bot.send_message(
             chat_id=update.callback_query.message.chat_id,
             text='Okay, hier ist nichts passiert.',
             reply_markup=ReplyKeyboardRemove())
     elif setting == "done":
-        end_of_settings(bot, update)
+        end_of_settings(update, context)
     else:  # we actually got a setting, now register it
         if update.callback_query.data.split(";")[2] == "SET":
             query = QueryBuffer().get_query(update.callback_query.message.message_id) + setting + "/"
@@ -291,7 +291,7 @@ def handle_settings(bot, update):
             QueryBuffer().edit_query(update.callback_query.message.message_id, query)
             # change keyboard layout
             try:
-                bot.edit_message_text(text=update.callback_query.message.text,
+                context.bot.edit_message_text(text=update.callback_query.message.text,
                                     chat_id=update.callback_query.message.chat_id,
                                     message_id=update.callback_query.message.message_id,
                                     reply_markup=generate_settings(to_set=settings_so_far))
@@ -309,7 +309,7 @@ def handle_settings(bot, update):
             QueryBuffer().edit_query(update.callback_query.message.message_id, new_query)
             # change keyboard layout
             try:
-                bot.edit_message_text(text=update.callback_query.message.text,
+                context.bot.edit_message_text(text=update.callback_query.message.text,
                                     chat_id=update.callback_query.message.chat_id,
                                     message_id=update.callback_query.message.message_id,
                                     reply_markup=generate_settings(to_set=settings_so_far))
@@ -317,7 +317,7 @@ def handle_settings(bot, update):
                 pass
 
 
-def end_of_settings(bot, update):
+def end_of_settings(update, context):
     query = QueryBuffer().get_query(update.callback_query.message.message_id)
     # query looks like: setting,username,notify_participation/notify_vote/
     possible_settings = ['notify_participation', 'notify_vote']
@@ -329,7 +329,7 @@ def end_of_settings(bot, update):
                 to_unset.append(_)
         user = ps.parse_csv(query)[1]
         dbf.update_settings(user, to_set, to_unset)
-        bot.send_message(
+        context.bot.send_message(
                     chat_id=update.callback_query.message.chat_id,
                     text="Okay, ich habe mir deine Einstellungen vermerkt.",
                     reply_markup=ReplyKeyboardRemove())

@@ -14,25 +14,25 @@ from singleton import Singleton
 from parse_strings import single_db_entry_to_string
 
 
-def handle_vote(bot, update):
+def handle_vote(update, context):
     plan = GameNight()
     if plan.poll is not None:
         check = plan.poll.register_vote(
             update.message.from_user.username, update.message.text)
         send_message = check_notify(update.message.from_user.username, "notify_vote")
         if check == 0 and send_message:
-            bot.send_message(update.message.from_user.id,
+            context.bot.send_message(update.message.from_user.id,
                              "Okay " + update.message.from_user.first_name +
                              ", du hast erneut für " + update.message.text +
                              " gestimmt. Du musst mir das nicht mehrmals "
                              "sagen, ich bin fähig ;)")
         elif check < 0 and send_message:
-            bot.send_message(update.message.from_user.id,
+            context.bot.send_message(update.message.from_user.id,
                              "Das hat nicht funktioniert. "
                              "Vielleicht darfst du gar nicht abstimmen, " +
                              update.message.from_user.first_name + "?")
         elif send_message:
-            bot.send_message(update.message.from_user.id,
+            context.bot.send_message(update.message.from_user.id,
                              "Okay " + update.message.from_user.first_name +
                              ", du hast für " + update.message.text +
                              " gestimmt.")
@@ -48,10 +48,10 @@ def test_termin(bot):
             if d < now:
                 plan = GameNight()
                 try:
-                    bot.set_chat_description(plan.chat_id, "")
+                    context.bot.set_chat_description(plan.chat_id, "")
                 except BadRequest:
                     pass
-                bot.set_chat_title(plan.chat_id, 'Spielwiese')
+                context.bot.set_chat_title(plan.chat_id, 'Spielwiese')
                 plan.clear()
 
 
