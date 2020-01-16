@@ -11,7 +11,8 @@ from telegram.ext import (Updater, CommandHandler, Filters, MessageHandler,
 import commands
 from filters import Vote
 from planning_functions import (handle_vote, test_termin)
-from reply_handler import (handle_reply, handle_inline)
+from reply_handler import handle_reply
+from inline_handler import handle_inline
 
 
 def main():
@@ -52,7 +53,9 @@ def main():
     dp.add_handler(CommandHandler("wer", commands.wer))
     dp.add_handler(CommandHandler("start_umfrage_spiel", commands.start_umfrage_spiel))
     dp.add_handler(CommandHandler("start_umfrage_erweiterung", commands.start_erweiterung))
+    dp.add_handler(CommandHandler("start_umfrage_genrespiel", commands.start_umfrage_genrespiel))
     dp.add_handler(CommandHandler("zufallsspiel", commands.zufallsspiel))
+    dp.add_handler(CommandHandler("genrespiel", commands.genrespiel))
     dp.add_handler(CommandHandler("ende_umfrage", commands.ende_umfrage))
     dp.add_handler(CommandHandler("ergebnis", commands.ergebnis))
     dp.add_handler(CommandHandler("spiele", commands.spiele))
@@ -60,6 +63,7 @@ def main():
     dp.add_handler(CommandHandler("neues_spiel", commands.neues_spiel))
     dp.add_handler(CommandHandler("neue_erweiterung", commands.neue_erweiterung))
     dp.add_handler(CommandHandler("leeren", commands.leeren))
+    dp.add_handler(CommandHandler("einstellungen", commands.einstellungen))
     dp.add_handler(CommandHandler("help", commands.help))
     dp.add_handler(CallbackQueryHandler(handle_inline))
     # Start the Bot
