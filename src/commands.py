@@ -7,10 +7,13 @@ from random import randrange
 from calendarkeyboard import telegramcalendar
 from database_functions import (choose_database, check_user,
                                 search_entries_by_user, check_household,
-                                get_playable_entries)
+                                get_playable_entries,
+                                check_notify)
 from parse_strings import (to_messagestring, single_db_entry_to_string)
 from reply_handler import ForceReplyJobs
 from planning_functions import GameNight
+from inline_handler import (generate_findbycategory, generate_pollbycategory, generate_settings)
+from query_buffer import QueryBuffer
 
 """
 Commands registered with BotFather:
@@ -23,6 +26,7 @@ Commands registered with BotFather:
     wer                         - Finde heraus, wer alles am Spieleabend teilnimmt (nur im Privatchat)
     start_umfrage_spiel         - Wähle, welches Spiel du spielen möchtest! (nur in Gruppen)
     start_umfrage_erweiterung   - Stimmt ab, welche Erweiterung eines Spiels ihr spielen wollt. (nur in Gruppen)
+    start_umfrage_genrespiel    - Stimmt ab, welches Spiel einer bestimmten Kategorie ihr spielen wollt. (nur in Gruppen)
     ende_umfrage                - Beende die Abstimmung. (nur in Gruppen)
     ergebnis                    - Lass dir die bisher abgegebenen Stimmen anzeigen.
     spiele                      - Ich sage dir, welche Spiele du bei mir angemeldet hast. (nur im Privatchat)
@@ -30,7 +34,9 @@ Commands registered with BotFather:
     neues_spiel                 - Trag dein neues Spiel ein! (nur im Privatchat)
     neue_erweiterung            - Trag deine neue Erweiterung ein. (nur im Privatchat)
     zufallsspiel                - Lass dir vom Bot ein Spiel vorschlagen. (nur im Privatchat)
+    genrespiel                  - Lass dir vom Bot ein Spiel einer bestimmten Kategorie vorschlagen. (nur im Privatchat)
     leeren                      - Lösche alle laufenden Pläne und Abstimmungen (laufende Spiel-Eintragungen etc. sind davon nicht betroffen) (nur in Gruppen)
+    einstellungen               - Verändere deine Einstellungen (Benachrichtigungen etc.) (nur im Privatchat)
     help                        - Was kann ich alles tun?
 """
 
@@ -129,26 +135,29 @@ def ich(update, context):
         if "group" in update.message.chat.type:
             plan = GameNight()
             check = plan.add_participant(update.message.from_user.username)
+            send_message = check_notify(update.message.from_user.username, "notify_participation")
             if check < 0:
                 update.message.reply_text(
                     'Das war leider nichts. Vereinbart erst einmal einen '
                     'Termin mit /neuertermin.')
             else:
-                try:
-                    context.bot.send_message(update.message.from_user.id,
-                                             'Danke für deine Zusage zum Spieleabend ' +
-                                             plan.date + ', ' +
-                                             update.message.from_user.first_name + '!')
-                    context.bot.set_chat_description(update.message.chat_id,
-                                                     plan.get_participants())
-                except Unauthorized:
-                    context.bot.send_message(update.message.chat_id, 'OH! '
-                                             'scheinbar darf ich nicht privat mit dir Reden.'
-                                             'Versuche dich privat mit start oder key'
-                                             'zu authorisieren und dann probiere /'
-                                             + __name__ +
-                                             ' nochmal'
-                                             )
+                if send_message:
+                    try:
+                        context.bot.send_message(update.message.from_user.id,
+                                                'Danke für deine Zusage zum Spieleabend ' +
+                                                plan.date + ', ' +
+                                                update.message.from_user.first_name + '!')
+                    except Unauthorized:
+                        context.bot.send_message(update.message.chat_id, 'OH! '
+                                                'scheinbar darf ich nicht privat mit dir Reden.'
+                                                'Versuche dich privat mit start oder key'
+                                                'zu authorisieren und dann probiere /'
+                                                + __name__ +
+                                                ' nochmal'
+                                                )
+                context.bot.set_chat_description(update.message.chat_id,
+                                                    plan.get_participants())
+                
 
         if update.message.chat.type == "private":
             update.message.reply_text('Stopp, das hat hier nichts zu suchen.\n'
@@ -251,6 +260,21 @@ def start_erweiterung(update, context):
                                             'Erweiterungen abgestimmt werden?',
                                             reply_markup=ForceReply())
             ForceReplyJobs().add(msg.message_id, "expansion_poll_game")
+        if update.message.chat.type == "private":
+            update.message.reply_text('Wirklich?! Eine Umfrage nur für dich?\n'
+                                      'Starte doch bitte eine Umfrage '
+                                      'im Gruppenchat...')
+    else:
+        update.message.reply_text('Bitte authentifiziere dich zunächst '
+                                  'mit /key.')
+
+
+def start_umfrage_genrespiel(update, context):
+    if check_user(update.message.chat_id):
+        if "group" in update.message.chat.type:
+            update.message.reply_text('Auf welche Kategorie habt ihr denn '
+                                      'heute Lust?',
+                                      reply_markup=generate_pollbycategory())
         if update.message.chat.type == "private":
             update.message.reply_text('Wirklich?! Eine Umfrage nur für dich?\n'
                                       'Starte doch bitte eine Umfrage '
@@ -410,6 +434,21 @@ def zufallsspiel(update, context):
                                   'mit /key.')
 
 
+def genrespiel(update, context):
+    if check_user(update.message.chat_id):
+        if "group" in update.message.chat.type:
+            context.bot.delete_message(update.message.chat_id,
+                               update.message.message_id)
+            pass
+        if update.message.chat.type == "private":
+            update.message.reply_text(
+                'Auf welche Kategorie hast du denn heute Lust?',
+                reply_markup=generate_findbycategory())
+    else:
+        update.message.reply_text('Bitte authentifiziere dich zunächst '
+                                  'mit /key.')
+
+
 def leeren(update, context):
     if check_user(update.message.chat_id):
         if "group" in update.message.chat.type:
@@ -431,60 +470,92 @@ def leeren(update, context):
                                   'mit /key.')
 
 
+def einstellungen(update, context):
+    if check_user(update.message.chat_id):
+        if "group" in update.message.chat.type:
+            context.bot.delete_message(update.message.chat_id,
+                               update.message.message_id)
+            pass
+        if update.message.chat.type == "private":
+            init_settings = []
+            msg = context.bot.send_message(update.message.chat_id,
+                                   'Ändere hier deine Einstellungen.\n'
+                                   'Antworte mit /stop, um abzubrechen.',
+                                   reply_markup=generate_settings(
+                                       first=True,
+                                       user=update.message.from_user.username,
+                                       init_array=init_settings))
+            query = "settings," + update.message.from_user.username + ","
+            for init_val in init_settings:
+                query = query + init_val + "/"
+            QueryBuffer().add(msg.message_id, query)
+    else:
+        update.message.reply_text('Bitte authentifiziere dich zunächst '
+                                  'mit /key.')                                      
+
+
 def help(update, context):
     if check_user(update.message.chat_id):
         if update.message.chat.type == "private":
             context.bot.send_message(update.message.chat_id,
-                                     'Folgende Funktionen stehen dir im Privatchat '
-                                     'zur Verfügung:\n\n'
-                                     '/key - Authentifiziere dich!\n'
-                                     '/wer - Finde heraus, wer alles am Spieleabend '
-                                     'teilnimmt\n'
-                                     '/ergebnis - Lass dir die bisher abgegebenen '
-                                     'Stimmen anzeigen.\n'
-                                     '/spiele - Ich sage dir, welche Spiele du bei '
-                                     'mir angemeldet hast.\n'
-                                     '/erweiterungen - Ich sage dir, welche '
-                                     'Erweiterungen du bei mir angemeldet hast.\n'
-                                     '/neues_spiel - Trag dein neues Spiel ein!\n'
-                                     '/neue_erweiterung - Trag deine neue '
-                                     'Erweiterung ein.\n'
-                                     '/zufallsspiel - Ich schlage dir ein Spiel vor.\n'
-                                     '/help - Was kann ich alles tun?\n\n'
-                                     'Solltest du im Gruppenchat Funktionen nutzen, '
-                                     'die dort nicht erlaubt sind, '
-                                     'wird deine Nachricht sofort gelöscht.\n'
-                                     'Weitere Funktionen stehen dir im Gruppenchat '
-                                     'zur Verfügung.')
+                             'Folgende Funktionen stehen dir im Privatchat '
+                             'zur Verfügung:\n\n'
+                             '/key - Authentifiziere dich!\n'
+                             '/wer - Finde heraus, wer alles am Spieleabend '
+                             'teilnimmt\n'
+                             '/ergebnis - Lass dir die bisher abgegebenen '
+                             'Stimmen anzeigen.\n'
+                             '/spiele - Ich sage dir, welche Spiele du bei '
+                             'mir angemeldet hast.\n'
+                             '/erweiterungen - Ich sage dir, welche '
+                             'Erweiterungen du bei mir angemeldet hast.\n'
+                             '/neues_spiel - Trag dein neues Spiel ein!\n'
+                             '/neue_erweiterung - Trag deine neue '
+                             'Erweiterung ein.\n'
+                             '/zufallsspiel - Ich schlage dir ein Spiel vor.\n'
+                             '/genrespiel - Ich schlage dir ein Spiel einer '
+                             'bestimmten Kategorie vor.\n'
+                             '/einstellungen - Verändere deine Einstellungen '
+                             '(Benachrichtigungen etc.)'
+                             '/help - Was kann ich alles tun?\n\n'
+                             'Weitere Funktionen stehen dir im Gruppenchat '
+                             'zur Verfügung.'
+                             'Solltest du im Gruppenchat Funktionen nutzen, '
+                             'die dort nicht erlaubt sind, '
+                             'wird deine Nachricht sofort gelöscht.\n'
+                             )
         if "group" in update.message.chat.type:
             context.bot.send_message(update.message.chat_id,
-                                     'Folgende Funktionen stehen dir im Gruppenchat '
-                                     'zur Verfügung:\n\n'
-                                     '/key - Authentifiziere dich!\n'
-                                     '/neuertermin - Wir wollen spielen! '
-                                     '(nur in Gruppen)\n'
-                                     '/ich - Nimm am nächsten Spieleabend teil! '
-                                     '(nur in Gruppen)\n'
-                                     '/nichtich - Melde dich vom Spieleabend ab '
-                                     '(nur in Gruppen)\n'
-                                     '/start_umfrage_spiel - Wähle, welches Spiel du '
-                                     'spielen möchtest! (nur in Gruppen)\n'
-                                     '/start_erweiterung - Stimmt ab, welche '
-                                     'Erweiterung eines Spiels ihr spielen wollt. '
-                                     '(nur in Gruppen)\n '
-                                     '/ende_umfrage - Beende die Abstimmung. '
-                                     '(nur in Gruppen)\n'
-                                     '/ergebnis - Lass dir die bisher abgegebenen '
-                                     'Stimmen anzeigen.\n'
-                                     '/leeren - Lösche alle laufenden Pläne und '
-                                     'Abstimmungen (laufende Spiel-Eintragungen '
-                                     'etc. sind davon nicht betroffen)\n '
-                                     '/help - Was kann ich alles tun?\n\n'
-                                     'Solltest du im Gruppenchat Funktionen nutzen, '
-                                     'die dort nicht erlaubt sind,'
-                                     ' wird deine Nachricht sofort gelöscht.\n'
-                                     'Weitere Funktionen stehen dir im Privatchat '
-                                     'zur Verfügung.')
+                             'Folgende Funktionen stehen dir im Gruppenchat '
+                             'zur Verfügung:\n\n'
+                             '/key - Authentifiziere dich!\n'
+                             '/neuertermin - Wir wollen spielen! '
+                             '(nur in Gruppen)\n'
+                             '/ich - Nimm am nächsten Spieleabend teil! '
+                             '(nur in Gruppen)\n'
+                             '/nichtich - Melde dich vom Spieleabend ab '
+                             '(nur in Gruppen)\n'
+                             '/start_umfrage_spiel - Wähle, welches Spiel du '
+                             'spielen möchtest! (nur in Gruppen)\n'
+                             '/start_erweiterung - Stimmt ab, welche '
+                             'Erweiterung eines Spiels ihr spielen wollt. '
+                             '(nur in Gruppen)\n '
+                             '/start_umfrage_genrespiel - Stimmt ab, welches '
+                             'Spiel einer bestimmten Kategorie ihr '
+                             'spielen wollt.\n'
+                             '/ende_umfrage - Beende die Abstimmung. '
+                             '(nur in Gruppen)\n'
+                             '/ergebnis - Lass dir die bisher abgegebenen '
+                             'Stimmen anzeigen.\n'
+                             '/leeren - Lösche alle laufenden Pläne und '
+                             'Abstimmungen (laufende Spiel-Eintragungen '
+                             'etc. sind davon nicht betroffen)\n '
+                             '/help - Was kann ich alles tun?\n\n'
+                             'Solltest du im Gruppenchat Funktionen nutzen, '
+                             'die dort nicht erlaubt sind,'
+                             ' wird deine Nachricht sofort gelöscht.\n'
+                             'Weitere Funktionen stehen dir im Privatchat '
+                             'zur Verfügung.')
     else:
         update.message.reply_text('Bitte authentifiziere dich zunächst '
                                   'mit /key.')
