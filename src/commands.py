@@ -2,7 +2,7 @@
 
 from telegram import (ForceReply, ReplyKeyboardMarkup, KeyboardButton,
                       ReplyKeyboardRemove)
-from telegram.error import BadRequest
+from telegram.error import BadRequest, Unauthorized
 from random import randrange
 from calendarkeyboard import telegramcalendar
 from database_functions import (choose_database, check_user,
@@ -134,12 +134,22 @@ def ich(update, context):
                     'Das war leider nichts. Vereinbart erst einmal einen '
                     'Termin mit /neuertermin.')
             else:
-                context.bot.send_message(update.message.from_user.id,
-                                         'Danke für deine Zusage zum Spieleabend ' +
-                                         plan.date + ', ' +
-                                         update.message.from_user.first_name + '!')
-                context.bot.set_chat_description(update.message.chat_id,
-                                                 plan.get_participants())
+                try:
+                    context.bot.send_message(update.message.from_user.id,
+                                             'Danke für deine Zusage zum Spieleabend ' +
+                                             plan.date + ', ' +
+                                             update.message.from_user.first_name + '!')
+                    context.bot.set_chat_description(update.message.chat_id,
+                                                     plan.get_participants())
+                except Unauthorized:
+                    context.bot.send_message(update.message.chat_id, 'OH! '
+                                             'scheinbar darf ich nicht privat mit dir Reden.'
+                                             'Versuche dich privat mit start oder key'
+                                             'zu authorisieren und dann probiere /'
+                                             + __name__ +
+                                             ' nochmal'
+                                             )
+
         if update.message.chat.type == "private":
             update.message.reply_text('Stopp, das hat hier nichts zu suchen.\n'
                                       'Bitte versuche es im Gruppenchat...')
@@ -155,15 +165,35 @@ def nichtich(update, context):
             plan = GameNight()
             check = plan.remove_participant(update.message.from_user.username)
             if check < 0:
-                context.bot.send_message(update.message.from_user.id, 'Das war leider '
-                                         'nichts. Du warst nicht angemeldet.')
+                try:
+                    context.bot.send_message(update.message.from_user.id, 'Das war leider '
+                                             'nichts. Du warst nicht angemeldet.')
+                except Unauthorized:
+                    context.bot.send_message(update.message.chat_id, 'OH! '
+                                             'scheinbar darf ich nicht privat mit dir Reden.'
+                                             'Versuche dich privat mit start oder key'
+                                             'zu authorisieren und dann probiere /'
+                                             + __name__ +
+                                             ' nochmal'
+                                             )
+
             else:
-                context.bot.send_message(update.message.from_user.id,
-                                         'Schade, dass du doch nicht '
-                                         'teilnehmen kannst, ' +
-                                         update.message.from_user.first_name + '.')
-                context.bot.set_chat_description(update.message.chat_id,
-                                                 plan.get_participants())
+                try:
+                    context.bot.send_message(update.message.from_user.id,
+                                             'Schade, dass du doch nicht '
+                                             'teilnehmen kannst, ' +
+                                             update.message.from_user.first_name + '.')
+                    context.bot.set_chat_description(update.message.chat_id,
+                                                     plan.get_participants())
+                except Unauthorized:
+                    context.bot.send_message(update.message.chat_id, 'OH! '
+                                             'scheinbar darf ich nicht mit dir Reden.'
+                                             'Versuche dich privat mit start oder key'
+                                             'zu authorisieren und dann probiere /'
+                                             + __name__ +
+                                             ' nochmal'
+                                             )
+
         if update.message.chat.type == "private":
             update.message.reply_text('Stopp, das hat hier nichts zu suchen.\n'
                                       'Bitte versuche es im Gruppenchat...')
@@ -176,7 +206,7 @@ def wer(update, context):
     if check_user(update.message.chat_id):
         if "group" in update.message.chat.type:
             context.bot.delete_message(update.message.chat_id,
-                               update.message.message_id)
+                                       update.message.message_id)
             pass
         else:
             participants = GameNight().get_participants()
