@@ -49,7 +49,7 @@ def to_messagestring(input_str):
 
     for _ in range(len(input_str)):
         entries.append(input_str[_][0])
-        
+
     entries.sort()
     messagestring = ",\n".join(entries)
     return messagestring
