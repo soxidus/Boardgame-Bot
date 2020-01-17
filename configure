@@ -93,7 +93,8 @@ echo bot configuration finished
 
 echo [GameCategories] >> src/config.ini
 echo Default categories for games are: groß, klein, Würfel, Rollenspiel, Karten, Worker Placement.
-echo Having categories \'groß\' and \'klein\' is mandatory, but if you wish, you can change the rest. 
+echo Having categories \'groß\' and \'klein\' is mandatory, but if you wish, you can change the rest.
+echo If you do decide to change the categories, do not put \'/\'s in there!
 read -p "Enter a category you want to add (press Return to stay with default values): " newcategory
 if [[ -z "$newcategory" ]]
 then
