@@ -141,7 +141,10 @@ class GameNight(Singleton):
 
     def add_participant(self, user_id):
         if self.date is not None:
-            self.participants.append(user_id)
+            if user_id not in self.participants:
+                self.participants.append(user_id)
+            else:
+                return 1
             if self.poll is not None:
                 self.poll.add_voter(user_id)
             return 0

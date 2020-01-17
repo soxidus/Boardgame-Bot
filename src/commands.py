@@ -142,11 +142,15 @@ def ich(update, context):
                     'Termin mit /neuertermin.')
             else:
                 if send_message:
+                    if check > 0:
+                        text = ('Alles gut, ' + update.message.from_user.first_name + ', '
+                                'ich weiß schon, dass du am ' + plan.date + ' teilnimmst.')
+                    else:  # check = 0
+                        text = ('Danke für deine Zusage zum Spieleabend ' + plan.date + ', '
+                                + update.message.from_user.first_name + '!')
                     try:
                         context.bot.send_message(update.message.from_user.id,
-                                                'Danke für deine Zusage zum Spieleabend ' +
-                                                plan.date + ', ' +
-                                                update.message.from_user.first_name + '!')
+                                                text)
                     except Unauthorized:
                         context.bot.send_message(update.message.chat_id, 'OH! '
                                                 'scheinbar darf ich nicht privat mit dir Reden.'
