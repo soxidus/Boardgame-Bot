@@ -11,6 +11,7 @@ from database_functions import (get_playable_entries, choose_database,
                                 get_playable_entries_by_category,
                                 check_notify)
 from singleton import Singleton
+from calendar_export import delete_ics_file
 from parse_strings import single_db_entry_to_string
 
 
