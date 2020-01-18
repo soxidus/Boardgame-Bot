@@ -2,6 +2,7 @@
 
 import configparser
 import os
+import datetime
 
 import mysql.connector
 
@@ -16,7 +17,7 @@ def choose_database(db):
     if db == 'auth':
         db = mysql.connector.connect(
             host=config['MySQL Auth']['host'],
-            port=config['MySQL Auth']['port'],
+            #port=config['MySQL Auth']['port'],
             user=config['MySQL Auth']['user'],
             passwd=config['MySQL Auth']['passwd'],
             database=config['MySQL Auth']['database']
@@ -25,7 +26,7 @@ def choose_database(db):
     if db == 'testdb':
         db = mysql.connector.connect(
             host=config['MySQL Data']['host'],
-            port=config['MySQL Data']['port'],
+            #port=config['MySQL Data']['port'],
             user=config['MySQL Data']['user'],
             passwd=config['MySQL Data']['passwd'],
             database=config['MySQL Data']['database']
@@ -57,14 +58,16 @@ def add_game(db, table, entry, values):
     db.commit()
 
 
-def search_single_entry(db, table, entry, values):
+def search_single_entry(db, table, entry, values, valuecnt=None):
     mycursor = db.cursor()
-    # wait, aren't these exactly the same? Do we still need this if/else?
     if isinstance(values, int):
         sql = "SELECT * FROM " + table + " WHERE " + entry + " = " + str(values)
         mycursor.execute(sql)
     if isinstance(values, str):
-        sql = "SELECT * FROM " + table + " WHERE " + entry + " = " + str(values)
+        if valuecnt and valuecnt > 1:
+            sql = "SELECT * FROM " + table + " WHERE " + entry + " = " + str(values)
+        else:
+            sql = "SELECT * FROM " + table + " WHERE " + entry + " = '" + str(values) + "'"
         mycursor.execute(sql)
     else:
         pass
@@ -90,6 +93,8 @@ def search_single_entry_substring(db, table, entry, values):
     return result
 
 
+# it might be slightly unfortunate to name this function "by_user"
+# when it's actually looking up the owner
 def search_entries_by_user(db, table, owner):
     mycursor = db.cursor()
 
@@ -127,14 +132,45 @@ def search_uuid(owner, title):
 
 # Selects entries from column in table where owner is owner
 # and the playercount is >= the participants
-def get_playable_entries(db, table, column, owner, no_participants=0, uuid=None):
+# planned_date is already a datetime object
+def get_playable_entries(db, table, column, owner, no_participants=0, uuid=None, planned_date=None):
     mycursor = db.cursor()
 
     if table == "games":
-        where = "owner LIKE \'%" + owner + "%\' AND playercount>=" + str(no_participants)
+        where = "owner LIKE \'%" + owner + "%\' AND (playercount>=" + str(no_participants) + " OR playercount=\'X\')"
+        if planned_date:
+            delta = datetime.timedelta(weeks=2)
+            not_played_after = planned_date - delta
+            not_played_after = not_played_after.date()
+            add_to_where = " AND (last_played<\'" + str(not_played_after) + "\' OR last_played IS NULL)"
+            where += add_to_where
     elif table == "expansions":
         where = "owner LIKE \'%" + owner + "%\' AND basegame_uuid=\'" + uuid + "\'"
     sql = "SELECT " + column + " FROM " + table + " WHERE " + where
+
+    mycursor.execute(sql)
+    result = mycursor.fetchall()
+
+    return result
+
+
+# Selects entries from column in table where owner is owner
+# and the playercount is >= the participants
+# and belong to category given
+# planned_date is already a datetime object
+def get_playable_entries_by_category(db, table, column, owner, category, no_participants=0, planned_date=None):
+    mycursor = db.cursor()
+
+    if table == "games":
+        where = "owner LIKE \'%" + owner + "%\' AND (playercount>=" + str(no_participants) + " OR playercount=\'X\') AND categories LIKE \'%" + category + "%\'"
+        if planned_date:
+            delta = datetime.timedelta(weeks=2)
+            not_played_after = planned_date - delta
+            not_played_after = not_played_after.date()
+            add_to_where = " AND (last_played<\'" + str(not_played_after) + "\' OR last_played IS NULL)"
+            where += add_to_where
+    sql = "SELECT " + column + " FROM " + table + " WHERE " + where
+
     mycursor.execute(sql)
     result = mycursor.fetchall()
 
@@ -142,7 +178,7 @@ def get_playable_entries(db, table, column, owner, no_participants=0, uuid=None)
 
 
 def add_game_into_db(values):
-    entry = "(owner, title, playercount, game_uuid)"
+    entry = "(owner, title, playercount, categories, game_uuid)"
     add_game(choose_database("testdb"), "games", entry, values)
 
 
@@ -159,7 +195,9 @@ def add_expansion_into_db(values):
 def add_user_auth(user):
     entry = "(id)"
     add_entry(choose_database("auth"), "users", entry, user, 1)
-
+    settings_entry = "(user)"
+    add_entry(choose_database("testdb"), "settings", settings_entry, user, 1)
+    
 
 # variable names user1 and user2 are a bit arbitrary
 # user2 can hold more than one username
@@ -192,6 +230,31 @@ def update_household_games(users):
     db.commit()
 
 
+# date format: YYYY-MM-DD
+def update_game_date(title, last_played):
+    db = choose_database("testdb")
+    mycursor = db.cursor()
+    sql = "UPDATE games SET last_played='" + str(last_played) + "' WHERE title='" + str(title) + "'"
+    mycursor.execute(sql)
+    db.commit()
+
+
+def update_settings(user, to_set, to_unset):
+    db = choose_database("testdb")
+    mycursor = db.cursor()
+    new_set = ''
+    for s in to_set:
+        add_to_new_set = str(s) + '=1,'
+        new_set += add_to_new_set
+    for s in to_unset:
+        add_to_new_set = str(s) + '=0,'
+        new_set += add_to_new_set
+    new_set = new_set[:-1]  # remove last comma
+    sql = "UPDATE settings SET " + new_set + " WHERE user='" + str(user) + "'"
+    mycursor.execute(sql)
+    db.commit()
+
+
 # Is the user authenticated?
 def check_user(user):
     result_user = search_single_entry(choose_database("auth"), "users", "id", user)
@@ -211,3 +274,14 @@ def check_household(user):
         return user
     else:
         return users_string[0][0]
+
+
+def check_notify(user, which):
+    entry = "(user, " + str(which) + ")"
+    values = "('" + user + "', 1)"
+    result = search_single_entry(choose_database("testdb"), "settings", entry, values, valuecnt=2)
+
+    if len(result) == 0:
+        return 0
+    else:
+        return 1
