@@ -23,40 +23,37 @@ def handle_vote(update, context):
                                          "sagen, ich bin fähig ;)")
             except Unauthorized:
                 context.bot.send_message(update.message.chat_id, 'OH! '
-                                            'scheinbar darf ich nicht mit dir Reden.'
-                                            'Versuche dich privat mit start oder key'
-                                            'zu authorisieren und dann probiere /'
-                                            + __name__ +
-                                            ' nochmal'
-                                            )
+                                         'scheinbar darf ich nicht mit dir Reden.'
+                                         'Versuche dich privat mit start oder key'
+                                         'zu authorisieren und dann probiere /'
+                                         + __name__ +
+                                         ' nochmal')
         elif check < 0:
             try:
                 context.bot.send_message(update.message.from_user.id,
-                                        "Das hat nicht funktioniert. "
-                                        "Vielleicht darfst du gar nicht abstimmen, " +
-                                        update.message.from_user.first_name + "?")
+                                         "Das hat nicht funktioniert. "
+                                         "Vielleicht darfst du gar nicht abstimmen, " +
+                                         update.message.from_user.first_name + "?")
             except Unauthorized:
                 context.bot.send_message(update.message.chat_id, 'OH! '
-                                            'scheinbar darf ich nicht mit dir Reden.'
-                                            'Versuche dich privat mit start oder key'
-                                            'zu authorisieren und dann probiere /'
-                                            + __name__ +
-                                            ' nochmal'
-                                            )        
+                                         'scheinbar darf ich nicht mit dir Reden.'
+                                         'Versuche dich privat mit start oder key'
+                                         'zu authorisieren und dann probiere /'
+                                         + __name__ +
+                                         ' nochmal')  
         else:
             try:
                 context.bot.send_message(update.message.from_user.id,
-                                        "Okay " + update.message.from_user.first_name +
-                                        ", du hast für " + update.message.text +
-                                        " gestimmt.")
+                                         "Okay " + update.message.from_user.first_name +
+                                         ", du hast für " + update.message.text +
+                                         " gestimmt.")
             except Unauthorized:
                 context.bot.send_message(update.message.chat_id, 'OH! '
-                                            'scheinbar darf ich nicht mit dir Reden.'
-                                            'Versuche dich privat mit start oder key'
-                                            'zu authorisieren und dann probiere /'
-                                            + __name__ +
-                                            ' nochmal'
-                                            )
+                                         'scheinbar darf ich nicht mit dir Reden.'
+                                         'Versuche dich privat mit start oder key'
+                                         'zu authorisieren und dann probiere /'
+                                         + __name__ +
+                                         ' nochmal')
 
 
 def test_termin(context):
@@ -84,7 +81,6 @@ class GameNight(Singleton):
         self.participants = []
         self.chat_id = chat_id
         self.cal_file = None
-
 
     def get_participants(self):
         if self.date:
