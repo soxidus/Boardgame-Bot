@@ -8,6 +8,7 @@ from telegram import (ReplyKeyboardRemove, ForceReply, ReplyKeyboardMarkup,
 
 import database_functions as dbf
 import parse_strings as ps
+from calendar_export import create_ics_file
 from calendarkeyboard import telegramcalendar
 from planning_functions import GameNight
 from singleton import Singleton
@@ -369,6 +370,7 @@ def handle_inline(update, context):
                 context.bot.set_chat_title(
                     update.callback_query.message.chat_id,
                     'Spielwiese: ' + date.strftime("%d/%m/%Y"))
+                create_ics_file("Spieleabend", date)
                 context.bot.send_message(
                     chat_id=update.callback_query.message.chat_id,
                     text="Okay, schrei einfach /ich, wenn du "
