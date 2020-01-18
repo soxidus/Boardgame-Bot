@@ -119,7 +119,6 @@ def endetermin(update, context):
             except BadRequest:
                 pass
 
-
             # since we can delete the Keyboard only via reply
             # this call is necessary
             context.bot.set_chat_title(update.message.chat.id, 'Spielwiese')
@@ -154,22 +153,22 @@ def ich(update, context):
                     else:  # check = 0
                         text = ('Danke für deine Zusage zum Spieleabend ' + plan.date + ', '
                                 + update.message.from_user.first_name + '!')
-                    try:
-                        context.bot.send_message(update.message.from_user.id,
-                                                 text)
+                        try:
+                            context.bot.send_message(update.message.from_user.id,
+                                                    text)
 
-                        context.bot.send_document(update.message.from_user.id, document=open(plan.cal_file, 'rb'))
+                            context.bot.send_document(update.message.from_user.id, document=open(plan.cal_file, 'rb'))
 
-                        context.bot.set_chat_description(update.message.chat_id,
-                                                         plan.get_participants())
-                    except Unauthorized:
-                        context.bot.send_message(update.message.chat_id, 'OH! '
-                                                'scheinbar darf ich nicht privat mit dir Reden.'
-                                                'Versuche dich privat mit start oder key'
-                                                'zu authorisieren und dann probiere /'
-                                                + __name__ +
-                                                ' nochmal'
-                                                )
+                            context.bot.set_chat_description(update.message.chat_id,
+                                                            plan.get_participants())
+                        except Unauthorized:
+                            context.bot.send_message(update.message.chat_id, 'OH! '
+                                                    'scheinbar darf ich nicht privat mit dir Reden.'
+                                                    'Versuche dich privat mit start oder key'
+                                                    'zu authorisieren und dann probiere /'
+                                                    + __name__ +
+                                                    ' nochmal'
+                                                    )
 
         if update.message.chat.type == "private":
             update.message.reply_text('Stopp, das hat hier nichts zu suchen.\n'
