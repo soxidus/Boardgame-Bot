@@ -10,6 +10,7 @@ from database_functions import (choose_database, check_user,
                                 get_playable_entries)
 from parse_strings import (to_messagestring, single_db_entry_to_string)
 from reply_handler import ForceReplyJobs
+from calendar_export import delete_ics_file
 from planning_functions import GameNight
 
 """
@@ -111,11 +112,16 @@ def endetermin(update, context):
                 context.bot.set_chat_description(update.message.chat_id, "")
             except BadRequest:
                 pass
+
+
+            # since we can delete the Keyboard only via reply
+            # this call is necessary
             context.bot.set_chat_title(update.message.chat.id, 'Spielwiese')
             msg = update.message.reply_text(
                         'Ich habe alles zurückgesetzt.',
                         reply_markup=ReplyKeyboardRemove())
             context.bot.delete_message(update.message.chat_id, msg.message_id)
+
         if update.message.chat.type == "private":
             update.message.reply_text('Stopp, das hat hier nichts zu suchen.\n'
                                       'Bitte versuche es im Gruppenchat...')
@@ -139,6 +145,9 @@ def ich(update, context):
                                              'Danke für deine Zusage zum Spieleabend ' +
                                              plan.date + ', ' +
                                              update.message.from_user.first_name + '!')
+
+                    context.bot.send_document(update.message.from_user.id, document=open(plan.cal_file, 'rb'))
+
                     context.bot.set_chat_description(update.message.chat_id,
                                                      plan.get_participants())
                 except Unauthorized:
