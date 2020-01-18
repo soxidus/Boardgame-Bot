@@ -29,40 +29,37 @@ def handle_vote(update, context):
                                          "sagen, ich bin fähig ;)")
             except Unauthorized:
                 context.bot.send_message(update.message.chat_id, 'OH! '
-                                            'scheinbar darf ich nicht mit dir Reden.'
-                                            'Versuche dich privat mit start oder key'
-                                            'zu authorisieren und dann probiere /'
-                                            + __name__ +
-                                            ' nochmal'
-                                            )
-        elif check < 0 and send_message:
+                                         'scheinbar darf ich nicht mit dir Reden.'
+                                         'Versuche dich privat mit start oder key'
+                                         'zu authorisieren und dann probiere /'
+                                         + __name__ +
+                                         ' nochmal')
+        elif check < 0:
             try:
                 context.bot.send_message(update.message.from_user.id,
-                                        "Das hat nicht funktioniert. "
-                                        "Vielleicht darfst du gar nicht abstimmen, " +
-                                        update.message.from_user.first_name + "?")
+                                         "Das hat nicht funktioniert. "
+                                         "Vielleicht darfst du gar nicht abstimmen, " +
+                                         update.message.from_user.first_name + "?")
             except Unauthorized:
                 context.bot.send_message(update.message.chat_id, 'OH! '
-                                            'scheinbar darf ich nicht mit dir Reden.'
-                                            'Versuche dich privat mit start oder key'
-                                            'zu authorisieren und dann probiere /'
-                                            + __name__ +
-                                            ' nochmal'
-                                            )
-        elif send_message:
+                                         'scheinbar darf ich nicht mit dir Reden.'
+                                         'Versuche dich privat mit start oder key'
+                                         'zu authorisieren und dann probiere /'
+                                         + __name__ +
+                                         ' nochmal')  
+        else:
             try:
                 context.bot.send_message(update.message.from_user.id,
-                                        "Okay " + update.message.from_user.first_name +
-                                        ", du hast für " + update.message.text +
-                                        " gestimmt.")
+                                         "Okay " + update.message.from_user.first_name +
+                                         ", du hast für " + update.message.text +
+                                         " gestimmt.")
             except Unauthorized:
                 context.bot.send_message(update.message.chat_id, 'OH! '
-                                            'scheinbar darf ich nicht mit dir Reden.'
-                                            'Versuche dich privat mit start oder key'
-                                            'zu authorisieren und dann probiere /'
-                                            + __name__ +
-                                            ' nochmal'
-                                            )
+                                         'scheinbar darf ich nicht mit dir Reden.'
+                                         'Versuche dich privat mit start oder key'
+                                         'zu authorisieren und dann probiere /'
+                                         + __name__ +
+                                         ' nochmal')
 
 
 def test_termin(context):
@@ -89,6 +86,7 @@ class GameNight(Singleton):
         self.old_poll = None
         self.participants = []
         self.chat_id = chat_id
+        self.cal_file = None
 
     def get_participants(self):
         if self.date:
@@ -118,6 +116,12 @@ class GameNight(Singleton):
                 return 0
         return -1
 
+    def set_cal_file(self, cal_file):
+        if self.cal_file is None:
+            self.cal_file = cal_file
+            return 0
+        return -1
+
     def end_poll(self, user_id):
         check = self.poll.end(user_id)
         if check < 0:
@@ -134,10 +138,12 @@ class GameNight(Singleton):
             self.old_poll.running = False  # this is important for /leeren
         except AttributeError:
             pass
+        delete_ics_file(self.cal_file)
         self.date = None
         self.poll = None
-        self.participants = []
         self.chat_id = None
+        self.cal_file = None
+        self.participants = []
 
     def add_participant(self, user_id):
         if self.date is not None:
