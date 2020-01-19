@@ -3,7 +3,7 @@ version: "3"
 services:
 
   auth_db:
-      image: hypriot/rpi-mysql:latest:latest
+      image: hypriot/rpi-mysql:latest
       container_name: auth_db
       ports:
         - 3306
@@ -19,7 +19,7 @@ services:
         - ./init_auth.sql:/docker-entrypoint-initdb.d/init_auth.sql:ro
 
   data_db:
-    image: hypriot/rpi-mysql:latest:latest
+    image: hypriot/rpi-mysql:latest
     container_name: data_db
     ports:
       - 3306
