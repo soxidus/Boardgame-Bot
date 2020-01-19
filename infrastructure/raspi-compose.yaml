@@ -32,9 +32,7 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       LANG: 'en_US.UTF-8'
     volumes:
-      - ./init_data_games.sql:/docker-entrypoint-initdb.d/init_data_games.sql
-      - ./init_data_expansions.sql:/docker-entrypoint-initdb.d/init_data_expansions.sql
-      - ./init_data_households.sql:/docker-entrypoint-initdb.d/init_data_households.sql
+      - ./init_data_games.sql:/docker-entrypoint-initdb.d/init_data.sql
 
   bot:
     container_name: bot
