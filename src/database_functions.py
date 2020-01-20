@@ -57,7 +57,7 @@ def add_game(db, table, entry, values):
 
     db.commit()
 
-
+# Searches all values from table by constraint
 def search_single_entry(db, table, entry, values, valuecnt=None):
     mycursor = db.cursor()
     if isinstance(values, int):
@@ -74,6 +74,14 @@ def search_single_entry(db, table, entry, values, valuecnt=None):
 
     result = mycursor.fetchall()
 
+    return result
+
+
+def search_column_with_constraint(db, table, column, entry, values):
+    mycursor = db.cursor()
+    sql = "SELECT" + column + "FROM " + table + " WHERE " + entry + " = " + str(values)
+    mycursor.execute(sql)
+    result = mycursor.fetchall()
     return result
 
 
@@ -189,7 +197,7 @@ def add_multiple_games_into_db(csv_string):
 
 def add_expansion_into_db(values):
     entry = "(owner, basegame_uuid, title)"
-    add_game(choose_database("testdb"), "expansions", entry, values) # using add_game because add_entry does not work...
+    add_game(choose_database("testdb"), "expansions", entry, values)  # using add_game because add_entry does not work...
 
 
 def add_user_auth(user):
@@ -197,7 +205,7 @@ def add_user_auth(user):
     add_entry(choose_database("auth"), "users", entry, user, 1)
     settings_entry = "(user)"
     add_entry(choose_database("testdb"), "settings", settings_entry, user, 1)
-    
+
 
 # variable names user1 and user2 are a bit arbitrary
 # user2 can hold more than one username
@@ -276,10 +284,10 @@ def check_household(user):
         return users_string[0][0]
 
 
-def check_notify(user, which):
-    entry = "(user, " + str(which) + ")"
-    values = "('" + user + "', 1)"
-    result = search_single_entry(choose_database("testdb"), "settings", entry, values, valuecnt=2)
+def check_notify(user, which, column):
+    entry = "user"
+    values = 1
+    result = search_column_with_constraint(choose_database("testdb"), "settings", column, entry, values)
 
     if len(result) == 0:
         return 0
