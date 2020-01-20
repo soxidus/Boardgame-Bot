@@ -140,7 +140,7 @@ def ich(update, context):
         if "group" in update.message.chat.type:
             plan = GameNight()
             check = plan.add_participant(update.message.from_user.username)
-            send_message = check_notify(update.message.from_user.username, "notify_participation")
+            send_message = check_notify(update.message.from_user.chat.id, "notify_participation")
             if check < 0:
                 update.message.reply_text(
                     'Das war leider nichts. Vereinbart erst einmal einen '
