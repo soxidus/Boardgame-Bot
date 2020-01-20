@@ -57,6 +57,7 @@ def add_game(db, table, entry, values):
 
     db.commit()
 
+
 # Searches all values from table by constraint
 def search_single_entry(db, table, entry, values, valuecnt=None):
     mycursor = db.cursor()
@@ -79,7 +80,7 @@ def search_single_entry(db, table, entry, values, valuecnt=None):
 
 def search_column_with_constraint(db, table, column, entry, values):
     mycursor = db.cursor()
-    sql = "SELECT" + column + "FROM " + table + " WHERE " + entry + " = " + str(values)
+    sql = "SELECT " + column + "FROM " + table + " WHERE " + entry + " = " + str(values)
     mycursor.execute(sql)
     result = mycursor.fetchall()
     return result
