@@ -286,9 +286,8 @@ def check_household(user):
 
 
 def check_notify(user, column):
-    entry = "user"
-    values = 1
-    result = search_column_with_constraint(choose_database("testdb"), "settings", column, entry, values)
+    entry = 'user'
+    result = search_column_with_constraint(choose_database("testdb"), "settings", column, entry, user)
 
     if len(result) == 0:
         return 0
