@@ -95,7 +95,7 @@ You will need a group to use the full functionality of this bot. While creating 
 * For full functionality, give your bot administrator rights.
 * All your members should have their Telegram alias configured. This is how they are identified as unique users by the bot.
 
-> **_NOTE:_** Just a quick heads-up: You do not want to use one bot with more than one group. The GameNight object is a Singleton and it has only one field for a PollObject. So if you use more than one group, you cannot plan game nights in both of them at the same time. You would have to wait for one group to finish planning theirs before the other can start. If you'd like to use it with more than one group, you're welcome to fork this repo / create a branch and start working on it! It's probably not something we will implement ourselves in the near future (well, honestly, you never know when motivation strikes).
+> **_NOTE:_** You do not want to use one bot with more than one group. The GameNight object is a Singleton and it has only one field for a PollObject. So if you use more than one group, you cannot plan game nights in both of them at the same time. You would have to wait for one group to finish planning theirs before the other can start. If you'd like to use it with more than one group, you're welcome to fork this repo / create a branch and start working on it! It's probably not something we will implement ourselves in the near future (well, honestly, you never know when motivation strikes).
 
 
 And there you go, you are now all set up and may start working on our lovely bot!
