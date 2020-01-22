@@ -84,7 +84,7 @@ Refer to [this stackoverflow thread](https://stackoverflow.com/questions/4722328
  `` docker volume rm $(docker volume ls -qf dangling=true)``.
  
 ### 3. EVERYTHING
- Do this only as last resort. Kill both containers as described [above](#1-containers), and then purge **ALL** Docker setings/data:  
+ Do this only as last resort. Kill the containers as described [above](#1-containers), and then purge **ALL** Docker setings/data:  
  ``docker system prune``.
 
  After that you should have a clean Docker install and can start again with the [init part](#Docker-up).
