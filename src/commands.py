@@ -95,7 +95,7 @@ def neuertermin(update, context):
             msg = update.message.reply_text('Okay, wann wollt ihr spielen?',
                                             reply_markup=telegramcalendar.create_calendar())
             # ForceReplyJobs().add(msg.message_id, "date")
-        if update.message.chat.type == "private":
+        if "private" in update.message.chat.type:
             update.message.reply_text('Stopp, das hat hier nichts zu suchen.\n'
                                       'Bitte versuche es im Gruppenchat...')
     else:
