@@ -10,7 +10,7 @@ def create_ics_file(title, date):
     gn = GameNight()
     gamenight_event = Event()
     gamenight_event.name = title
-    gamenight_event.begin = date.datetime.isoformat()
+    gamenight_event.begin = date.isoformat()
     calendar.events.add(gamenight_event)
     filename = 'cal-' + generate_uuid_32() + '.ics'
     gn(chat_id=update.callback_query.message.chat_id).set_cal_file(filename)
