@@ -75,7 +75,8 @@ def handle_reply(update, context):
                     "game_players": game_players,
                     "expansion_for": expansion_for,
                     "expansion_title": expansion_title,
-                    "expansion_poll_game": expansion_poll_game, "date": date,
+                    "expansion_poll_game": expansion_poll_game,
+                    "date": date,
                     "csv": csv, "household": household,
                     "expansions_list": expansions_list}
 
@@ -353,7 +354,6 @@ def handle_inline(update, context):
                 context.bot.set_chat_title(
                     update.callback_query.message.chat_id,
                     'Spielwiese: ' + date.strftime("%d/%m/%Y"))
-                create_ics_file("Spieleabend", date)
                 context.bot.send_message(
                     chat_id=update.callback_query.message.chat_id,
                     text="Okay, schrei einfach /ich, wenn du "
