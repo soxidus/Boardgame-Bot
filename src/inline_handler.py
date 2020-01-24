@@ -50,6 +50,7 @@ def handle_calendar(update, context):
                 context.bot.set_chat_title(
                     update.callback_query.message.chat_id,
                     'Spielwiese: ' + date.strftime("%d/%m/%Y"))
+                create_ics_file("Spieleabend", date)
                 context.bot.send_message(
                     chat_id=update.callback_query.message.chat_id,
                     text="Okay, schrei einfach /ich, wenn du "
