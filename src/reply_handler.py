@@ -7,7 +7,6 @@ from telegram import (ReplyKeyboardRemove, ForceReply, ReplyKeyboardMarkup,
                       KeyboardButton)
 import database_functions as dbf
 import parse_strings as ps
-from calendar_export import create_ics_file
 from calendarkeyboard import telegramcalendar
 from planning_functions import GameNight
 from singleton import Singleton

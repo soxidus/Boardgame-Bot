@@ -11,6 +11,7 @@ from calendarkeyboard import telegramcalendar
 from planning_functions import GameNight
 from query_buffer import QueryBuffer
 from parse_strings import single_db_entry_to_string
+from calendar_export import create_ics_file
 import reply_handler as rep
 import database_functions as dbf
 import parse_strings as ps
