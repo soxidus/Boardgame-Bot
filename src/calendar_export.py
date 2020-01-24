@@ -1,6 +1,7 @@
 from ics import Calendar, Event
 from os import remove
 import datetime
+from planning_functions import GameNight
 from parse_strings import generate_uuid_32
 
 
