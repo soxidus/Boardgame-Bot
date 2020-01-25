@@ -14,7 +14,7 @@ def create_ics_file(title, date):
 #    GameNight(chat_id=update.callback_query.message.chat_id).set_cal_file(filename)
     gamenight_event.make_all_day()
     with open(filename, 'w+') as my_file:
-        my_file.writelines(c)7
+        my_file.writelines(calendar)
 
     return filename
 
