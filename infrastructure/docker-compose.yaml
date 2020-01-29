@@ -3,7 +3,7 @@ version: "3"
 services:
 
   auth_db:
-      image: mariadb:latest
+      image: mariadb:10.3.16
       container_name: auth_db
       ports:
         - 3306
@@ -13,13 +13,31 @@ services:
         MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
         MYSQL_DATABASE: auth
         MYSQL_USER: ${MYSQL_USER}
+        MYSQL_USER: ${MYSQL_USER}
+        MYSQL_USER: ${MYSQL_USER}
+        MYSQL_USER: ${MYSQL_USER}
+        MYSQL_USER: ${MYSQL_USER}
+        MYSQL_USER: ${MYSQL_USER}
+        MYSQL_USER: ${MYSQL_USER}
+        MYSQL_USER: ${MYSQL_USER}
+        MYSQL_USER: ${MYSQL_USER}
+        MYSQL_USER: ${MYSQL_USER}
+        MYSQL_USER: ${MYSQL_USER}
+        MYSQL_USER: ${MYSQL_USER}
+        MYSQL_USER: ${MYSQL_USER}
+        MYSQL_USER: ${MYSQL_USER}
+        MYSQL_USER: ${MYSQL_USER}
+        MYSQL_USER: ${MYSQL_USER}
+        MYSQL_USER: ${MYSQL_USER}
+        MYSQL_USER: ${MYSQL_USER}
+        MYSQL_USER: ${MYSQL_USER}
         MYSQL_PASSWORD: ${MYSQL_PASSWORD}
         LANG: 'en_US.UTF-8'
       volumes:
         - ./init_auth.sql:/docker-entrypoint-initdb.d/init_auth.sql:ro
 
   data_db:
-    image: mariadb:latest
+    image: mariadb:10.3.16
     container_name: data_db
     ports:
       - 3306
