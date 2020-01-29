@@ -252,16 +252,18 @@ class Poll(object):
                 d = datetime.datetime.strptime(plan.date, '%d/%m/%Y')
         else: d = None
         for p in participants:
-            entries = get_playable_entries(
-                choose_database("testdb"), 'games', 'title, categories', p,
-                no_participants=len(participants), planned_date=d)
+            for c in categories:
+                entries = get_playable_entries_by_category(
+                    choose_database("testdb"), 'games', 'title', p, c,
+                    no_participants=len(participants), planned_date=d)
+                for _ in range(len(entries)):
+                    games_by_category[categories[c]].add(single_db_entry_to_string(entries[_][0]))
+                    games_general_set.add(single_db_entry_to_string(entries[_][0]))  # keeps track of actual amount of games available this evening
+            entries = get_playable_entries(choose_database("testdb"), 'games', 'title',
+                        p, no_participants=len(participants), planned_date=d)
             for _ in range(len(entries)):
-                cats = entries[_][1].split("/")[:-1]  # ignore last entry since it's empty
-                if not cats:
-                    games_by_category[categories['keine']].add(single_db_entry_to_string(entries[_][0]))
-                for cat in cats:
-                    games_by_category[categories[cat]].add(single_db_entry_to_string(entries[_][0]))
-                games_general_set.add(single_db_entry_to_string(entries[_][0]))  # keeps track of actual amount of games available this evening
+                games_by_category[categories['keine']].add(single_db_entry_to_string(entries[_][0]))
+                games_general_set.add(single_db_entry_to_string(entries[_][0]))
 
         available_games_count = len(games_general_set)
         for _ in range(len(games_by_category)):
@@ -287,22 +289,22 @@ class Poll(object):
             categories_used = []  # record what kinds of games we already have    
             i = 0
             # select one small game
-            small_set = games_by_category[categories['klein']]
+            small_set = games_by_category[categories['kurz']]
             if len(small_set) > 0:
                 opt = small_set[randrange(len(small_set))]
                 options.append(opt)
-                categories_used.append(categories['klein'])
+                categories_used.append(categories['kurz'])
                 i += 1
 
             # select one big game
-            big_set = games_by_category[categories['groß']]
+            big_set = games_by_category[categories['lang']]
             if len(big_set) > 0:
                 while i < 2:
                     opt = big_set[randrange(len(big_set))]
                     if opt not in options:
                         options.append(opt)
                         i += 1
-                        categories_used.append(categories['groß'])
+                        categories_used.append(categories['lang'])
                         break  # make sure only one big game is added
                     elif len(big_set) == 1:
                         # big game is the small game already added - does this even make sense?
