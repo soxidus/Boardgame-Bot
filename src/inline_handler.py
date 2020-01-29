@@ -268,9 +268,9 @@ def generate_pollbycategory():
         keyboard.append(row)
     # last row: no statement and /stop button
     row = []      
-    data = ";".join(["POLLBY","IGNORE"])
+    data = ";".join(["POLLBY", "IGNORE"])
     row.append(InlineKeyboardButton(' ', callback_data=data))
-    data = ";".join(["POLLBY","stop"])
+    data = ";".join(["POLLBY", "stop"])
     row.append(InlineKeyboardButton('Abbrechen', callback_data=data))
     keyboard.append(row)
     return InlineKeyboardMarkup(keyboard)
@@ -295,9 +295,9 @@ def handle_settings(update, context):
             # change keyboard layout
             try:
                 context.bot.edit_message_text(text=update.callback_query.message.text,
-                                    chat_id=update.callback_query.message.chat_id,
-                                    message_id=update.callback_query.message.message_id,
-                                    reply_markup=generate_settings(to_set=settings_so_far))
+                                              chat_id=update.callback_query.message.chat_id,
+                                              message_id=update.callback_query.message.message_id,
+                                              reply_markup=generate_settings(to_set=settings_so_far))
             except BadRequest:
                 pass
         elif update.callback_query.data.split(";")[2] == "UNSET":
@@ -313,9 +313,9 @@ def handle_settings(update, context):
             # change keyboard layout
             try:
                 context.bot.edit_message_text(text=update.callback_query.message.text,
-                                    chat_id=update.callback_query.message.chat_id,
-                                    message_id=update.callback_query.message.message_id,
-                                    reply_markup=generate_settings(to_set=settings_so_far))
+                                              chat_id=update.callback_query.message.chat_id,
+                                              message_id=update.callback_query.message.message_id,
+                                              reply_markup=generate_settings(to_set=settings_so_far))
             except BadRequest:
                 pass
 
@@ -349,19 +349,19 @@ def generate_settings(to_set=None, first=None, user=None, init_array=None):
     if first:
         current_settings = dbf.search_single_entry(dbf.choose_database("testdb"), "settings", "user", user)[0][1:]   
     keyboard = []
-    settings = {'Benachrichtigung bei Teilnahme am Spieleabend' : 'notify_participation', 'Benachrichtigung bei Abstimmung' : 'notify_vote'}
+    settings = {'Benachrichtigung bei Teilnahme am Spieleabend': 'notify_participation', 'Benachrichtigung bei Abstimmung': 'notify_vote'}
     if first:
         index = 0
         for (key, value) in settings.items():
             row = []
-            if current_settings[index]==1:
-                data = ";".join(["SETTING",value,"UNSET"])
+            if 1 in current_settings[index]:
+                data = ";".join(["SETTING", value, "UNSET"])
                 label = key + " ✓"
                 row.append(InlineKeyboardButton(label, callback_data=data))
                 # init query buffer
                 init_array.append(value)
             else:
-                data = ";".join(["SETTING",value,"SET"])
+                data = ";".join(["SETTING", value, "SET"])
                 row.append(InlineKeyboardButton(key, callback_data=data))
             keyboard.append(row)
             index += 1
@@ -369,18 +369,18 @@ def generate_settings(to_set=None, first=None, user=None, init_array=None):
         for (key, value) in settings.items():
             row = []
             if to_set and (value in to_set):
-                data = ";".join(["SETTING",value,"UNSET"])
+                data = ";".join(["SETTING", value, "UNSET"])
                 label = key + " ✓"
                 row.append(InlineKeyboardButton(label, callback_data=data))
             else:
-                data = ";".join(["SETTING",value,"SET"])
+                data = ";".join(["SETTING", value, "SET"])
                 row.append(InlineKeyboardButton(key, callback_data=data))
             keyboard.append(row)
     # last row: done and /stop button
     row = []
-    data = ";".join(["SETTING","done"])
-    row.append(InlineKeyboardButton('Fertig', callback_data=data))        
-    data = ";".join(["SETTING","stop"])
+    data = ";".join(["SETTING", "done"])
+    row.append(InlineKeyboardButton('Fertig', callback_data=data))
+    data = ";".join(["SETTING", "stop"])
     row.append(InlineKeyboardButton('Abbrechen', callback_data=data))
     keyboard.append(row)
     return InlineKeyboardMarkup(keyboard)
