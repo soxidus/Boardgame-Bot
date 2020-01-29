@@ -105,7 +105,7 @@ def handle_category(update, context):
                 pass
 
 
-def end_of_categories(bot, update, no_category=False):
+def end_of_categories(update, context, no_category=False):
     if no_category:
         query = QueryBuffer().get_query(update.callback_query.message.message_id) + " ," + ps.generate_uuid_32()
     else:  # user pressed "Done"
