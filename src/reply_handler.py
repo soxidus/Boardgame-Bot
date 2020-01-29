@@ -328,33 +328,3 @@ def date(update):
 def default(update):
     update.message.reply_text("Ja... Bald...",
                               reply_markup=ReplyKeyboardRemove())
-
-
-# as of now, we only have the calendar as an inline feature
-# if that changes, we need to distinguish the kind of inline callback!
-def handle_inline(update, context):
-    selected, date, user_inp_req = telegramcalendar.process_calendar_selection(update, context)
-    if selected:
-        if user_inp_req:
-            msg = context.bot.send_message(
-                chat_id=update.callback_query.message.chat_id,
-                text='Okay, wann wollt ihr spielen?',
-                reply_markup=ForceReply())
-            ForceReplyJobs().add(msg.message_id, "date")
-        elif date:
-            check = GameNight(chat_id=update.callback_query.message.chat_id).set_date(date.strftime("%d/%m/%Y"))
-            if check < 0:
-                context.bot.send_message(
-                    chat_id=update.callback_query.message.chat_id,
-                    text="Melde dich doch einfach mit /ich "
-                         "beim festgelegten Termin an.",
-                    reply_markup=ReplyKeyboardRemove())
-            else:
-                context.bot.set_chat_title(
-                    update.callback_query.message.chat_id,
-                    'Spielwiese: ' + date.strftime("%d/%m/%Y"))
-                context.bot.send_message(
-                    chat_id=update.callback_query.message.chat_id,
-                    text="Okay, schrei einfach /ich, wenn du "
-                         "teilnehmen willst!",
-                    reply_markup=ReplyKeyboardRemove())
