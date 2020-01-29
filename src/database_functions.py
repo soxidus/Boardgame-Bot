@@ -44,6 +44,8 @@ def add_entry(db, table, entry, values, valuecnt=None):
         mycursor.execute(sql)
     else:
         sql = "INSERT INTO " + table + " " + entry + " " + "VALUES ('" + str(values) + "')"
+        print(type(values))
+        print(sql)
         mycursor.execute(sql, values)
 
     db.commit()
@@ -178,7 +180,7 @@ def get_playable_entries_by_category(db, table, column, owner, category, no_part
         add_to_where = " AND (last_played<\'" + str(not_played_after) + "\' OR last_played IS NULL)"
         where += add_to_where
 
-    on = table + ".game_uuid=categories."+category + " AND " + where
+    on = table + ".game_uuid=categories.`"+category + "` AND " + where  # use `` bc. categories have spaces in them
     sql = "SELECT " + table + "." + column + " FROM " + table + " INNER JOIN categories ON "+ on
 
     mycursor.execute(sql)
@@ -187,9 +189,17 @@ def get_playable_entries_by_category(db, table, column, owner, category, no_part
     return result
 
 
-def add_game_into_db(values):
-    entry = "(owner, title, playercount, categories, game_uuid)"
-    add_game(choose_database("testdb"), "games", entry, values)
+def add_game_into_category(db, category, uuid):
+    entry = "(`" + category + "`)"  # use `` because there's categories with spaces
+    add_entry(db, "categories", entry, uuid)
+
+
+def add_game_into_db(games_values, cats=None, uuid=None):
+    entry = "(owner, title, playercount, game_uuid)"
+    add_game(choose_database("testdb"), "games", entry, games_values)
+    if cats and uuid:
+        for cat in cats:
+            add_game_into_category(choose_database("testdb"), cat, uuid)
 
 
 def add_multiple_games_into_db(csv_string):

@@ -61,7 +61,7 @@ def handle_category(update, context):
     update.callback_query.answer()
     category = update.callback_query.data.split(";")[1]
     if category == "none":
-        end_of_categories(bot, update, no_category=True)
+        end_of_categories(update, context, no_category=True)
     elif category == "stop":
         QueryBuffer().clear_query(update.callback_query.message.message_id)
         context.bot.send_message(
@@ -106,26 +106,34 @@ def handle_category(update, context):
 
 
 def end_of_categories(update, context, no_category=False):
-    if no_category:
-        query = QueryBuffer().get_query(update.callback_query.message.message_id) + " ," + ps.generate_uuid_32()
-    else:  # user pressed "Done"
-        query = QueryBuffer().get_query(update.callback_query.message.message_id) + "," + ps.generate_uuid_32()
-
-    if ps.parse_csv(query)[0] == "new_game":
+    query = QueryBuffer().get_query(update.callback_query.message.message_id)
+    query_csv = ps.parse_csv(query)
+    categories = query_csv[-1].split('/')[:-1]
+    # remove categories from query buffer now
+    uuid = ps.generate_uuid_32()
+    query = ps.csv_to_string(query_csv[:-1]) + "," + uuid
+    
+    if query_csv[0] == "new_game":
         known_games = dbf.search_entries_by_user(
             dbf.choose_database("testdb"), 'games',
             update.callback_query.from_user.username)
         for _ in range(len(known_games)):
             # check whether this title has already been added for this user
-            if known_games[_][0] == ps.parse_csv(query)[2]:
+            if known_games[_][0] == query_csv[2]:
                 context.bot.send_message(
                     chat_id=update.callback_query.message.chat_id,
                     text="Wusste ich doch: Das Spiel hast du schon "
                          "einmal eingetragen. Viel Spaß noch damit!",
                     reply_markup=ReplyKeyboardRemove())
                 return
-        dbf.add_game_into_db(ps.parse_values_from_array(
-                                ps.remove_first_string(query)))
+        if no_category:
+            dbf.add_game_into_db(ps.parse_values_from_array(
+                                    ps.remove_first_string(query)))
+        else:
+            dbf.add_game_into_db(ps.parse_values_from_array(
+                                    ps.remove_first_string(query)),
+                                    cats=categories,
+                                    uuid=uuid)            
         context.bot.send_message(
                     chat_id=update.callback_query.message.chat_id,
                     text="Okay, das Spiel wurde hinzugefügt \\o/",
