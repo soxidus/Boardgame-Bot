@@ -242,12 +242,20 @@ def handle_pollbycategory(update, context):
         if check < 0:
             context.bot.send_message(
                         chat_id=update.callback_query.message.chat_id,
-                        text='Das war leider nichts. \n'
-                             'Habt ihr kein Datum festgelegt? '
+                        text='Das war leider nichts. '
+                             'Dies könnte verschiedene Gründe haben:\n'
+                             '(1) Ihr habt kein Datum festgelegt. '
                              'Holt das mit /neuertermin nach.\n'
-                             'Vielleicht hast du dich auch '
-                             'einfach nicht angemeldet? Hole das '
-                             'mit /ich nach.',
+                             '(2) Du bist nicht zum Spieleabend angemeldet. '
+                             'Hole das mit /ich nach.\n'
+                             '(3) Ihr habt gerade kein Spiel dieser Kategorie '
+                             'zur Verfügung. Sollte ich mich da irren, '
+                             'tragt das Spiel mit /neues_spiel ein '
+                             '(natürlich im Privatchat).\n'
+                             '(4) Ihr habt die Spiele dieser Kategorie, '
+                             'welche euch zur Verfügung stehen, alle innerhalb '
+                             'der letzten 14 Tage gespielt. Kommt schon, '
+                             'es ist mal Zeit für was anderes!',
                         reply_markup=ReplyKeyboardRemove())
         else:
             keys = []

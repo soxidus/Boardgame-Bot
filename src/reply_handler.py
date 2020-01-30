@@ -291,7 +291,7 @@ def expansion_poll_game(update):
             '(3) Mir ist nicht bekannt, dass einer der Teilnehmenden eine '
             'Erweiterung für dieses Spiel hat.'
             'Wenn das jedoch der Fall ist, sagt mir mit /neue_erweiterung '
-            'Bescheid (natürlich im Privatchat!')
+            'Bescheid (natürlich im Privatchat)!')
     else:
         keys = []
         for o in plan.poll.options:

@@ -63,6 +63,9 @@ def handle_vote(update, context):
                                          ' nochmal')
 
 
+# Once a day, this function gets called.
+# If it notices a past Game Night, 
+# it clears all the info on it.
 def test_termin(context):
     now = datetime.datetime.now()
     plan = GameNight()
@@ -252,13 +255,14 @@ class Poll(object):
                 d = datetime.datetime.strptime(plan.date, '%d/%m/%Y')
         else: d = None
         for p in participants:
-            for c in categories:
+            for c in categories_list[:-1]:  # ignore "keine" category
                 entries = get_playable_entries_by_category(
-                    choose_database("testdb"), 'games', 'title', p, c,
-                    no_participants=len(participants), planned_date=d)
+                            choose_database("testdb"), 'games', 'title', p, c,
+                            no_participants=len(participants), planned_date=d)
                 for _ in range(len(entries)):
                     games_by_category[categories[c]].add(single_db_entry_to_string(entries[_][0]))
                     games_general_set.add(single_db_entry_to_string(entries[_][0]))  # keeps track of actual amount of games available this evening
+            # get all playable games that were assigned no category
             entries = get_playable_entries(choose_database("testdb"), 'games', 'title',
                         p, no_participants=len(participants), planned_date=d)
             for _ in range(len(entries)):
