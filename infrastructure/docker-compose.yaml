@@ -13,24 +13,6 @@ services:
         MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
         MYSQL_DATABASE: auth
         MYSQL_USER: ${MYSQL_USER}
-        MYSQL_USER: ${MYSQL_USER}
-        MYSQL_USER: ${MYSQL_USER}
-        MYSQL_USER: ${MYSQL_USER}
-        MYSQL_USER: ${MYSQL_USER}
-        MYSQL_USER: ${MYSQL_USER}
-        MYSQL_USER: ${MYSQL_USER}
-        MYSQL_USER: ${MYSQL_USER}
-        MYSQL_USER: ${MYSQL_USER}
-        MYSQL_USER: ${MYSQL_USER}
-        MYSQL_USER: ${MYSQL_USER}
-        MYSQL_USER: ${MYSQL_USER}
-        MYSQL_USER: ${MYSQL_USER}
-        MYSQL_USER: ${MYSQL_USER}
-        MYSQL_USER: ${MYSQL_USER}
-        MYSQL_USER: ${MYSQL_USER}
-        MYSQL_USER: ${MYSQL_USER}
-        MYSQL_USER: ${MYSQL_USER}
-        MYSQL_USER: ${MYSQL_USER}
         MYSQL_PASSWORD: ${MYSQL_PASSWORD}
         LANG: 'en_US.UTF-8'
       volumes:
