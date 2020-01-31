@@ -82,11 +82,11 @@ This table keeps track of user settings. It has three fields: "user", "notify_pa
 
 By using ```SELECT * FROM settings``` we get:
 
-+--------------+----------------------+-------------+
-| user         | notify_participation | notify_vote |
-+--------------+----------------------+-------------+
-| usergoeshere | BITgoeshere          | BITgoeshere |
-+--------------+----------------------+-------------+
+    +--------------+----------------------+-------------+
+    | user         | notify_participation | notify_vote |
+    +--------------+----------------------+-------------+
+    | usergoeshere | BITgoeshere          | BITgoeshere |
+    +--------------+----------------------+-------------+
 
 
 ### 2.5 Table "categories"
@@ -97,8 +97,8 @@ On column in this table corresponds to one category. A category contains all the
 
 By using ```SELECT * FROM categories``` we get:
 
-+--------------+---------------+--------------+
-| kurz         | lang          | category_3   | ...
-+--------------+---------------+--------------+
-| uuidgoeshere | uuidgoeshere  | uuidgoeshere | ...
-+--------------+---------------+--------------+
+    +--------------+---------------+--------------+
+    | kurz         | lang          | category_3   | ...
+    +--------------+---------------+--------------+
+    | uuidgoeshere | uuidgoeshere  | uuidgoeshere | ...
+    +--------------+---------------+--------------+
