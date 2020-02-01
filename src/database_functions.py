@@ -6,7 +6,7 @@ import datetime
 
 import mysql.connector
 
-from parse_strings import (generate_query_string)
+from parse_strings import (generate_query_string, generate_uuid_32)
 
 
 def choose_database(db):
@@ -35,17 +35,19 @@ def choose_database(db):
     return db
 
 
-def add_entry(db, table, entry, values, valuecnt=None):
+def add_entry(db, table, entry, values, valuesformatted=None):
     mycursor = db.cursor()
 
-    if isinstance(values, int):
+    if valuesformatted:
+        sql = "INSERT INTO " + table + " " + entry + " " + "VALUES " + str(values)
+        print(sql)
+        mycursor.execute(sql)
+    elif isinstance(values, int):
         valcountstr = "VALUES ("
         sql = "INSERT INTO " + table + " " + entry + " " + valcountstr + str(values) + ")"
         mycursor.execute(sql)
     else:
         sql = "INSERT INTO " + table + " " + entry + " " + "VALUES ('" + str(values) + "')"
-        print(type(values))
-        print(sql)
         mycursor.execute(sql, values)
 
     db.commit()
@@ -189,22 +191,35 @@ def get_playable_entries_by_category(db, table, column, owner, category, no_part
     return result
 
 
-def add_game_into_category(db, category, uuid):
-    entry = "(`" + category + "`)"  # use `` because there's categories with spaces
-    add_entry(db, "categories", entry, uuid)
+def add_game_into_categories(db, categories, uuid):
+    entry = "("
+    vals = "("
+    for cat in categories:
+        entry += "`" + cat + "`,"
+        vals = vals + "'" + str(uuid) + "',"
+    entry = entry[:-1] + ")"
+    vals = vals[:-1] + ")"
+    add_entry(db, "categories", entry, vals, valuesformatted=True)
 
 
 def add_game_into_db(games_values, cats=None, uuid=None):
     entry = "(owner, title, playercount, game_uuid)"
     add_game(choose_database("testdb"), "games", entry, games_values)
     if cats and uuid:
-        for cat in cats:
-            add_game_into_category(choose_database("testdb"), cat, uuid)
+        add_game_into_categories(choose_database("testdb"), cats, uuid)
 
 
+# csv_string is a list of lists
+# rows contain all info on games
+# columns correspond to owner, title, max. playercount, categories
 def add_multiple_games_into_db(csv_string):
-    for _ in range(len(csv_string)):
-        add_game_into_db(generate_query_string(csv_string[_]))
+    for _ in range(len(csv_string)):  # iterate through rows
+        if len(csv_string[_]) > 3:  # categories are given
+            g_id = generate_uuid_32()
+            add_game_into_db(generate_query_string(csv_string[_][:3], uuid=g_id),
+                             cats=csv_string[_][3:], uuid=g_id)
+        else:
+            add_game_into_db(generate_query_string(csv_string[_]))
 
 
 def add_expansion_into_db(values):

@@ -80,7 +80,8 @@ def csv_import(update, context):
                                            'möchtest.\n'
                                            'Importiere zur Sicherheit max. 75 Einträge'
                                            ' über den Chat auf einmal!\n'
-                                           'Format: Besitzer, Titel, Max. Spielerzahl'
+                                           'Format: Besitzer, Titel, Max. Spielerzahl, '
+                                           'Kategorie_1, Kategorie_2, ... '
                                            'Pro Zeile ein Spiel',
                                            reply_markup=ForceReply())
             ForceReplyJobs().add(msg.message_id, "csv")
