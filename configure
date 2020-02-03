@@ -131,7 +131,7 @@ else
         if [[ -z "$newcategory" ]]
         then
             echo >> src/config.ini
-			echo ");" >> infrastructure/init_data_categories.sql
+	    echo ");" >> infrastructure/init_data_categories.sql
         else
             echo -n , $newcategory >> src/config.ini
             echo -n ", \`$newcategory\` VARCHAR(255)" >> infrastructure/init_data_categories.sql
