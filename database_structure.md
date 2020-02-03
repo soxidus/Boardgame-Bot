@@ -93,7 +93,7 @@ By using ```SELECT * FROM settings``` we get:
 This table keeps track of what games belong into which categories. It has a minimum of two fields: "kurz" and "lang", but can have more.
 Other fields can be defined when running [configure](configure#L94).
 
-On column in this table corresponds to one category. A category contains all the unique hashes from ["games"](database_structure.md#21-table-games) that belong to this category.
+One column in this table corresponds to one category. A category contains all the unique hashes from ["games"](database_structure.md#21-table-games) that belong to this category.
 
 By using ```SELECT * FROM categories``` we get:
 
