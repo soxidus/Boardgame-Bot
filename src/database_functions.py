@@ -40,7 +40,6 @@ def add_entry(db, table, entry, values, valuesformatted=None):
 
     if valuesformatted:
         sql = "INSERT INTO " + table + " " + entry + " " + "VALUES " + str(values)
-        print(sql)
         mycursor.execute(sql)
     elif isinstance(values, int):
         valcountstr = "VALUES ("
