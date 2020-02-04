@@ -13,8 +13,8 @@ def create_ics_file(title, date):
     gamenight_event.add('dtstamp', datetime.now())
     gamenight_event.add('summary', title)
     gamenight_event.add('description', 'Created by Meeple the boardgame bot')
-    gamenight_event.add('dtstart', datetime.strptime(str(date) + " 19", "%d/%m/%Y %H"))
-    gamenight_event.add('dtend',  datetime.strptime(str(date) + " 23", "%d/%m/%Y %H"))
+    gamenight_event.add('dtstart', datetime.strptime(str(date) + " 19", "%Y-%m-%d 00:00:00 %H"))
+    gamenight_event.add('dtend',  datetime.strptime(str(date) + " 23", "%Y-%m-%d 00:00:00 %H"))
     calendar.add_component(gamenight_event)
     filename = 'cal-' + generate_uuid_32() + '.ics'
 
