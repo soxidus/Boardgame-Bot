@@ -80,7 +80,8 @@ def csv_import(update, context):
                                            'möchtest.\n'
                                            'Importiere zur Sicherheit max. 75 Einträge'
                                            ' über den Chat auf einmal!\n'
-                                           'Format: Besitzer, Titel, Max. Spielerzahl'
+                                           'Format: Besitzer, Titel, Max. Spielerzahl, '
+                                           'Kategorie_1, Kategorie_2, ... '
                                            'Pro Zeile ein Spiel',
                                            reply_markup=ForceReply())
             ForceReplyJobs().add(msg.message_id, "csv")
@@ -526,10 +527,10 @@ def help(update, context):
                              '/genrespiel - Ich schlage dir ein Spiel einer '
                              'bestimmten Kategorie vor.\n'
                              '/einstellungen - Verändere deine Einstellungen '
-                             '(Benachrichtigungen etc.)'
+                             '(Benachrichtigungen etc.)\n'
                              '/help - Was kann ich alles tun?\n\n'
                              'Weitere Funktionen stehen dir im Gruppenchat '
-                             'zur Verfügung.'
+                             'zur Verfügung. '
                              'Solltest du im Gruppenchat Funktionen nutzen, '
                              'die dort nicht erlaubt sind, '
                              'wird deine Nachricht sofort gelöscht.\n'
