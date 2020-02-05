@@ -139,7 +139,8 @@ class GameNight(Singleton):
             self.old_poll.running = False  # this is important for /leeren
         except AttributeError:
             pass
-        delete_ics_file(self.cal_file)
+        if self.cal_file is not None:
+            delete_ics_file(self.cal_file)
         self.date = None
         self.poll = None
         self.chat_id = None
