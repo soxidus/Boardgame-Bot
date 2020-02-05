@@ -384,7 +384,6 @@ def end_of_settings(update, context):
 # later, just keep track of what the user selected up until now
 def generate_settings(to_set=None, first=None, user=None, init_array=None):
     if first:
-        print(dbf.search_single_entry(dbf.choose_database("testdb"), "settings", "user", user))
         current_settings = dbf.search_single_entry(dbf.choose_database("testdb"), "settings", "user", user)[0][1:]   
     keyboard = []
     settings = {'Benachrichtigung bei Teilnahme am Spieleabend' : 'notify_participation', 'Benachrichtigung bei Abstimmung' : 'notify_vote'}
