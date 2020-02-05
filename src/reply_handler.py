@@ -103,8 +103,8 @@ def auth(update):
         update.message.bot.delete_message(update.message.chat_id,
                                           update.message.message_id)
         if not dbf.check_user(update.message.chat_id):
-            dbf.add_user_auth(update.message.chat_id)
             if update.message.chat_id > 0:
+                dbf.add_user_auth(update.message.chat_id, name=update.message.from_user.username)
                 msg = update.message.bot.send_message(
                         chat_id=update.message.chat_id,
                         text='Super! Wir dürfen jetzt miteinander reden. '
@@ -119,6 +119,7 @@ def auth(update):
                         reply_markup=ForceReply())
                 ForceReplyJobs().add(msg.message_id, "household")
             else:
+                dbf.add_user_auth(update.message.chat_id)
                 update.message.bot.send_message(chat_id=update.message.chat_id,
                                  text='Super! Wir dürfen jetzt '
                                       'miteinander reden.',
