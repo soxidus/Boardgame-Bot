@@ -19,7 +19,7 @@ def create_ics_file(title, date):
     filename = 'cal-' + generate_uuid_32() + '.ics'
 
     with open(filename, 'wb') as my_file:
-        my_file.write(Calendar.to_ical(self))
+        my_file.write(calendar.to_ical())
 
     return filename
 
