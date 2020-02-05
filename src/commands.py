@@ -160,7 +160,7 @@ def ich(update, context):
 
                             context.bot.send_document(update.message.from_user.id,
                                                       document=open(plan.cal_file, 'rb'),
-                                                      filename=str("Spieleabend " + datetime.strptime(str(plan.date),  "%Y-%m-%d")))
+                                                      filename=str("Spieleabend " + datetime.strptime(str(plan.date), "%d/%m/%Y")))
                             context.bot.set_chat_description(update.message.chat_id,
                                                              plan.get_participants())
                         except Unauthorized:
