@@ -4,6 +4,7 @@ from telegram import (ForceReply, ReplyKeyboardMarkup, KeyboardButton,
                       ReplyKeyboardRemove)
 from telegram.error import BadRequest, Unauthorized
 from random import randrange
+from datetime import datetime
 from calendarkeyboard import telegramcalendar
 from database_functions import (choose_database, check_user,
                                 search_entries_by_user, check_household,
@@ -157,8 +158,9 @@ def ich(update, context):
                             context.bot.send_message(update.message.from_user.id,
                                                      text)
 
-                            context.bot.send_document(update.message.from_user.id, document=open(plan.cal_file, 'rb'), filename=str("Spieleabend " + plan.date))
-
+                            context.bot.send_document(update.message.from_user.id,
+                                                      document=open(plan.cal_file, 'rb'),
+                                                      filename=str("Spieleabend " + datetime.strptime(str(plan.date),  "%Y-%m-%d")))
                             context.bot.set_chat_description(update.message.chat_id,
                                                              plan.get_participants())
                         except Unauthorized:
