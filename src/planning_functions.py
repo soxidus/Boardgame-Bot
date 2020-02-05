@@ -163,7 +163,8 @@ class GameNight(Singleton):
     def remove_participant(self, user_id):
         try:
             self.participants.remove(user_id)
-            self.poll.remove_voter(user_id)
+            if self.poll:
+                self.poll.remove_voter(user_id)
         except ValueError:
             return -1
         else:
