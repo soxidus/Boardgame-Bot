@@ -11,6 +11,7 @@ from calendarkeyboard import telegramcalendar
 from planning_functions import GameNight
 from query_buffer import QueryBuffer
 from parse_strings import single_db_entry_to_string
+from error_handler import handle_bot_not_admin
 import reply_handler as rep
 import database_functions as dbf
 import parse_strings as ps
@@ -64,9 +65,12 @@ def handle_calendar(update, context):
                          "beim festgelegten Termin an.",
                     reply_markup=ReplyKeyboardRemove())
             else:
-                context.bot.set_chat_title(
-                    update.callback_query.message.chat_id,
-                    'Spielwiese: ' + date.strftime("%d/%m/%Y"))
+                try:
+                    context.bot.set_chat_title(
+                        update.callback_query.message.chat_id,
+                        'Spielwiese: ' + date.strftime("%d/%m/%Y"))
+                except BadRequest:
+                    handle_bot_not_admin(context.bot, update.message.chat.id)
                 context.bot.send_message(
                     chat_id=update.callback_query.message.chat_id,
                     text="Okay, schrei einfach /ich, wenn du "

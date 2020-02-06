@@ -15,6 +15,7 @@ from calendar_export import delete_ics_file
 from planning_functions import GameNight
 from inline_handler import (generate_findbycategory, generate_pollbycategory, generate_settings)
 from query_buffer import QueryBuffer
+from error_handler import handle_bot_not_admin
 
 """
 Commands registered with BotFather:
@@ -70,9 +71,11 @@ def csv_import(update, context):
     if check_user(update.message.chat_id):
         if "group" in update.message.chat.type:
             # maybe add some waiting here at some point
-            context.bot.delete_message(update.message.chat_id,
-                                       update.message.message_id)
-            pass
+            try:
+                context.bot.delete_message(update.message.chat_id,
+                                           update.message.message_id)
+            except BadRequest:
+                handle_bot_not_admin(context.bot, update.message.chat_id)
         if update.message.chat.type == "private":
             msg = context.bot.send_message(update.message.chat_id,
                                            'Gib die Daten ein, die du im CSV-Format '
@@ -93,9 +96,8 @@ def csv_import(update, context):
 def neuertermin(update, context):
     if check_user(update.message.chat_id):
         if "group" in update.message.chat.type:
-            msg = update.message.reply_text('Okay, wann wollt ihr spielen?',
+            update.message.reply_text('Okay, wann wollt ihr spielen?',
                                             reply_markup=telegramcalendar.create_calendar())
-            # ForceReplyJobs().add(msg.message_id, "date")
         if update.message.chat.type == "private":
             update.message.reply_text('Stopp, das hat hier nichts zu suchen.\n'
                                       'Bitte versuche es im Gruppenchat...')
@@ -116,17 +118,19 @@ def endetermin(update, context):
             plan = GameNight()
             plan.clear()
             try:
-                context.bot.set_chat_description(update.message.chat_id, "")
+                context.bot.set_chat_title(update.message.chat.id, 'Spielwiese')
+                context.bot.set_chat_description(update.message.chat_id, "")                
             except BadRequest:
-                pass
-
+                handle_bot_not_admin(context.bot, update.message.chat.id)
             # since we can delete the Keyboard only via reply
             # this call is necessary
-            context.bot.set_chat_title(update.message.chat.id, 'Spielwiese')
             msg = update.message.reply_text(
                         'Ich habe alles zurückgesetzt.',
                         reply_markup=ReplyKeyboardRemove())
-            context.bot.delete_message(update.message.chat_id, msg.message_id)
+            try:
+                context.bot.delete_message(update.message.chat_id, msg.message_id)
+            except BadRequest:
+                handle_bot_not_admin(context.bot, update.message.chat_id)
 
         if update.message.chat.type == "private":
             update.message.reply_text('Stopp, das hat hier nichts zu suchen.\n'
@@ -155,13 +159,15 @@ def ich(update, context):
                         text = ('Danke für deine Zusage zum Spieleabend ' + plan.date + ', '
                                 + update.message.from_user.first_name + '!')
                         try:
+                            context.bot.set_chat_description(update.message.chat_id,
+                                                             plan.get_participants())
+                        except BadRequest:
+                            handle_bot_not_admin(context.bot, update.message.chat.id)
+                        try:
                             context.bot.send_message(update.message.from_user.id,
                                                     text)
 
                             context.bot.send_document(update.message.from_user.id, document=open(plan.cal_file, 'rb'))
-
-                            context.bot.set_chat_description(update.message.chat_id,
-                                                            plan.get_participants())
                         except Unauthorized:
                             context.bot.send_message(update.message.chat_id, 'OH! '
                                                     'scheinbar darf ich nicht privat mit dir Reden.'
@@ -199,12 +205,15 @@ def nichtich(update, context):
 
             else:
                 try:
+                    context.bot.set_chat_description(update.message.chat_id,
+                                                     plan.get_participants())
+                except BadRequest:
+                    handle_bot_not_admin(context.bot, update.message.chat.id)
+                try:
                     context.bot.send_message(update.message.from_user.id,
                                              'Schade, dass du doch nicht '
                                              'teilnehmen kannst, ' +
                                              update.message.from_user.first_name + '.')
-                    context.bot.set_chat_description(update.message.chat_id,
-                                                     plan.get_participants())
                 except Unauthorized:
                     context.bot.send_message(update.message.chat_id, 'OH! '
                                              'scheinbar darf ich nicht mit dir Reden.'
@@ -225,9 +234,11 @@ def nichtich(update, context):
 def wer(update, context):
     if check_user(update.message.chat_id):
         if "group" in update.message.chat.type:
-            context.bot.delete_message(update.message.chat_id,
-                                       update.message.message_id)
-            pass
+            try:
+                context.bot.delete_message(update.message.chat_id,
+                                           update.message.message_id)
+            except BadRequest:
+                handle_bot_not_admin(context.bot, update.message.chat_id)
         else:
             participants = GameNight().get_participants()
             update.message.reply_text(participants)
@@ -346,9 +357,11 @@ def ergebnis(update, context):
 def spiele(update, context):
     if check_user(update.message.chat_id):
         if "group" in update.message.chat.type:
-            context.bot.delete_message(update.message.chat_id,
-                                       update.message.message_id)
-            pass
+            try:
+                context.bot.delete_message(update.message.chat_id,
+                                           update.message.message_id)
+            except BadRequest:
+                handle_bot_not_admin(context.bot, update.message.chat_id)
         if update.message.chat.type == "private":
             gamestring = to_messagestring(
                 search_entries_by_user(choose_database("testdb"), 'games',
@@ -368,9 +381,11 @@ def spiele(update, context):
 def erweiterungen(update, context):
     if check_user(update.message.chat_id):
         if "group" in update.message.chat.type:
-            context.bot.delete_message(update.message.chat_id,
-                                       update.message.message_id)
-            pass
+            try:
+                context.bot.delete_message(update.message.chat_id,
+                                           update.message.message_id)
+            except:
+                handle_bot_not_admin(context.bot, update.message.chat_id)
         if update.message.chat.type == "private":
             msg = context.bot.send_message(update.message.chat_id,
                                            'Um welches Grundspiel geht es dir gerade?\n'
@@ -385,9 +400,11 @@ def erweiterungen(update, context):
 def neues_spiel(update, context):
     if check_user(update.message.chat_id):
         if "group" in update.message.chat.type:
-            context.bot.delete_message(update.message.chat_id,
-                                       update.message.message_id)
-            pass
+            try:
+                context.bot.delete_message(update.message.chat_id,
+                                           update.message.message_id)
+            except:
+                handle_bot_not_admin(context.bot, update.message.chat_id)
         if update.message.chat.type == "private":
             msg = context.bot.send_message(update.message.chat_id,
                                            'Wie heißt dein neues Spiel?\n'
@@ -406,9 +423,11 @@ def neues_spiel(update, context):
 def neue_erweiterung(update, context):
     if check_user(update.message.chat_id):
         if "group" in update.message.chat.type:
-            context.bot.delete_message(update.message.chat_id,
-                                       update.message.message_id)
-            pass
+            try:
+                context.bot.delete_message(update.message.chat_id,
+                                           update.message.message_id)
+            except BadRequest:
+                handle_bot_not_admin(context.bot, update.message.chat_id)
         if update.message.chat.type == "private":
             msg = context.bot.send_message(update.message.chat_id,
                                            'Für welches Spiel hast du eine neue '
@@ -428,9 +447,11 @@ def neue_erweiterung(update, context):
 def zufallsspiel(update, context):
     if check_user(update.message.chat_id):
         if "group" in update.message.chat.type:
-            context.bot.delete_message(update.message.chat_id,
-                                       update.message.message_id)
-            pass
+            try:
+                context.bot.delete_message(update.message.chat_id,
+                                           update.message.message_id)
+            except BadRequest:
+                handle_bot_not_admin(context.bot, update.message.chat_id)
         if update.message.chat.type == "private":
             opt = []
             entries = get_playable_entries(
@@ -448,9 +469,11 @@ def zufallsspiel(update, context):
 def genrespiel(update, context):
     if check_user(update.message.chat_id):
         if "group" in update.message.chat.type:
-            context.bot.delete_message(update.message.chat_id,
-                               update.message.message_id)
-            pass
+            try:
+                context.bot.delete_message(update.message.chat_id,
+                                           update.message.message_id)
+            except BadRequest:
+                handle_bot_not_admin(context.bot, update.message.chat_id)
         if update.message.chat.type == "private":
             update.message.reply_text(
                 'Auf welche Kategorie hast du denn heute Lust?',
@@ -465,11 +488,11 @@ def leeren(update, context):
         if "group" in update.message.chat.type:
             plan = GameNight()
             plan.clear()
-            try:  # raises error when no modification
+            try:  # raises error when no modification or bot not Admin
+                context.bot.set_chat_title(update.message.chat.id, 'Spielwiese')
                 context.bot.set_chat_description(update.message.chat_id, "")
             except BadRequest:
-                pass
-            context.bot.set_chat_title(update.message.chat.id, 'Spielwiese')
+                handle_bot_not_admin(context.bot, update.message.chat.id)            
             update.message.reply_text('Ich habe alle Termine und '
                                       'Umfragen zurückgesetzt.',
                                       reply_markup=ReplyKeyboardRemove())
@@ -484,9 +507,11 @@ def leeren(update, context):
 def einstellungen(update, context):
     if check_user(update.message.chat_id):
         if "group" in update.message.chat.type:
-            context.bot.delete_message(update.message.chat_id,
-                               update.message.message_id)
-            pass
+            try:
+                context.bot.delete_message(update.message.chat_id,
+                                           update.message.message_id)
+            except BadRequest:
+                handle_bot_not_admin(context.bot, update.message.chat_id)
         if update.message.chat.type == "private":
             init_settings = []
             msg = context.bot.send_message(update.message.chat_id,

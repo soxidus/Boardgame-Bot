@@ -13,6 +13,7 @@ from database_functions import (get_playable_entries, choose_database,
 from singleton import Singleton
 from calendar_export import delete_ics_file
 from parse_strings import single_db_entry_to_string
+from error_handler import handle_bot_not_admin
 
 
 def handle_vote(update, context):
@@ -76,10 +77,10 @@ def test_termin(context):
             if d < now:
                 plan = GameNight()
                 try:
+                    context.bot.set_chat_title(plan.chat_id, 'Spielwiese')
                     context.bot.set_chat_description(plan.chat_id, "")
                 except BadRequest:
-                    pass
-                context.bot.set_chat_title(plan.chat_id, 'Spielwiese')
+                    handle_bot_not_admin(context.bot, plan.chat_id)
                 plan.clear()
 
 
