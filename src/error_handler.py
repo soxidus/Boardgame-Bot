@@ -8,7 +8,8 @@ def handle_bot_not_admin(bot, chat_id):
     if not bot_is_admin:
         bot.send_message(chat_id, 
                          'Hey Leute, leider bin ich hier kein Admin. '
-                         'Deswegen kann ich ein paar meiner Funktionen nicht nutzen:\n'
+                         'Das fällt gerade auf, weil ich so ein paar '
+                         'meiner Funktionen nicht nutzen kann:\n'
                          '- Gruppennamen verändern '
                          '(um das Datum des nächsten Spieleabends einzutragen)\n'
                          '- Gruppenbeschreibung verändern '
