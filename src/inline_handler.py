@@ -27,6 +27,23 @@ def handle_inline(update, context):
         handle_pollbycategory(update, context)
     elif "SETTING" in update.callback_query.data:
         handle_settings(update, context)
+    elif "ENDED" in update.callback_query.data:
+        # don't do a thing
+        update.callback_query.answer()
+
+
+# used by inlines CATEGORY, FINDBY, POLLBY and SETTING
+# CALENDAR does this in telegramcalendar submodule instead
+def shrink_keyboard(update, context, label):
+    query = update.callback_query
+    keyboard = []
+    row = []
+    row.append(InlineKeyboardButton(label, callback_data="ENDED"))
+    keyboard.append(row)
+    context.bot.edit_message_text(text=query.message.text,
+                            chat_id=query.message.chat_id,
+                            message_id=query.message.message_id,
+                            reply_markup=InlineKeyboardMarkup(keyboard))
 
 
 def handle_calendar(update, context):
@@ -125,6 +142,8 @@ def end_of_categories(update, context, no_category=False):
                     text="Wusste ich doch: Das Spiel hast du schon "
                          "einmal eingetragen. Viel Spaß noch damit!",
                     reply_markup=ReplyKeyboardRemove())
+                inline_text = "Du wolltest das Spiel " + query_csv[2] + " hinzufügen."
+                shrink_keyboard(update, context, inline_text)
                 return
         if no_category:
             dbf.add_game_into_db(ps.parse_values_from_array(
@@ -138,6 +157,8 @@ def end_of_categories(update, context, no_category=False):
                     chat_id=update.callback_query.message.chat_id,
                     text="Okay, das Spiel wurde hinzugefügt \\o/",
                     reply_markup=ReplyKeyboardRemove())
+        inline_text = "Du hast das Spiel " + query_csv[2] + " hinzugefügt."
+        shrink_keyboard(update, context, inline_text)
     else:
         pass
     QueryBuffer().clear_query(
@@ -202,6 +223,7 @@ def handle_findbycategory(update, context):
                         chat_id=update.callback_query.message.chat_id,
                         text='Du besitzt kein Spiel dieser Kategorie.',
                         reply_markup=ReplyKeyboardRemove())
+        shrink_keyboard(update, context, category)
 
 
 def generate_findbycategory():
@@ -266,6 +288,7 @@ def handle_pollbycategory(update, context):
                         text='Welches Spiel wollt ihr spielen?',
                         reply_markup=ReplyKeyboardMarkup(
                                         keys, one_time_keyboard=True))
+        shrink_keyboard(update, context, category)
 
 
 def generate_pollbycategory():
@@ -349,6 +372,7 @@ def end_of_settings(update, context):
                     chat_id=update.callback_query.message.chat_id,
                     text="Okay, ich habe mir deine Einstellungen vermerkt.",
                     reply_markup=ReplyKeyboardRemove())
+        shrink_keyboard(update, context, "Einstellungen angepasst.")
     else:
         pass
     QueryBuffer().clear_query(

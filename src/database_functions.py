@@ -223,14 +223,15 @@ def add_multiple_games_into_db(csv_string):
 
 def add_expansion_into_db(values):
     entry = "(owner, basegame_uuid, title)"
-    add_game(choose_database("testdb"), "expansions", entry, values)  # using add_game because add_entry does not work...
+    add_game(choose_database("testdb"), "expansions", entry, values)
 
 
-def add_user_auth(user):
+def add_user_auth(user, name=None):
     entry = "(id)"
-    add_entry(choose_database("auth"), "users", entry, user, 1)
-    settings_entry = "(user)"
-    add_entry(choose_database("testdb"), "settings", settings_entry, user, 1)
+    add_entry(choose_database("auth"), "users", entry, user)
+    if name:  # ignore groups, they don't need settings
+        settings_entry = "(user)"
+        add_entry(choose_database("testdb"), "settings", settings_entry, name)
 
 
 # variable names user1 and user2 are a bit arbitrary
@@ -242,7 +243,7 @@ def add_household(users):
         res = check_household(u)
         if res != u:  # user already lives with someone, delete it
             delete_single_entry_substring(choose_database("testdb"), "households", entry, u)
-    add_entry(choose_database("testdb"), "households", entry, household, 1)
+    add_entry(choose_database("testdb"), "households", entry, household)
     update_household_games(users)
 
 
