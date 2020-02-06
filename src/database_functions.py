@@ -226,12 +226,15 @@ def add_expansion_into_db(values):
     add_game(choose_database("testdb"), "expansions", entry, values)
 
 
-def add_user_auth(user, name=None):
+def add_user_auth(user_id, name=None):
     entry = "(id)"
-    add_entry(choose_database("auth"), "users", entry, user)
-    if name:  # ignore groups, they don't need settings
+    add_entry(choose_database("auth"), "users", entry, user_id)
+    if name:  # use username for settings
         settings_entry = "(user)"
         add_entry(choose_database("testdb"), "settings", settings_entry, name)
+    if user_id < 0:  # group
+        settings_entry = "(id)"
+        add_entry(choose_database("testdb"), "group_settings", settings_entry, user_id)
 
 
 # variable names user1 and user2 are a bit arbitrary
@@ -274,7 +277,7 @@ def update_game_date(title, last_played):
     db.commit()
 
 
-def update_settings(user, to_set, to_unset):
+def update_settings(table, who, to_set, to_unset):
     db = choose_database("testdb")
     mycursor = db.cursor()
     new_set = ''
@@ -285,7 +288,11 @@ def update_settings(user, to_set, to_unset):
         add_to_new_set = str(s) + '=0,'
         new_set += add_to_new_set
     new_set = new_set[:-1]  # remove last comma
-    sql = "UPDATE settings SET " + new_set + " WHERE user='" + str(user) + "'"
+    if table=="settings":
+        entry="user"
+    elif table=="group_settings":
+        entry="id"
+    sql = "UPDATE " + table + " SET " + new_set + " WHERE "+entry+"='" + str(who) + "'"
     mycursor.execute(sql)
     db.commit()
 
@@ -311,11 +318,11 @@ def check_household(user):
         return users_string[0][0]
 
 
-def check_notify(user, column):
-    entry = 'user'
-    result = search_column_with_constraint(choose_database("testdb"), "settings", column, entry, user)
+def check_notify(table, who, column):
+    if table=="settings":
+        entry = 'user'
+    elif table=="group_settings":
+        entry = 'id'
+    result = search_column_with_constraint(choose_database("testdb"), table, column, entry, who)
 
-    if len(result) == 0:
-        return 0
-    else:
-        return 1
+    return result[0][0]

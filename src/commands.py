@@ -145,7 +145,7 @@ def ich(update, context):
         if "group" in update.message.chat.type:
             plan = GameNight()
             check = plan.add_participant(update.message.from_user.username)
-            send_message = check_notify(update.message.from_user.username, "notify_participation")
+            send_message = check_notify("settings", update.message.from_user.username, "notify_participation")
             if check < 0:
                 update.message.reply_text(
                     'Das war leider nichts. Vereinbart erst einmal einen '
@@ -185,7 +185,8 @@ def nichtich(update, context):
         if "group" in update.message.chat.type:
             plan = GameNight()
             check = plan.remove_participant(update.message.from_user.username)
-            if check < 0:
+            send_message = check_notify("settings", update.message.from_user.username, "notify_participation")
+            if check < 0 and send_message:
                 try:
                     context.bot.send_message(update.message.from_user.id, 'Das war leider '
                                              'nichts. Du warst nicht angemeldet.')
@@ -200,15 +201,16 @@ def nichtich(update, context):
                                                      plan.get_participants())
                 except BadRequest:
                     handle_bot_not_admin(context.bot, update.message.chat.id)
-                try:
-                    context.bot.send_message(update.message.from_user.id,
-                                             'Schade, dass du doch nicht '
-                                             'teilnehmen kannst, ' +
-                                             update.message.from_user.first_name + '.')
-                except Unauthorized:
-                    handle_bot_unauthorized(context.bot, update.message.chat_id,
-                                            update.message.from_user.first_name,
-                                            try_again="/"+__name__)
+                if send_message:
+                    try:
+                        context.bot.send_message(update.message.from_user.id,
+                                                'Schade, dass du doch nicht '
+                                                'teilnehmen kannst, ' +
+                                                update.message.from_user.first_name + '.')
+                    except Unauthorized:
+                        handle_bot_unauthorized(context.bot, update.message.chat_id,
+                                                update.message.from_user.first_name,
+                                                try_again="/"+__name__)
 
         if update.message.chat.type == "private":
             update.message.reply_text('Stopp, das hat hier nichts zu suchen.\n'
@@ -494,21 +496,32 @@ def leeren(update, context):
 def einstellungen(update, context):
     if check_user(update.message.chat_id):
         if "group" in update.message.chat.type:
-            try:
-                context.bot.delete_message(update.message.chat_id,
-                                           update.message.message_id)
-            except BadRequest:
-                handle_bot_not_admin(context.bot, update.message.chat_id)
+            init_settings = []
+            msg = context.bot.send_message(update.message.chat_id,
+                                   'Ändert hier die Gruppeneinstellungen.\n'
+                                   'Antwortet mit /stop, um abzubrechen.',
+                                   reply_markup=generate_settings(
+                                       "settings_group",
+                                       first=True,
+                                       who=update.message.chat_id,
+                                       init_array=init_settings))
+            query = "settings_group," + str(update.message.chat_id) + ","
+            # is this needed???
+            for init_val in init_settings:
+                query = query + init_val + "/"
+            QueryBuffer().add(msg.message_id, query)
         if update.message.chat.type == "private":
             init_settings = []
             msg = context.bot.send_message(update.message.chat_id,
                                    'Ändere hier deine Einstellungen.\n'
                                    'Antworte mit /stop, um abzubrechen.',
                                    reply_markup=generate_settings(
+                                       "settings_private",
                                        first=True,
-                                       user=update.message.from_user.username,
+                                       who=update.message.from_user.username,
                                        init_array=init_settings))
-            query = "settings," + update.message.from_user.username + ","
+            query = "settings_private," + update.message.from_user.username + ","
+            # is this needed???
             for init_val in init_settings:
                 query = query + init_val + "/"
             QueryBuffer().add(msg.message_id, query)

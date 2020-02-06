@@ -21,7 +21,7 @@ def handle_vote(update, context):
     if plan.poll is not None:
         check = plan.poll.register_vote(
             update.message.from_user.username, update.message.text)
-        send_message = check_notify(update.message.from_user.username, "notify_vote")
+        send_message = check_notify("settings", update.message.from_user.username, "notify_vote")
         if check == 0 and send_message:
             try:
                 context.bot.send_message(update.message.from_user.id,

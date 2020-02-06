@@ -70,7 +70,7 @@ def handle_calendar(update, context):
                         update.callback_query.message.chat_id,
                         'Spielwiese: ' + date.strftime("%d/%m/%Y"))
                 except BadRequest:
-                    handle_bot_not_admin(context.bot, update.message.chat.id)
+                    handle_bot_not_admin(context.bot, update.callback_query.message.chat.id)
                 context.bot.send_message(
                     chat_id=update.callback_query.message.chat_id,
                     text="Okay, schrei einfach /ich, wenn du "
@@ -326,7 +326,9 @@ def handle_settings(update, context):
             text='Okay, hier ist nichts passiert.',
             reply_markup=ReplyKeyboardRemove())
     elif setting == "done":
-        end_of_settings(update, context)
+        query = QueryBuffer().get_query(update.callback_query.message.message_id)
+        settings_type = ps.parse_csv(query)[0]
+        end_of_settings(update, context, settings_type)
     else:  # we actually got a setting, now register it
         if update.callback_query.data.split(";")[2] == "SET":
             query = QueryBuffer().get_query(update.callback_query.message.message_id) + setting + "/"
@@ -337,7 +339,7 @@ def handle_settings(update, context):
                 context.bot.edit_message_text(text=update.callback_query.message.text,
                                     chat_id=update.callback_query.message.chat_id,
                                     message_id=update.callback_query.message.message_id,
-                                    reply_markup=generate_settings(to_set=settings_so_far))
+                                    reply_markup=generate_settings(ps.parse_csv(query)[0], to_set=settings_so_far))
             except BadRequest:
                 pass
         elif update.callback_query.data.split(";")[2] == "UNSET":
@@ -355,26 +357,32 @@ def handle_settings(update, context):
                 context.bot.edit_message_text(text=update.callback_query.message.text,
                                     chat_id=update.callback_query.message.chat_id,
                                     message_id=update.callback_query.message.message_id,
-                                    reply_markup=generate_settings(to_set=settings_so_far))
+                                    reply_markup=generate_settings(ps.parse_csv(query)[0], to_set=settings_so_far))
             except BadRequest:
                 pass
 
 
-def end_of_settings(update, context):
+def end_of_settings(update, context, settings_type):
     query = QueryBuffer().get_query(update.callback_query.message.message_id)
-    # query looks like: setting,username,notify_participation/notify_vote/
-    possible_settings = ['notify_participation', 'notify_vote']
-    if ps.parse_csv(query)[0] == "settings":
+    # query looks like: settings_private,username,notify_participation/notify_vote/
+    # or: settings_group,title,notify_not_admin,notify_unauthorized
+    if "settings" in ps.parse_csv(query)[0]:
         to_set = ps.parse_csv(query)[-1].split('/')[:-1]
         to_unset = []
+        if ps.parse_csv(query)[0] == "settings_private":
+            possible_settings = ['notify_participation', 'notify_vote']
+            table = "settings"
+        else:  # ps.parse_csv(query)[0] == "settings_group":
+            possible_settings = ['notify_not_admin', 'notify_unauthorized']
+            table = "group_settings"
         for _ in possible_settings:
             if _ not in to_set:
                 to_unset.append(_)
-        user = ps.parse_csv(query)[1]
-        dbf.update_settings(user, to_set, to_unset)
+        who = ps.parse_csv(query)[1]
+        dbf.update_settings(table, who, to_set, to_unset)
         context.bot.send_message(
                     chat_id=update.callback_query.message.chat_id,
-                    text="Okay, ich habe mir deine Einstellungen vermerkt.",
+                    text="Okay, ich habe mir die Einstellungen vermerkt.",
                     reply_markup=ReplyKeyboardRemove())
         shrink_keyboard(update, context, "Einstellungen angepasst.")
     else:
@@ -386,11 +394,20 @@ def end_of_settings(update, context):
 # when generated the first time, set "first" and "user" to look up the current settings
 # also, store in init_array the settings already set to initialize query buffer
 # later, just keep track of what the user selected up until now
-def generate_settings(to_set=None, first=None, user=None, init_array=None):
+def generate_settings(settings_type, to_set=None, first=None, who=None, init_array=None):
+    if settings_type == "settings_group":
+        table = "group_settings"
+        entry = "id"
+        settings = {'Warnung, wenn Bot kein Admin ist' : 'notify_not_admin',
+                    'Warnung, wenn Bot jemanden nicht privat ansprechen darf' : 'notify_unauthorized'}
+    else:  # settings_type == "settings_private"
+        table = "settings"
+        entry = "user"
+        settings = {'Benachrichtigung bei Teilnahme am Spieleabend' : 'notify_participation',
+                    'Benachrichtigung bei Abstimmung' : 'notify_vote'}
     if first:
-        current_settings = dbf.search_single_entry(dbf.choose_database("testdb"), "settings", "user", user)[0][1:]   
+        current_settings = dbf.search_single_entry(dbf.choose_database("testdb"), table, entry, who)[0][1:]
     keyboard = []
-    settings = {'Benachrichtigung bei Teilnahme am Spieleabend' : 'notify_participation', 'Benachrichtigung bei Abstimmung' : 'notify_vote'}
     if first:
         index = 0
         for (key, value) in settings.items():
