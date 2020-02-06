@@ -15,7 +15,7 @@ from calendar_export import delete_ics_file
 from planning_functions import GameNight
 from inline_handler import (generate_findbycategory, generate_pollbycategory, generate_settings)
 from query_buffer import QueryBuffer
-from error_handler import handle_bot_not_admin
+from error_handler import (handle_bot_not_admin, handle_bot_unauthorized)
 
 """
 Commands registered with BotFather:
@@ -169,13 +169,7 @@ def ich(update, context):
 
                             context.bot.send_document(update.message.from_user.id, document=open(plan.cal_file, 'rb'))
                         except Unauthorized:
-                            context.bot.send_message(update.message.chat_id, 'OH! '
-                                                    'scheinbar darf ich nicht privat mit dir Reden.'
-                                                    'Versuche dich privat mit start oder key'
-                                                    'zu authorisieren und dann probiere /'
-                                                    + __name__ +
-                                                    ' nochmal'
-                                                    )
+                            handle_bot_unauthorized(context.bot, update.message.chat.id, "/"+__name__)
 
         if update.message.chat.type == "private":
             update.message.reply_text('Stopp, das hat hier nichts zu suchen.\n'
@@ -195,13 +189,7 @@ def nichtich(update, context):
                     context.bot.send_message(update.message.from_user.id, 'Das war leider '
                                              'nichts. Du warst nicht angemeldet.')
                 except Unauthorized:
-                    context.bot.send_message(update.message.chat_id, 'OH! '
-                                             'scheinbar darf ich nicht privat mit dir Reden.'
-                                             'Versuche dich privat mit start oder key'
-                                             'zu authorisieren und dann probiere /'
-                                             + __name__ +
-                                             ' nochmal'
-                                             )
+                    handle_bot_unauthorized(context.bot, update.message.chat_id, "/"+__name__)
 
             else:
                 try:
@@ -215,13 +203,7 @@ def nichtich(update, context):
                                              'teilnehmen kannst, ' +
                                              update.message.from_user.first_name + '.')
                 except Unauthorized:
-                    context.bot.send_message(update.message.chat_id, 'OH! '
-                                             'scheinbar darf ich nicht mit dir Reden.'
-                                             'Versuche dich privat mit start oder key'
-                                             'zu authorisieren und dann probiere /'
-                                             + __name__ +
-                                             ' nochmal'
-                                             )
+                    handle_bot_unauthorized(context.bot, update.message.chat_id, "/"+__name__)
 
         if update.message.chat.type == "private":
             update.message.reply_text('Stopp, das hat hier nichts zu suchen.\n'

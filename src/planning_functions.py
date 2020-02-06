@@ -13,7 +13,7 @@ from database_functions import (get_playable_entries, choose_database,
 from singleton import Singleton
 from calendar_export import delete_ics_file
 from parse_strings import single_db_entry_to_string
-from error_handler import handle_bot_not_admin
+from error_handler import (handle_bot_not_admin, handle_bot_unauthorized)
 
 
 def handle_vote(update, context):
@@ -30,12 +30,7 @@ def handle_vote(update, context):
                                          " gestimmt. Du musst mir das nicht mehrmals "
                                          "sagen, ich bin fähig ;)")
             except Unauthorized:
-                context.bot.send_message(update.message.chat_id, 'OH! '
-                                         'scheinbar darf ich nicht mit dir Reden.'
-                                         'Versuche dich privat mit start oder key'
-                                         'zu authorisieren und dann probiere /'
-                                         + __name__ +
-                                         ' nochmal')
+                handle_bot_unauthorized(context.bot, update.message.chat_id)
         elif check < 0:
             try:
                 context.bot.send_message(update.message.from_user.id,
@@ -43,12 +38,7 @@ def handle_vote(update, context):
                                          "Vielleicht darfst du gar nicht abstimmen, " +
                                          update.message.from_user.first_name + "?")
             except Unauthorized:
-                context.bot.send_message(update.message.chat_id, 'OH! '
-                                         'scheinbar darf ich nicht mit dir Reden.'
-                                         'Versuche dich privat mit start oder key'
-                                         'zu authorisieren und dann probiere /'
-                                         + __name__ +
-                                         ' nochmal')  
+                handle_bot_unauthorized(context.bot, update.message.chat_id)  
         else:
             try:
                 context.bot.send_message(update.message.from_user.id,
@@ -56,12 +46,7 @@ def handle_vote(update, context):
                                          ", du hast für " + update.message.text +
                                          " gestimmt.")
             except Unauthorized:
-                context.bot.send_message(update.message.chat_id, 'OH! '
-                                         'scheinbar darf ich nicht mit dir Reden.'
-                                         'Versuche dich privat mit start oder key'
-                                         'zu authorisieren und dann probiere /'
-                                         + __name__ +
-                                         ' nochmal')
+                handle_bot_unauthorized(context.bot, update.message.chat_id, "das mit dem Abstimmen")
 
 
 # Once a day, this function gets called.
