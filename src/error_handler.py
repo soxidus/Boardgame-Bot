@@ -20,7 +20,8 @@ def handle_bot_not_admin(bot, chat_id):
 
 
 def handle_bot_unauthorized(bot, chat_id, user, try_again=None):
-    text = ('OH! Scheinbar darf ich nicht privat mit dir reden. '
+    text = ('OH! Scheinbar darf ich nicht privat mit dir reden, ' +
+            user + '. '
             'Versuche, dich in einem Privatchat mit mir '
             'mit /start oder /key zu authentifizieren.')
     if try_again:
