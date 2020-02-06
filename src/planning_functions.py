@@ -30,11 +30,7 @@ def handle_vote(update, context):
                                          "sagen, ich bin fähig ;)")
             except Unauthorized:
                 context.bot.send_message(update.message.chat_id, 'OH! '
-                                         'scheinbar darf ich nicht mit dir Reden.'
-                                         'Versuche dich privat mit start oder key'
-                                         'zu authorisieren und dann probiere /'
-                                         + __name__ +
-                                         ' nochmal')
+                                         'scheinbar darf ich nicht mit dir Reden.')
         elif check < 0:
             try:
                 context.bot.send_message(update.message.from_user.id,
@@ -43,11 +39,7 @@ def handle_vote(update, context):
                                          update.message.from_user.first_name + "?")
             except Unauthorized:
                 context.bot.send_message(update.message.chat_id, 'OH! '
-                                         'scheinbar darf ich nicht mit dir Reden.'
-                                         'Versuche dich privat mit start oder key'
-                                         'zu authorisieren und dann probiere /'
-                                         + __name__ +
-                                         ' nochmal')
+                                         'scheinbar darf ich nicht mit dir Reden.')
         else:
             try:
                 context.bot.send_message(update.message.from_user.id,
@@ -56,11 +48,7 @@ def handle_vote(update, context):
                                          " gestimmt.")
             except Unauthorized:
                 context.bot.send_message(update.message.chat_id, 'OH! '
-                                         'scheinbar darf ich nicht mit dir Reden.'
-                                         'Versuche dich privat mit start oder key'
-                                         'zu authorisieren und dann probiere /'
-                                         + __name__ +
-                                         ' nochmal')
+                                         'scheinbar darf ich nicht mit dir Reden.')
 
 
 def test_termin(context):
@@ -95,7 +83,7 @@ class GameNight(Singleton):
             for p in self.participants:
                 result = result + p + "\n"
         else:
-            result = "Derzeit ist kein Spieleabend geplant. Das kannst du mit /neuertermin ändern!"
+            result = "Derzeit ist kein Spieleabend geplant. Das kannst du mit /neuer_termin ändern!"
         return result
 
     def set_date(self, date):

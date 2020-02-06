@@ -239,7 +239,7 @@ def handle_pollbycategory(update, context):
                         chat_id=update.callback_query.message.chat_id,
                         text='Das war leider nichts. \n'
                              'Habt ihr kein Datum festgelegt? '
-                             'Holt das mit /neuertermin nach.\n'
+                             'Holt das mit /neuer_termin nach.\n'
                              'Vielleicht hast du dich auch '
                              'einfach nicht angemeldet? Hole das '
                              'mit /ich nach.',

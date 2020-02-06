@@ -145,7 +145,7 @@ def ich(update, context):
             if check < 0:
                 update.message.reply_text(
                     'Das war leider nichts. Vereinbart erst einmal einen '
-                    'Termin mit /neuertermin.')
+                    'Termin mit /neuer_termin.')
             else:
                 if send_message:
                     if check > 0:
@@ -244,7 +244,7 @@ def start_umfrage_spiel(update, context):
             if check < 0:
                 update.message.reply_text('Das war leider nichts. \n'
                                           'Habt ihr kein Datum festgelegt? '
-                                          'Holt das mit /neuertermin nach.\n'
+                                          'Holt das mit /neuer_termin nach.\n'
                                           'Vielleicht hast du dich auch '
                                           'einfach nicht angemeldet? Hole das '
                                           'mit /ich nach.')
@@ -540,7 +540,7 @@ def help(update, context):
                                      'Folgende Funktionen stehen dir im Gruppenchat '
                                      'zur Verfügung:\n\n'
                                      '/key - Authentifiziere dich!\n'
-                                     '/neuertermin - Wir wollen spielen! '
+                                     '/neuer_termin - Wir wollen spielen! '
                                      '(nur in Gruppen)\n'
                                      '/ich - Nimm am nächsten Spieleabend teil! '
                                      '(nur in Gruppen)\n'

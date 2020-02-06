@@ -285,7 +285,7 @@ def expansion_poll_game(update):
         update.message.reply_text(
             'Das war leider nichts. Dies könnte verschiedene Gründe haben:\n\n'
             '(1) Ihr habt kein Datum festgelegt. Holt das mit '
-            '/neuertermin nach.\n'
+            '/neuer_termin nach.\n'
             '(2) Du bist nicht zum Spieleabend angemeldet. '
             'Hole das mit /ich nach.\n'
             '(3) Mir ist nicht bekannt, dass einer der Teilnehmenden eine '
