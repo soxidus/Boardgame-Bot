@@ -30,7 +30,8 @@ def handle_vote(update, context):
                                          " gestimmt. Du musst mir das nicht mehrmals "
                                          "sagen, ich bin fähig ;)")
             except Unauthorized:
-                handle_bot_unauthorized(context.bot, update.message.chat_id)
+                handle_bot_unauthorized(context.bot, update.message.chat_id,
+                                        update.message.from_user.first_name)
         elif check < 0:
             try:
                 context.bot.send_message(update.message.from_user.id,
@@ -38,7 +39,8 @@ def handle_vote(update, context):
                                          "Vielleicht darfst du gar nicht abstimmen, " +
                                          update.message.from_user.first_name + "?")
             except Unauthorized:
-                handle_bot_unauthorized(context.bot, update.message.chat_id)  
+                handle_bot_unauthorized(context.bot, update.message.chat_id,
+                                        update.message.from_user.first_name)  
         else:
             try:
                 context.bot.send_message(update.message.from_user.id,
@@ -46,7 +48,9 @@ def handle_vote(update, context):
                                          ", du hast für " + update.message.text +
                                          " gestimmt.")
             except Unauthorized:
-                handle_bot_unauthorized(context.bot, update.message.chat_id, "das mit dem Abstimmen")
+                handle_bot_unauthorized(context.bot, update.message.chat_id,
+                                        update.message.from_user.first_name,
+                                        try_again="das mit dem Abstimmen")
 
 
 # Once a day, this function gets called.
