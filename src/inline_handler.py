@@ -419,7 +419,7 @@ def generate_settings(settings_type, to_set=None, first=None, who=None, init_arr
         index = 0
         for (key, value) in settings.items():
             row = []
-            if 1 in current_settings[index]:
+            if current_settings[index] == 1:
                 data = ";".join(["SETTING", value, "UNSET"])
                 label = key + " ✓"
                 row.append(InlineKeyboardButton(label, callback_data=data))
