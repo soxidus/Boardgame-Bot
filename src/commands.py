@@ -285,7 +285,10 @@ def start_umfrage_spiel(update, context):
                                           'Holt das mit /neuer_termin nach.\n'
                                           'Vielleicht hast du dich auch '
                                           'einfach nicht angemeldet? Hole das '
-                                          'mit /ich nach.')
+                                          'mit /ich nach.\n'
+                                          'Vielleicht steht auch gar kein Spiel '
+                                          'zur Auswahl? Tragt neue Spiele mit '
+                                          '/neues_spiel ein!')
             else:
                 keys = []
                 for o in plan.poll.options:
