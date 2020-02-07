@@ -26,7 +26,7 @@ def handle_vote(update, context):
         if send_message < 0:  # no entry in table, user hasn't talked to bot yet
             handle_bot_unauthorized(context.bot, update.message.chat_id, update.message.from_user.first_name)
             handled_unauthorized = True
-        if check == 0 and send_message:
+        if check == 0 and send_message:  # user voted the same thing
             try:
                 context.bot.send_message(update.message.from_user.id,
                                          "Okay " + update.message.from_user.first_name +
@@ -38,7 +38,7 @@ def handle_vote(update, context):
                     handle_bot_unauthorized(context.bot, update.message.chat_id,
                                             update.message.from_user.first_name)
                     handled_unauthorized = True
-        elif check < 0:
+        elif check < 0:  # user not allowed to vote
             try:
                 context.bot.send_message(update.message.from_user.id,
                                          "Das hat nicht funktioniert. "
@@ -49,7 +49,7 @@ def handle_vote(update, context):
                     handle_bot_unauthorized(context.bot, update.message.chat_id,
                                             update.message.from_user.first_name)
                     handled_unauthorized = True
-        else:
+        elif check > 0 and send_message:  # user gave a new vote
             try:
                 context.bot.send_message(update.message.from_user.id,
                                          "Okay " + update.message.from_user.first_name +
