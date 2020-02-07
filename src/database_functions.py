@@ -182,7 +182,7 @@ def get_playable_entries_by_category(db, table, column, owner, category, no_part
         where += add_to_where
 
     on = table + ".game_uuid=categories.`"+category + "` AND " + where  # use `` bc. categories have spaces in them
-    sql = "SELECT " + table + "." + column + " FROM " + table + " INNER JOIN categories ON "+ on
+    sql = "SELECT " + table + "." + column + " FROM " + table + " INNER JOIN categories ON " + on
 
     mycursor.execute(sql)
     result = mycursor.fetchall()
@@ -288,11 +288,11 @@ def update_settings(table, who, to_set, to_unset):
         add_to_new_set = str(s) + '=0,'
         new_set += add_to_new_set
     new_set = new_set[:-1]  # remove last comma
-    if table=="settings":
-        entry="user"
-    elif table=="group_settings":
-        entry="id"
-    sql = "UPDATE " + table + " SET " + new_set + " WHERE "+entry+"='" + str(who) + "'"
+    if table == "settings":
+        entry = "user"
+    elif table == "group_settings":
+        entry = "id"
+    sql = "UPDATE " + table + " SET " + new_set + " WHERE " + entry + "='" + str(who) + "'"
     mycursor.execute(sql)
     db.commit()
 

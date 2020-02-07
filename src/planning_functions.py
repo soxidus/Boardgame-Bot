@@ -64,7 +64,7 @@ def handle_vote(update, context):
 
 
 # Once a day, this function gets called.
-# If it notices a past Game Night, 
+# If it notices a past Game Night,
 # it clears all the info on it.
 def test_termin(context):
     now = datetime.datetime.now()
@@ -259,7 +259,8 @@ class Poll(object):
             r = re.compile('.{2}/.{2}/.{4}')
             if r.match(plan.date) is not None:
                 d = datetime.datetime.strptime(plan.date, '%d/%m/%Y')
-        else: d = None
+        else:
+            d = None
         for p in participants:
             for c in categories_list[:-1]:  # ignore "keine" category
                 entries = get_playable_entries_by_category(
@@ -270,7 +271,7 @@ class Poll(object):
                     games_general_set.add(single_db_entry_to_string(entries[_][0]))  # keeps track of actual amount of games available this evening
             # get all playable games that were assigned no category
             entries = get_playable_entries(choose_database("testdb"), 'games', 'title',
-                        p, no_participants=len(participants), planned_date=d)
+                                           p, no_participants=len(participants), planned_date=d)
             for _ in range(len(entries)):
                 games_by_category[categories['keine']].add(single_db_entry_to_string(entries[_][0]))
                 games_general_set.add(single_db_entry_to_string(entries[_][0]))
@@ -349,7 +350,8 @@ class Poll(object):
             r = re.compile('.{2}/.{2}/.{4}')
             if r.match(plan.date) is not None:
                 d = datetime.datetime.strptime(plan.date, '%d/%m/%Y')
-        else: d = None
+        else:
+            d = None
 
         games = set()
         for p in participants:

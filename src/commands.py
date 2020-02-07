@@ -108,7 +108,7 @@ def neuertermin(update, context):
     if check_user(update.message.chat_id):
         if "group" in update.message.chat.type:
             update.message.reply_text('Okay, wann wollt ihr spielen?',
-                                            reply_markup=telegramcalendar.create_calendar())
+                                      reply_markup=telegramcalendar.create_calendar())
         if "private" in update.message.chat.type:
             update.message.reply_text('Stopp, das hat hier nichts zu suchen.\n'
                                       'Bitte versuche es im Gruppenchat...')
@@ -132,9 +132,9 @@ def endetermin(update, context):
             config_path = os.path.dirname(os.path.realpath(__file__))
             config.read(os.path.join(config_path, "config.ini"))
             title = config['GroupDetails']['title']
-            try:                
+            try:
                 context.bot.set_chat_title(update.message.chat.id, title)
-                context.bot.set_chat_description(update.message.chat_id, "")                
+                context.bot.set_chat_description(update.message.chat_id, "")
             except BadRequest:
                 handle_bot_not_admin(context.bot, update.message.chat.id)
             # since we can delete the Keyboard only via reply
@@ -219,7 +219,7 @@ def nichtich(update, context):
                                              'nichts. Du warst nicht angemeldet.')
                 except Unauthorized:
                     if not handled_unauthorized:
-                        handle_bot_unauthorized(context.bot, update.message.chat_id, 
+                        handle_bot_unauthorized(context.bot, update.message.chat_id,
                                                 update.message.from_user.first_name,
                                                 try_again="/nichtich")
                         handled_unauthorized = True
@@ -232,9 +232,9 @@ def nichtich(update, context):
                 if send_message:
                     try:
                         context.bot.send_message(update.message.from_user.id,
-                                                'Schade, dass du doch nicht '
-                                                'teilnehmen kannst, ' +
-                                                update.message.from_user.first_name + '.')
+                                                 'Schade, dass du doch nicht '
+                                                 'teilnehmen kannst, ' +
+                                                 update.message.from_user.first_name + '.')
                     except Unauthorized:
                         if not handled_unauthorized:
                             handle_bot_unauthorized(context.bot, update.message.chat_id,
@@ -570,11 +570,11 @@ def leeren(update, context):
             config_path = os.path.dirname(os.path.realpath(__file__))
             config.read(os.path.join(config_path, "config.ini"))
             title = config['GroupDetails']['title']
-            try:  # raises error when no modification or bot not Admin                
+            try:  # raises error when no modification or bot not Admin
                 context.bot.set_chat_title(update.message.chat.id, title)
                 context.bot.set_chat_description(update.message.chat_id, "")
             except BadRequest:
-                handle_bot_not_admin(context.bot, update.message.chat.id)            
+                handle_bot_not_admin(context.bot, update.message.chat.id)
             update.message.reply_text('Ich habe alle Termine und '
                                       'Umfragen zurückgesetzt.',
                                       reply_markup=ReplyKeyboardRemove())
@@ -591,13 +591,13 @@ def einstellungen(update, context):
         if "group" in update.message.chat.type:
             init_settings = []
             msg = context.bot.send_message(update.message.chat_id,
-                                   'Ändert hier die Gruppeneinstellungen.\n'
-                                   'Antwortet mit /stop, um abzubrechen.',
-                                   reply_markup=generate_settings(
-                                       "settings_group",
-                                       first=True,
-                                       who=update.message.chat_id,
-                                       init_array=init_settings))
+                                           'Ändert hier die Gruppeneinstellungen.\n'
+                                           'Antwortet mit /stop, um abzubrechen.',
+                                           reply_markup=generate_settings(
+                                                "settings_group",
+                                                first=True,
+                                                who=update.message.chat_id,
+                                                init_array=init_settings))
             query = "settings_group," + str(update.message.chat_id) + ","
             # init_settings was initialised in generate_settings
             for init_val in init_settings:
@@ -606,13 +606,13 @@ def einstellungen(update, context):
         if update.message.chat.type == "private":
             init_settings = []
             msg = context.bot.send_message(update.message.chat_id,
-                                   'Ändere hier deine Einstellungen.\n'
-                                   'Antworte mit /stop, um abzubrechen.',
-                                   reply_markup=generate_settings(
-                                       "settings_private",
-                                       first=True,
-                                       who=update.message.from_user.username,
-                                       init_array=init_settings))
+                                           'Ändere hier deine Einstellungen.\n'
+                                           'Antworte mit /stop, um abzubrechen.',
+                                           reply_markup=generate_settings(
+                                                "settings_private",
+                                                first=True,
+                                                who=update.message.from_user.username,
+                                                init_array=init_settings))
             query = "settings_private," + update.message.from_user.username + ","
             # init_settings was initialised in generate_settings
             for init_val in init_settings:

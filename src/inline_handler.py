@@ -43,9 +43,9 @@ def shrink_keyboard(update, context, label):
     row.append(InlineKeyboardButton(label, callback_data="ENDED"))
     keyboard.append(row)
     context.bot.edit_message_text(text=query.message.text,
-                            chat_id=query.message.chat_id,
-                            message_id=query.message.message_id,
-                            reply_markup=InlineKeyboardMarkup(keyboard))
+                                  chat_id=query.message.chat_id,
+                                  message_id=query.message.message_id,
+                                  reply_markup=InlineKeyboardMarkup(keyboard))
 
 
 def handle_calendar(update, context):
@@ -140,7 +140,7 @@ def end_of_categories(update, context, no_category=False):
     # remove categories from query buffer now
     uuid = ps.generate_uuid_32()
     query = ps.csv_to_string(query_csv[:-1]) + "," + uuid
-    
+
     if query_csv[0] == "new_game":
         known_games = dbf.search_entries_by_user(
             dbf.choose_database("testdb"), 'games',
@@ -161,9 +161,9 @@ def end_of_categories(update, context, no_category=False):
                                     ps.remove_first_string(query)))
         else:
             dbf.add_game_into_db(ps.parse_values_from_array(
-                                    ps.remove_first_string(query)),
-                                    cats=categories,
-                                    uuid=uuid)            
+                                 ps.remove_first_string(query)),
+                                 cats=categories,
+                                 uuid=uuid)
         context.bot.send_message(
                     chat_id=update.callback_query.message.chat_id,
                     text="Okay, das Spiel wurde hinzugefügt \\o/",
@@ -405,13 +405,13 @@ def generate_settings(settings_type, to_set=None, first=None, who=None, init_arr
     if settings_type == "settings_group":
         table = "group_settings"
         entry = "id"
-        settings = {'Warnung, wenn Bot kein Admin ist' : 'notify_not_admin',
-                    'Warnung, wenn Bot jemanden nicht privat ansprechen darf' : 'notify_unauthorized'}
+        settings = {'Warnung, wenn Bot kein Admin ist': 'notify_not_admin',
+                    'Warnung, wenn Bot jemanden nicht privat ansprechen darf': 'notify_unauthorized'}
     else:  # settings_type == "settings_private"
         table = "settings"
         entry = "user"
-        settings = {'Benachrichtigung bei Teilnahme am Spieleabend' : 'notify_participation',
-                    'Benachrichtigung bei Abstimmung' : 'notify_vote'}
+        settings = {'Benachrichtigung bei Teilnahme am Spieleabend': 'notify_participation',
+                    'Benachrichtigung bei Abstimmung': 'notify_vote'}
     if first:
         current_settings = dbf.search_single_entry(dbf.choose_database("testdb"), table, entry, who)[0][1:]
     keyboard = []

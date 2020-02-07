@@ -2,6 +2,7 @@
 
 from database_functions import check_notify
 
+
 def handle_bot_not_admin(bot, chat_id):
     bot_is_admin = False
     for _ in bot.get_chat_administrators(chat_id):
@@ -9,7 +10,7 @@ def handle_bot_not_admin(bot, chat_id):
             bot_is_admin = True  # error was raised because no modification occurs
     notify = check_notify("group_settings", chat_id, "notify_not_admin")
     if not bot_is_admin and notify:
-        bot.send_message(chat_id, 
+        bot.send_message(chat_id,
                          'Hey Leute, leider bin ich hier kein Admin. '
                          'Das fällt gerade auf, weil ich so ein paar '
                          'meiner Funktionen nicht nutzen kann:\n'
