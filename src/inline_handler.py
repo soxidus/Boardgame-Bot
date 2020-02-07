@@ -5,13 +5,14 @@ import os
 from random import randrange
 from telegram.error import BadRequest
 from telegram import (InlineKeyboardButton, InlineKeyboardMarkup,
-                      ReplyKeyboardRemove, ForceReply, 
+                      ReplyKeyboardRemove, ForceReply,
                       KeyboardButton, ReplyKeyboardMarkup)
 from calendarkeyboard import telegramcalendar
 from planning_functions import GameNight
 from query_buffer import QueryBuffer
 from parse_strings import single_db_entry_to_string
 from error_handler import handle_bot_not_admin
+from calendar_export import create_ics_file
 import reply_handler as rep
 import database_functions as dbf
 import parse_strings as ps
@@ -75,6 +76,8 @@ def handle_calendar(update, context):
                         title + ': ' + date.strftime("%d/%m/%Y"))
                 except BadRequest:
                     handle_bot_not_admin(context.bot, update.callback_query.message.chat.id)
+                filename = create_ics_file("Spieleabend", date)
+                GameNight(chat_id=update.callback_query.message.chat_id).set_cal_file(filename)
                 context.bot.send_message(
                     chat_id=update.callback_query.message.chat_id,
                     text="Okay, schrei einfach /ich, wenn du "
@@ -105,9 +108,9 @@ def handle_category(update, context):
             # change keyboard layout
             try:
                 context.bot.edit_message_text(text=update.callback_query.message.text,
-                                    chat_id=update.callback_query.message.chat_id,
-                                    message_id=update.callback_query.message.message_id,
-                                    reply_markup=generate_categories(pressed=categories_so_far))
+                                              chat_id=update.callback_query.message.chat_id,
+                                              message_id=update.callback_query.message.message_id,
+                                              reply_markup=generate_categories(pressed=categories_so_far))
             except BadRequest:
                 pass
         elif update.callback_query.data.split(";")[2] == "UNSET":
@@ -123,9 +126,9 @@ def handle_category(update, context):
             # change keyboard layout
             try:
                 context.bot.edit_message_text(text=update.callback_query.message.text,
-                                    chat_id=update.callback_query.message.chat_id,
-                                    message_id=update.callback_query.message.message_id,
-                                    reply_markup=generate_categories(pressed=categories_so_far))
+                                              chat_id=update.callback_query.message.chat_id,
+                                              message_id=update.callback_query.message.message_id,
+                                              reply_markup=generate_categories(pressed=categories_so_far))
             except BadRequest:
                 pass
 
@@ -178,26 +181,26 @@ def generate_categories(first=False, pressed=None):
     config = configparser.ConfigParser(converters={'list': lambda x: [i.strip() for i in x.split(',')]})
     config_path = os.path.dirname(os.path.realpath(__file__))
     config.read(os.path.join(config_path, "config.ini"))
-    categories = config.getlist('GameCategories','categories')  # no, this is no error. getlist is created by converter above
+    categories = config.getlist('GameCategories', 'categories')  # no, this is no error. getlist is created by converter above
     for cat in categories:
         row = []
         if pressed and (cat in pressed):
-            data = ";".join(["CATEGORY",cat,"UNSET"])
+            data = ";".join(["CATEGORY", cat, "UNSET"])
             label = cat + " ✓"
             row.append(InlineKeyboardButton(label, callback_data=data))
         else:
-            data = ";".join(["CATEGORY",cat,"SET"])
+            data = ";".join(["CATEGORY", cat, "SET"])
             row.append(InlineKeyboardButton(cat, callback_data=data))
         keyboard.append(row)
     # last row: no statement and /stop button
     row = []
     if first:
-        data = ";".join(["CATEGORY","none"])
+        data = ";".join(["CATEGORY", "none"])
         row.append(InlineKeyboardButton('keine Angabe', callback_data=data))
     else:
-        data = ";".join(["CATEGORY","done"])
-        row.append(InlineKeyboardButton('Fertig', callback_data=data))        
-    data = ";".join(["CATEGORY","stop"])
+        data = ";".join(["CATEGORY", "done"])
+        row.append(InlineKeyboardButton('Fertig', callback_data=data))
+    data = ";".join(["CATEGORY", "stop"])
     row.append(InlineKeyboardButton('Abbrechen', callback_data=data))
     keyboard.append(row)
     return InlineKeyboardMarkup(keyboard)
@@ -239,17 +242,17 @@ def generate_findbycategory():
     config = configparser.ConfigParser(converters={'list': lambda x: [i.strip() for i in x.split(',')]})
     config_path = os.path.dirname(os.path.realpath(__file__))
     config.read(os.path.join(config_path, "config.ini"))
-    categories = config.getlist('GameCategories','categories')  # no, this is no error. getlist is created by converter above
+    categories = config.getlist('GameCategories', 'categories')  # no, this is no error. getlist is created by converter above
     for cat in categories:
         row = []
-        data = ";".join(["FINDBY",cat])
+        data = ";".join(["FINDBY", cat])
         row.append(InlineKeyboardButton(cat, callback_data=data))
         keyboard.append(row)
     # last row: no statement and /stop button
-    row = []      
-    data = ";".join(["FINDBY","IGNORE"])
+    row = []
+    data = ";".join(["FINDBY", "IGNORE"])
     row.append(InlineKeyboardButton(' ', callback_data=data))
-    data = ";".join(["FINDBY","stop"])
+    data = ";".join(["FINDBY", "stop"])
     row.append(InlineKeyboardButton('Abbrechen', callback_data=data))
     keyboard.append(row)
     return InlineKeyboardMarkup(keyboard)
@@ -268,14 +271,14 @@ def handle_pollbycategory(update, context):
     else:  # got a category
         plan = GameNight()
         check = plan.set_poll(update.callback_query.from_user.username,
-                            category=category)
+                              category=category)
         if check < 0:
             context.bot.send_message(
                         chat_id=update.callback_query.message.chat_id,
                         text='Das war leider nichts. '
                              'Dies könnte verschiedene Gründe haben:\n'
                              '(1) Ihr habt kein Datum festgelegt. '
-                             'Holt das mit /neuertermin nach.\n'
+                             'Holt das mit /neuer_termin nach.\n'
                              '(2) Du bist nicht zum Spieleabend angemeldet. '
                              'Hole das mit /ich nach.\n'
                              '(3) Ihr habt gerade kein Spiel dieser Kategorie '
@@ -304,17 +307,17 @@ def generate_pollbycategory():
     config = configparser.ConfigParser(converters={'list': lambda x: [i.strip() for i in x.split(',')]})
     config_path = os.path.dirname(os.path.realpath(__file__))
     config.read(os.path.join(config_path, "config.ini"))
-    categories = config.getlist('GameCategories','categories')  # no, this is no error. getlist is created by converter above
+    categories = config.getlist('GameCategories', 'categories')  # no, this is no error. getlist is created by converter above
     for cat in categories:
         row = []
-        data = ";".join(["POLLBY",cat])
+        data = ";".join(["POLLBY", cat])
         row.append(InlineKeyboardButton(cat, callback_data=data))
         keyboard.append(row)
     # last row: no statement and /stop button
-    row = []      
-    data = ";".join(["POLLBY","IGNORE"])
+    row = []
+    data = ";".join(["POLLBY", "IGNORE"])
     row.append(InlineKeyboardButton(' ', callback_data=data))
-    data = ";".join(["POLLBY","stop"])
+    data = ";".join(["POLLBY", "stop"])
     row.append(InlineKeyboardButton('Abbrechen', callback_data=data))
     keyboard.append(row)
     return InlineKeyboardMarkup(keyboard)
@@ -341,9 +344,9 @@ def handle_settings(update, context):
             # change keyboard layout
             try:
                 context.bot.edit_message_text(text=update.callback_query.message.text,
-                                    chat_id=update.callback_query.message.chat_id,
-                                    message_id=update.callback_query.message.message_id,
-                                    reply_markup=generate_settings(ps.parse_csv(query)[0], to_set=settings_so_far))
+                                              chat_id=update.callback_query.message.chat_id,
+                                              message_id=update.callback_query.message.message_id,
+                                              reply_markup=generate_settings(ps.parse_csv(query)[0], to_set=settings_so_far))
             except BadRequest:
                 pass
         elif update.callback_query.data.split(";")[2] == "UNSET":
@@ -359,9 +362,9 @@ def handle_settings(update, context):
             # change keyboard layout
             try:
                 context.bot.edit_message_text(text=update.callback_query.message.text,
-                                    chat_id=update.callback_query.message.chat_id,
-                                    message_id=update.callback_query.message.message_id,
-                                    reply_markup=generate_settings(ps.parse_csv(query)[0], to_set=settings_so_far))
+                                              chat_id=update.callback_query.message.chat_id,
+                                              message_id=update.callback_query.message.message_id,
+                                              reply_markup=generate_settings(ps.parse_csv(query)[0], to_set=settings_so_far))
             except BadRequest:
                 pass
 
@@ -416,14 +419,14 @@ def generate_settings(settings_type, to_set=None, first=None, who=None, init_arr
         index = 0
         for (key, value) in settings.items():
             row = []
-            if current_settings[index]==1:
-                data = ";".join(["SETTING",value,"UNSET"])
+            if 1 in current_settings[index]:
+                data = ";".join(["SETTING", value, "UNSET"])
                 label = key + " ✓"
                 row.append(InlineKeyboardButton(label, callback_data=data))
                 # init query buffer
                 init_array.append(value)
             else:
-                data = ";".join(["SETTING",value,"SET"])
+                data = ";".join(["SETTING", value, "SET"])
                 row.append(InlineKeyboardButton(key, callback_data=data))
             keyboard.append(row)
             index += 1
@@ -431,18 +434,18 @@ def generate_settings(settings_type, to_set=None, first=None, who=None, init_arr
         for (key, value) in settings.items():
             row = []
             if to_set and (value in to_set):
-                data = ";".join(["SETTING",value,"UNSET"])
+                data = ";".join(["SETTING", value, "UNSET"])
                 label = key + " ✓"
                 row.append(InlineKeyboardButton(label, callback_data=data))
             else:
-                data = ";".join(["SETTING",value,"SET"])
+                data = ";".join(["SETTING", value, "SET"])
                 row.append(InlineKeyboardButton(key, callback_data=data))
             keyboard.append(row)
     # last row: done and /stop button
     row = []
-    data = ";".join(["SETTING","done"])
-    row.append(InlineKeyboardButton('Fertig', callback_data=data))        
-    data = ";".join(["SETTING","stop"])
+    data = ";".join(["SETTING", "done"])
+    row.append(InlineKeyboardButton('Fertig', callback_data=data))
+    data = ";".join(["SETTING", "stop"])
     row.append(InlineKeyboardButton('Abbrechen', callback_data=data))
     keyboard.append(row)
     return InlineKeyboardMarkup(keyboard)

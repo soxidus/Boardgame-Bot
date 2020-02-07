@@ -7,7 +7,7 @@ import os
 from telegram.error import (BadRequest, Unauthorized)
 from random import randrange
 from database_functions import (get_playable_entries, choose_database,
-                                search_uuid, update_game_date, 
+                                search_uuid, update_game_date,
                                 get_playable_entries_by_category,
                                 check_notify)
 from singleton import Singleton
@@ -92,7 +92,7 @@ class GameNight(Singleton):
             for p in self.participants:
                 result = result + p + "\n"
         else:
-            result = "Derzeit ist kein Spieleabend geplant. Das kannst du mit /neuertermin ändern!"
+            result = "Derzeit ist kein Spieleabend geplant. Das kannst du mit /neuer_termin ändern!"
         return result
 
     def set_date(self, date):
@@ -136,7 +136,8 @@ class GameNight(Singleton):
             self.old_poll.running = False  # this is important for /leeren
         except AttributeError:
             pass
-        delete_ics_file(self.cal_file)
+        if self.cal_file is not None:
+            delete_ics_file(self.cal_file)
         self.date = None
         self.poll = None
         self.chat_id = None
@@ -235,9 +236,9 @@ class Poll(object):
         config = configparser.ConfigParser(converters={'list': lambda x: [i.strip() for i in x.split(',')]})
         config_path = os.path.dirname(os.path.realpath(__file__))
         config.read(os.path.join(config_path, "config.ini"))
-        categories_list = config.getlist('GameCategories','categories')  # no, this is no error. getlist is created by converter above
+        categories_list = config.getlist('GameCategories', 'categories')  # no, this is no error. getlist is created by converter above
         categories_list.append('keine')
-        categories = {categories_list[i]:i for i in range(len(categories_list))}  # {'groß' : 0, ...}
+        categories = {categories_list[i]: i for i in range(len(categories_list))}  # {'groß' : 0, ...}
 
         games_by_category = []
         games_general_set = set()
@@ -284,8 +285,8 @@ class Poll(object):
                     options.append(_[0])
                     break
 
-        else:        
-            categories_used = []  # record what kinds of games we already have    
+        else:
+            categories_used = []  # record what kinds of games we already have
             i = 0
             # select one small game
             small_set = games_by_category[categories['kurz']]
@@ -308,7 +309,7 @@ class Poll(object):
                     elif len(big_set) == 1:
                         # big game is the small game already added - does this even make sense?
                         break
-            
+
             # fill the rest of options up
             while i < no_opts:
                 category = randrange(len(games_by_category))
@@ -328,7 +329,7 @@ class Poll(object):
                         opt = category_set[randrange(len(category_set))]
                         if opt not in options:
                             options.append(opt)
-                            i += 1    
+                            i += 1
 
         return options
 
@@ -348,7 +349,6 @@ class Poll(object):
             for e in entries:
                 games.add(single_db_entry_to_string(e))
 
-        
         games = list(games)  # convert to list so we can index it randomly
         if len(games) == 0:  # no participant owns a game of this category
             return None
@@ -366,7 +366,6 @@ class Poll(object):
                 i += 1
 
         return options
-
 
     def generate_options_exp(self, participants, game):
         exp = set()  # use a set because it takes care of duplicates

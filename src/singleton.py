@@ -10,4 +10,3 @@ class Singleton(object):
 
     def init(self, *args, **kwds):
         pass
-        
