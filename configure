@@ -45,7 +45,18 @@ echo ""
 echo "... setting parameters for authentication database ..."
 
 echo [MySQL Auth] > src/config.ini
-echo host = auth_db >> src/config.ini
+read -p "Do you want the authentication database to run in a docker container (D) or locally (l)? " where
+if [[ ( -z "$where" ) || ( "$where" = "D" ) || ( "$where" = "d" ) ]]
+then
+    echo host = auth_db >> src/config.ini
+elif [[ ( "$where" = "l" ) || ( "$where" = "l" ) ]]
+then
+    echo host = localhost >> src/config.ini
+else
+    echo "Please select it to run in a docker container (D) or locally (l) next time."
+    exit 1
+fi
+echo ...
 echo user = $uservar >> src/config.ini
 echo port = 3306 >> src/config.ini
 echo passwd = $userpassvar >> src/config.ini
@@ -56,7 +67,17 @@ echo >> src/config.ini
 echo "... setting parameters for data database ..."
 
 echo [MySQL Data] >> src/config.ini
-echo host = data_db >> src/config.ini
+read -p "Do you want the data database to run in a docker container (D) or locally (l)? " where
+if [[ ( -z "$where" ) || ( "$where" = "D" ) || ( "$where" = "d" ) ]]
+then
+    echo host = data_db >> src/config.ini
+elif [[ ( "$where" = "l" ) || ( "$where" = "l" ) ]]
+then
+    echo host = localhost >> src/config.ini
+else
+    echo "Please select it to run in a docker container (D) or locally (l) next time."
+    exit 1
+fi
 echo user = $uservar >> src/config.ini
 echo port = 3306 >> src/config.ini
 echo passwd = $userpassvar >> src/config.ini
