@@ -160,7 +160,7 @@ def ich(update, context):
                                                              plan.get_participants())
                             context.bot.send_message(update.message.from_user.id,
                                                      text)
-                            if None not in match('\\d\\d[\\/]\\d\\d[\\/]\\d\\d\\d\\d', str(plan.date)):
+                            if match('\\d\\d[\\/]\\d\\d[\\/]\\d\\d\\d\\d', str(plan.date)) is not None:
                                 context.bot.send_document(update.message.from_user.id,
                                                           document=open(plan.cal_file, 'rb'),
                                                           filename=("Spieleabend " + str(plan.date).replace('/', '-') + ".ics"))
