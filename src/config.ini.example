@@ -19,7 +19,7 @@ token = <insert your token here>
 password = <insert your password here>
 
 [GameCategories]
-categories = ['groß', 'klein', 'Würfel', 'Rollenspiel', 'Karten', 'Worker Placement']
+categories = lang, kurz, komplex, simpel, Kooperationsspiel, Partyspiel, storylastig, Wuerfelspiel, Kartenspiel, Worker Placement, Resource Management, Tile Placement, Deckbuilding, Drafting, Social Deduction
 
 [GroupDetails]
 title = <insert your title here>
