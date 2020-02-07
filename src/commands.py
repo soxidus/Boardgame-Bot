@@ -3,6 +3,7 @@
 from telegram import (ForceReply, ReplyKeyboardMarkup, KeyboardButton,
                       ReplyKeyboardRemove)
 from telegram.error import BadRequest, Unauthorized
+from re import match
 from random import randrange
 from datetime import datetime
 from calendarkeyboard import telegramcalendar
@@ -155,13 +156,14 @@ def ich(update, context):
                         text = ('Danke für deine Zusage zum Spieleabend ' + plan.date + ', '
                                 + update.message.from_user.first_name + '!')
                         try:
-                            context.bot.send_message(update.message.from_user.id,
-                                                     text)
-                            context.bot.send_document(update.message.from_user.id,
-                                                      document=open(plan.cal_file, 'rb'),
-                                                      filename=("Spieleabend " + str(plan.date).replace('/', '-') + ".ics"))
                             context.bot.set_chat_description(update.message.chat_id,
                                                              plan.get_participants())
+                            context.bot.send_message(update.message.from_user.id,
+                                                     text)
+                            if None not in match('\\d\\d[\\/]\\d\\d[\\/]\\d\\d\\d\\d', str(plan.date)):
+                                context.bot.send_document(update.message.from_user.id,
+                                                          document=open(plan.cal_file, 'rb'),
+                                                          filename=("Spieleabend " + str(plan.date).replace('/', '-') + ".ics"))
                         except Unauthorized:
                             context.bot.send_message(update.message.chat_id, 'OH! '
                                                      'scheinbar darf ich nicht privat mit dir Reden.'
