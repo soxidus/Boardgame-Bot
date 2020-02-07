@@ -151,6 +151,11 @@ def ich(update, context):
                     'Das war leider nichts. Vereinbart erst einmal einen '
                     'Termin mit /neuertermin.')
             else:
+                try:
+                    context.bot.set_chat_description(update.message.chat_id,
+                                                     plan.get_participants())
+                except BadRequest:
+                    handle_bot_not_admin(context.bot, update.message.chat.id)
                 if send_message:
                     if check > 0:
                         text = ('Alles gut, ' + update.message.from_user.first_name + ', '
@@ -158,19 +163,14 @@ def ich(update, context):
                     else:  # check = 0
                         text = ('Danke für deine Zusage zum Spieleabend ' + plan.date + ', '
                                 + update.message.from_user.first_name + '!')
-                        try:
-                            context.bot.set_chat_description(update.message.chat_id,
-                                                             plan.get_participants())
-                        except BadRequest:
-                            handle_bot_not_admin(context.bot, update.message.chat.id)
-                        try:
-                            context.bot.send_message(update.message.from_user.id,
-                                                    text)
+                    try:
+                        context.bot.send_message(update.message.from_user.id,
+                                                 text)
 
-                            context.bot.send_document(update.message.from_user.id, document=open(plan.cal_file, 'rb'))
-                        except Unauthorized:
-                            handle_bot_unauthorized(context.bot, update.message.chat.id,
-                                                    update.message.from_user.first_name, try_again="/"+__name__)
+                        context.bot.send_document(update.message.from_user.id, document=open(plan.cal_file, 'rb'))
+                    except Unauthorized:
+                        handle_bot_unauthorized(context.bot, update.message.chat.id,
+                                                update.message.from_user.first_name, try_again="/"+__name__)
 
         if update.message.chat.type == "private":
             update.message.reply_text('Stopp, das hat hier nichts zu suchen.\n'
@@ -194,8 +194,7 @@ def nichtich(update, context):
                     handle_bot_unauthorized(context.bot, update.message.chat_id, 
                                             update.message.from_user.first_name,
                                             try_again="/"+__name__)
-
-            else:
+            elif check >= 0:
                 try:
                     context.bot.set_chat_description(update.message.chat_id,
                                                      plan.get_participants())
