@@ -91,6 +91,7 @@ echo >> src/config.ini
 
 echo [Authentication] >> src/config.ini
 echo password = $botpassvar >> src/config.ini
+echo >> src/config.ini
 
 echo bot configuration finished
 echo ""
@@ -138,4 +139,11 @@ else
         fi
     done
 fi
+echo >> src/config.ini
 echo categories defined.
+echo ""
+
+echo >> src/config.ini
+echo [GroupDetails] >> src/config.ini
+read -p "Enter your group's name: " groupname
+echo title = $groupname >> src/config.ini

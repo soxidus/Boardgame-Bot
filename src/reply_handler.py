@@ -324,9 +324,13 @@ def date(update):
                                   "beim festgelegten Termin an.",
                                   reply_markup=ReplyKeyboardRemove())
     else:
+        config = configparser.ConfigParser()
+        config_path = os.path.dirname(os.path.realpath(__file__))
+        config.read(os.path.join(config_path, "config.ini"))
+        title = config['GroupDetails']['title']
         try:
             update.message.bot.set_chat_title(
-                update.message.chat.id, 'Spielwiese: ' + update.message.text)
+                update.message.chat.id, title + ': ' + update.message.text)
         except BadRequest:
             handle_bot_not_admin(update.message.bot, update.message.chat.id)
         update.message.reply_text("Okay, schrei einfach /ich, "
@@ -359,10 +363,14 @@ def handle_inline(update, context):
                          "beim festgelegten Termin an.",
                     reply_markup=ReplyKeyboardRemove())
             else:
+                config = configparser.ConfigParser()
+                config_path = os.path.dirname(os.path.realpath(__file__))
+                config.read(os.path.join(config_path, "config.ini"))
+                title = config['GroupDetails']['title']
                 try:
                     context.bot.set_chat_title(
                         update.callback_query.message.chat_id,
-                        'Spielwiese: ' + date.strftime("%d/%m/%Y"))
+                        title + ': ' + date.strftime("%d/%m/%Y"))
                 except BadRequest:
                     handle_bot_not_admin(context.bot, update.callback_query.message.chat_id)
                 create_ics_file("Spieleabend", date)

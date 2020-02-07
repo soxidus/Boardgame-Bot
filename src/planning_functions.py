@@ -65,8 +65,12 @@ def test_termin(context):
             d = datetime.datetime.strptime(plan.date, '%d/%m/%Y')
             if d < now:
                 plan = GameNight()
+                config = configparser.ConfigParser()
+                config_path = os.path.dirname(os.path.realpath(__file__))
+                config.read(os.path.join(config_path, "config.ini"))
+                title = config['GroupDetails']['title']
                 try:
-                    context.bot.set_chat_title(plan.chat_id, 'Spielwiese')
+                    context.bot.set_chat_title(plan.chat_id, title)
                     context.bot.set_chat_description(plan.chat_id, "")
                 except BadRequest:
                     handle_bot_not_admin(context.bot, plan.chat_id)

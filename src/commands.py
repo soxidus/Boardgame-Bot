@@ -1,5 +1,7 @@
 # coding=utf-8
 
+import configparser
+import os
 from telegram import (ForceReply, ReplyKeyboardMarkup, KeyboardButton,
                       ReplyKeyboardRemove)
 from telegram.error import BadRequest, Unauthorized
@@ -117,8 +119,12 @@ def endetermin(update, context):
         if "group" in update.message.chat.type:
             plan = GameNight()
             plan.clear()
-            try:
-                context.bot.set_chat_title(update.message.chat.id, 'Spielwiese')
+            config = configparser.ConfigParser()
+            config_path = os.path.dirname(os.path.realpath(__file__))
+            config.read(os.path.join(config_path, "config.ini"))
+            title = config['GroupDetails']['title']
+            try:                
+                context.bot.set_chat_title(update.message.chat.id, title)
                 context.bot.set_chat_description(update.message.chat_id, "")                
             except BadRequest:
                 handle_bot_not_admin(context.bot, update.message.chat.id)
@@ -476,8 +482,12 @@ def leeren(update, context):
         if "group" in update.message.chat.type:
             plan = GameNight()
             plan.clear()
-            try:  # raises error when no modification or bot not Admin
-                context.bot.set_chat_title(update.message.chat.id, 'Spielwiese')
+            config = configparser.ConfigParser()
+            config_path = os.path.dirname(os.path.realpath(__file__))
+            config.read(os.path.join(config_path, "config.ini"))
+            title = config['GroupDetails']['title']
+            try:  # raises error when no modification or bot not Admin                
+                context.bot.set_chat_title(update.message.chat.id, title)
                 context.bot.set_chat_description(update.message.chat_id, "")
             except BadRequest:
                 handle_bot_not_admin(context.bot, update.message.chat.id)            

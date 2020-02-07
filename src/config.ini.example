@@ -20,3 +20,6 @@ password = <insert your password here>
 
 [GameCategories]
 categories = ['groß', 'klein', 'Würfel', 'Rollenspiel', 'Karten', 'Worker Placement']
+
+[GroupDetails]
+title = <insert your title here>
