@@ -42,7 +42,7 @@ Commands registered with BotFather:
     zufallsspiel                - Lass dir vom Bot ein Spiel vorschlagen. (nur im Privatchat)
     genrespiel                  - Lass dir vom Bot ein Spiel einer bestimmten Kategorie vorschlagen. (nur im Privatchat)
     leeren                      - Lösche alle laufenden Pläne und Abstimmungen (laufende Spiel-Eintragungen etc. sind davon nicht betroffen) (nur in Gruppen)
-    einstellungen               - Verändere deine Einstellungen (Benachrichtigungen etc.) (nur im Privatchat)
+    einstellungen               - Verändere deine Einstellungen (Benachrichtigungen etc.)
     help                        - Was kann ich alles tun?
 """
 
@@ -645,10 +645,10 @@ def help(update, context):
                                      '/genrespiel - Ich schlage dir ein Spiel einer '
                                      'bestimmten Kategorie vor.\n'
                                      '/einstellungen - Verändere deine Einstellungen '
-                                     '(Benachrichtigungen etc.)'
+                                     '(Benachrichtigungen etc.)\n'
                                      '/help - Was kann ich alles tun?\n\n'
                                      'Weitere Funktionen stehen dir im Gruppenchat '
-                                     'zur Verfügung.'
+                                     'zur Verfügung. '
                                      'Solltest du im Gruppenchat Funktionen nutzen, '
                                      'die dort nicht erlaubt sind, '
                                      'wird deine Nachricht sofort gelöscht.\n'
@@ -679,6 +679,8 @@ def help(update, context):
                                      '/leeren - Lösche alle laufenden Pläne und '
                                      'Abstimmungen (laufende Spiel-Eintragungen '
                                      'etc. sind davon nicht betroffen)\n '
+                                     '/einstellungen - Verändere die Gruppeneinstellungen '
+                                     '(Benachrichtigungen etc.)\n'
                                      '/help - Was kann ich alles tun?\n\n'
                                      'Solltest du im Gruppenchat Funktionen nutzen, '
                                      'die dort nicht erlaubt sind,'
