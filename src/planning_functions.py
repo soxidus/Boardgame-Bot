@@ -22,8 +22,10 @@ def handle_vote(update, context):
         check = plan.poll.register_vote(
             update.message.from_user.username, update.message.text)
         send_message = check_notify("settings", update.message.from_user.username, "notify_vote")
+        handled_unauthorized = False
         if send_message < 0:  # no entry in table, user hasn't talked to bot yet
-            handle_bot_unauthorized(context.bot, update.message.chat_id, update.message.from_user.username)
+            handle_bot_unauthorized(context.bot, update.message.chat_id, update.message.from_user.first_name)
+            handled_unauthorized = True
         if check == 0 and send_message:
             try:
                 context.bot.send_message(update.message.from_user.id,
@@ -32,8 +34,10 @@ def handle_vote(update, context):
                                          " gestimmt. Du musst mir das nicht mehrmals "
                                          "sagen, ich bin fähig ;)")
             except Unauthorized:
-                handle_bot_unauthorized(context.bot, update.message.chat_id,
-                                        update.message.from_user.first_name)
+                if not handled_unauthorized:
+                    handle_bot_unauthorized(context.bot, update.message.chat_id,
+                                            update.message.from_user.first_name)
+                    handled_unauthorized = True
         elif check < 0:
             try:
                 context.bot.send_message(update.message.from_user.id,
@@ -41,8 +45,10 @@ def handle_vote(update, context):
                                          "Vielleicht darfst du gar nicht abstimmen, " +
                                          update.message.from_user.first_name + "?")
             except Unauthorized:
-                handle_bot_unauthorized(context.bot, update.message.chat_id,
-                                        update.message.from_user.first_name)  
+                if not handled_unauthorized:
+                    handle_bot_unauthorized(context.bot, update.message.chat_id,
+                                            update.message.from_user.first_name)
+                    handled_unauthorized = True
         else:
             try:
                 context.bot.send_message(update.message.from_user.id,
@@ -50,9 +56,11 @@ def handle_vote(update, context):
                                          ", du hast für " + update.message.text +
                                          " gestimmt.")
             except Unauthorized:
-                handle_bot_unauthorized(context.bot, update.message.chat_id,
-                                        update.message.from_user.first_name,
-                                        try_again="das mit dem Abstimmen")
+                if not handled_unauthorized:
+                    handle_bot_unauthorized(context.bot, update.message.chat_id,
+                                            update.message.from_user.first_name,
+                                            try_again="das mit dem Abstimmen")
+                    handled_unauthorized = True
 
 
 # Once a day, this function gets called.

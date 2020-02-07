@@ -161,8 +161,10 @@ def ich(update, context):
             plan = GameNight()
             check = plan.add_participant(update.message.from_user.username)
             send_message = check_notify("settings", update.message.from_user.username, "notify_participation")
+            handled_unauthorized = False
             if send_message < 0:  # no entry in table, user hasn't talked to bot yet
-                handle_bot_unauthorized(context.bot, update.message.chat_id, update.message.from_user.username)
+                handled_unauthorized = True
+                handle_bot_unauthorized(context.bot, update.message.chat_id, update.message.from_user.first_name)
             if check < 0:
                 update.message.reply_text(
                     'Das war leider nichts. Vereinbart erst einmal einen '
@@ -189,8 +191,10 @@ def ich(update, context):
                                                       document=open(plan.cal_file, 'rb'),
                                                       filename=("Spieleabend " + str(plan.date).replace('/', '-') + ".ics"))
                     except Unauthorized:
-                        handle_bot_unauthorized(context.bot, update.message.chat.id,
-                                                update.message.from_user.first_name, try_again="/ich")
+                        if not handled_unauthorized:  # don't send two warnings within the same command
+                            handle_bot_unauthorized(context.bot, update.message.chat.id,
+                                                    update.message.from_user.first_name, try_again="/ich")
+                            handled_unauthorized = True
         if update.message.chat.type == "private":
             update.message.reply_text('Stopp, das hat hier nichts zu suchen.\n'
                                       'Bitte versuche es im Gruppenchat...')
@@ -205,16 +209,20 @@ def nichtich(update, context):
             plan = GameNight()
             check = plan.remove_participant(update.message.from_user.username)
             send_message = check_notify("settings", update.message.from_user.username, "notify_participation")
+            handled_unauthorized = False
             if send_message < 0:  # no entry in table, user hasn't talked to bot yet
-                handle_bot_unauthorized(context.bot, update.message.chat_id, update.message.from_user.username)
+                handle_bot_unauthorized(context.bot, update.message.chat_id, update.message.from_user.first_name)
+                handled_unauthorized = True
             if check < 0 and send_message:
                 try:
                     context.bot.send_message(update.message.from_user.id, 'Das war leider '
                                              'nichts. Du warst nicht angemeldet.')
                 except Unauthorized:
-                    handle_bot_unauthorized(context.bot, update.message.chat_id, 
-                                            update.message.from_user.first_name,
-                                            try_again="/nichtich")
+                    if not handled_unauthorized:
+                        handle_bot_unauthorized(context.bot, update.message.chat_id, 
+                                                update.message.from_user.first_name,
+                                                try_again="/nichtich")
+                        handled_unauthorized = True
             elif check >= 0:
                 try:
                     context.bot.set_chat_description(update.message.chat_id,
@@ -228,9 +236,11 @@ def nichtich(update, context):
                                                 'teilnehmen kannst, ' +
                                                 update.message.from_user.first_name + '.')
                     except Unauthorized:
-                        handle_bot_unauthorized(context.bot, update.message.chat_id,
-                                                update.message.from_user.first_name,
-                                                try_again="/nichtich")
+                        if not handled_unauthorized:
+                            handle_bot_unauthorized(context.bot, update.message.chat_id,
+                                                    update.message.from_user.first_name,
+                                                    try_again="/nichtich")
+                            handled_unauthorized = True
 
         if update.message.chat.type == "private":
             update.message.reply_text('Stopp, das hat hier nichts zu suchen.\n'
