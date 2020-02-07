@@ -72,12 +72,19 @@ def key(update, context):
 def csv_import(update, context):
     if check_user(update.message.chat_id):
         if "group" in update.message.chat.type:
-            # maybe add some waiting here at some point
             try:
                 context.bot.delete_message(update.message.chat_id,
                                            update.message.message_id)
             except BadRequest:
                 handle_bot_not_admin(context.bot, update.message.chat_id)
+            try:
+                context.bot.send_message(update.message.from_user.id,
+                                         'Hey, /csv_import kannst du im Gruppenchat '
+                                         'nicht verwenden. Hier schon!')
+            except Unauthorized:
+                handle_bot_unauthorized(context.bot, update.message.chat_id,
+                                        update.message.from_user.username,
+                                        try_again='das Ganze im Privatchat')
         if update.message.chat.type == "private":
             msg = context.bot.send_message(update.message.chat_id,
                                            'Gib die Daten ein, die du im CSV-Format '
@@ -176,7 +183,7 @@ def ich(update, context):
                         context.bot.send_document(update.message.from_user.id, document=open(plan.cal_file, 'rb'))
                     except Unauthorized:
                         handle_bot_unauthorized(context.bot, update.message.chat.id,
-                                                update.message.from_user.first_name, try_again="/"+__name__)
+                                                update.message.from_user.first_name, try_again="/ich")
 
         if update.message.chat.type == "private":
             update.message.reply_text('Stopp, das hat hier nichts zu suchen.\n'
@@ -199,7 +206,7 @@ def nichtich(update, context):
                 except Unauthorized:
                     handle_bot_unauthorized(context.bot, update.message.chat_id, 
                                             update.message.from_user.first_name,
-                                            try_again="/"+__name__)
+                                            try_again="/nichtich")
             elif check >= 0:
                 try:
                     context.bot.set_chat_description(update.message.chat_id,
@@ -215,7 +222,7 @@ def nichtich(update, context):
                     except Unauthorized:
                         handle_bot_unauthorized(context.bot, update.message.chat_id,
                                                 update.message.from_user.first_name,
-                                                try_again="/"+__name__)
+                                                try_again="/nichtich")
 
         if update.message.chat.type == "private":
             update.message.reply_text('Stopp, das hat hier nichts zu suchen.\n'
@@ -233,6 +240,14 @@ def wer(update, context):
                                            update.message.message_id)
             except BadRequest:
                 handle_bot_not_admin(context.bot, update.message.chat_id)
+            try:
+                context.bot.send_message(update.message.from_user.id,
+                                         'Hey, /wer kannst du im Gruppenchat '
+                                         'nicht verwenden. Hier schon!')
+            except Unauthorized:
+                handle_bot_unauthorized(context.bot, update.message.chat_id,
+                                        update.message.from_user.username,
+                                        try_again='das Ganze im Privatchat')
         else:
             participants = GameNight().get_participants()
             update.message.reply_text(participants)
@@ -356,6 +371,14 @@ def spiele(update, context):
                                            update.message.message_id)
             except BadRequest:
                 handle_bot_not_admin(context.bot, update.message.chat_id)
+            try:
+                context.bot.send_message(update.message.from_user.id,
+                                         'Hey, /spiele kannst du im Gruppenchat '
+                                         'nicht verwenden. Hier schon!')
+            except Unauthorized:
+                handle_bot_unauthorized(context.bot, update.message.chat_id,
+                                        update.message.from_user.username,
+                                        try_again='das Ganze im Privatchat')
         if update.message.chat.type == "private":
             gamestring = to_messagestring(
                 search_entries_by_user(choose_database("testdb"), 'games',
@@ -378,8 +401,16 @@ def erweiterungen(update, context):
             try:
                 context.bot.delete_message(update.message.chat_id,
                                            update.message.message_id)
-            except:
+            except BadRequest:
                 handle_bot_not_admin(context.bot, update.message.chat_id)
+            try:
+                context.bot.send_message(update.message.from_user.id,
+                                         'Hey, /erweiterungen kannst du im Gruppenchat '
+                                         'nicht verwenden. Hier schon!')
+            except Unauthorized:
+                handle_bot_unauthorized(context.bot, update.message.chat_id,
+                                        update.message.from_user.username,
+                                        try_again='das Ganze im Privatchat')
         if update.message.chat.type == "private":
             msg = context.bot.send_message(update.message.chat_id,
                                            'Um welches Grundspiel geht es dir gerade?\n'
@@ -397,8 +428,16 @@ def neues_spiel(update, context):
             try:
                 context.bot.delete_message(update.message.chat_id,
                                            update.message.message_id)
-            except:
+            except BadRequest:
                 handle_bot_not_admin(context.bot, update.message.chat_id)
+            try:
+                context.bot.send_message(update.message.from_user.id,
+                                         'Hey, /neues_spiel kannst du im Gruppenchat '
+                                         'nicht verwenden. Hier schon!')
+            except Unauthorized:
+                handle_bot_unauthorized(context.bot, update.message.chat_id,
+                                        update.message.from_user.username,
+                                        try_again='das Ganze im Privatchat')
         if update.message.chat.type == "private":
             msg = context.bot.send_message(update.message.chat_id,
                                            'Wie heißt dein neues Spiel?\n'
@@ -422,6 +461,14 @@ def neue_erweiterung(update, context):
                                            update.message.message_id)
             except BadRequest:
                 handle_bot_not_admin(context.bot, update.message.chat_id)
+            try:
+                context.bot.send_message(update.message.from_user.id,
+                                         'Hey, /neue_erweiterung kannst du im Gruppenchat '
+                                         'nicht verwenden. Hier schon!')
+            except Unauthorized:
+                handle_bot_unauthorized(context.bot, update.message.chat_id,
+                                        update.message.from_user.username,
+                                        try_again='das Ganze im Privatchat')
         if update.message.chat.type == "private":
             msg = context.bot.send_message(update.message.chat_id,
                                            'Für welches Spiel hast du eine neue '
@@ -446,6 +493,14 @@ def zufallsspiel(update, context):
                                            update.message.message_id)
             except BadRequest:
                 handle_bot_not_admin(context.bot, update.message.chat_id)
+            try:
+                context.bot.send_message(update.message.from_user.id,
+                                         'Hey, /zufallsspiel kannst du im Gruppenchat '
+                                         'nicht verwenden. Hier schon!')
+            except Unauthorized:
+                handle_bot_unauthorized(context.bot, update.message.chat_id,
+                                        update.message.from_user.username,
+                                        try_again='das Ganze im Privatchat')
         if update.message.chat.type == "private":
             opt = []
             entries = get_playable_entries(
@@ -468,6 +523,14 @@ def genrespiel(update, context):
                                            update.message.message_id)
             except BadRequest:
                 handle_bot_not_admin(context.bot, update.message.chat_id)
+            try:
+                context.bot.send_message(update.message.from_user.id,
+                                         'Hey, /genrespiel kannst du im Gruppenchat '
+                                         'nicht verwenden. Hier schon!')
+            except Unauthorized:
+                handle_bot_unauthorized(context.bot, update.message.chat_id,
+                                        update.message.from_user.username,
+                                        try_again='das Ganze im Privatchat')
         if update.message.chat.type == "private":
             update.message.reply_text(
                 'Auf welche Kategorie hast du denn heute Lust?',
