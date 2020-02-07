@@ -6,7 +6,7 @@ import datetime
 
 import mysql.connector
 
-from parse_strings import (generate_query_string)
+from parse_strings import (generate_query_string, generate_uuid_32)
 
 
 def choose_database(db):
@@ -35,10 +35,13 @@ def choose_database(db):
     return db
 
 
-def add_entry(db, table, entry, values, valuecnt=None):
+def add_entry(db, table, entry, values, valuesformatted=None):
     mycursor = db.cursor()
 
-    if isinstance(values, int):
+    if valuesformatted:
+        sql = "INSERT INTO " + table + " " + entry + " " + "VALUES " + str(values)
+        mycursor.execute(sql)
+    elif isinstance(values, int):
         valcountstr = "VALUES ("
         sql = "INSERT INTO " + table + " " + entry + " " + valcountstr + str(values) + ")"
         mycursor.execute(sql)
@@ -80,7 +83,7 @@ def search_single_entry(db, table, entry, values, valuecnt=None):
 
 def search_column_with_constraint(db, table, column, entry, values):
     mycursor = db.cursor()
-    sql = "SELECT " + column + " FROM " + table + " WHERE " + entry + " = " + str(values)
+    sql = "SELECT " + column + " FROM " + table + " WHERE " + entry + " = '" + str(values) + "'"
     mycursor.execute(sql)
     result = mycursor.fetchall()
     return result
@@ -170,15 +173,16 @@ def get_playable_entries(db, table, column, owner, no_participants=0, uuid=None,
 def get_playable_entries_by_category(db, table, column, owner, category, no_participants=0, planned_date=None):
     mycursor = db.cursor()
 
-    if table == "games":
-        where = "owner LIKE \'%" + owner + "%\' AND (playercount>=" + str(no_participants) + " OR playercount=\'X\') AND categories LIKE \'%" + category + "%\'"
-        if planned_date:
-            delta = datetime.timedelta(weeks=2)
-            not_played_after = planned_date - delta
-            not_played_after = not_played_after.date()
-            add_to_where = " AND (last_played<\'" + str(not_played_after) + "\' OR last_played IS NULL)"
-            where += add_to_where
-    sql = "SELECT " + column + " FROM " + table + " WHERE " + where
+    where = "owner LIKE \'%" + owner + "%\' AND (playercount>=" + str(no_participants) + " OR playercount=\'X\')"
+    if planned_date:
+        delta = datetime.timedelta(weeks=2)
+        not_played_after = planned_date - delta
+        not_played_after = not_played_after.date()
+        add_to_where = " AND (last_played<\'" + str(not_played_after) + "\' OR last_played IS NULL)"
+        where += add_to_where
+
+    on = table + ".game_uuid=categories.`"+category + "` AND " + where  # use `` bc. categories have spaces in them
+    sql = "SELECT " + table + "." + column + " FROM " + table + " INNER JOIN categories ON "+ on
 
     mycursor.execute(sql)
     result = mycursor.fetchall()
@@ -186,26 +190,48 @@ def get_playable_entries_by_category(db, table, column, owner, category, no_part
     return result
 
 
-def add_game_into_db(values):
-    entry = "(owner, title, playercount, categories, game_uuid)"
-    add_game(choose_database("testdb"), "games", entry, values)
+def add_game_into_categories(db, categories, uuid):
+    entry = "("
+    vals = "("
+    for cat in categories:
+        entry += "`" + cat + "`,"
+        vals = vals + "'" + str(uuid) + "',"
+    entry = entry[:-1] + ")"
+    vals = vals[:-1] + ")"
+    add_entry(db, "categories", entry, vals, valuesformatted=True)
 
 
+def add_game_into_db(games_values, cats=None, uuid=None):
+    entry = "(owner, title, playercount, game_uuid)"
+    add_game(choose_database("testdb"), "games", entry, games_values)
+    if cats and uuid:
+        add_game_into_categories(choose_database("testdb"), cats, uuid)
+
+
+# csv_string is a list of lists
+# rows contain all info on games
+# columns correspond to owner, title, max. playercount, categories
 def add_multiple_games_into_db(csv_string):
-    for _ in range(len(csv_string)):
-        add_game_into_db(generate_query_string(csv_string[_]))
+    for _ in range(len(csv_string)):  # iterate through rows
+        if len(csv_string[_]) > 3:  # categories are given
+            g_id = generate_uuid_32()
+            add_game_into_db(generate_query_string(csv_string[_][:3], uuid=g_id),
+                             cats=csv_string[_][3:], uuid=g_id)
+        else:
+            add_game_into_db(generate_query_string(csv_string[_]))
 
 
 def add_expansion_into_db(values):
     entry = "(owner, basegame_uuid, title)"
-    add_game(choose_database("testdb"), "expansions", entry, values)  # using add_game because add_entry does not work...
+    add_game(choose_database("testdb"), "expansions", entry, values)
 
 
-def add_user_auth(user):
+def add_user_auth(user, name=None):
     entry = "(id)"
-    add_entry(choose_database("auth"), "users", entry, user, 1)
-    settings_entry = "(user)"
-    add_entry(choose_database("testdb"), "settings", settings_entry, user, 1)
+    add_entry(choose_database("auth"), "users", entry, user)
+    if name:  # ignore groups, they don't need settings
+        settings_entry = "(user)"
+        add_entry(choose_database("testdb"), "settings", settings_entry, name)
 
 
 # variable names user1 and user2 are a bit arbitrary
@@ -217,7 +243,7 @@ def add_household(users):
         res = check_household(u)
         if res != u:  # user already lives with someone, delete it
             delete_single_entry_substring(choose_database("testdb"), "households", entry, u)
-    add_entry(choose_database("testdb"), "households", entry, household, 1)
+    add_entry(choose_database("testdb"), "households", entry, household)
     update_household_games(users)
 
 
