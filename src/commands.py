@@ -161,6 +161,8 @@ def ich(update, context):
             plan = GameNight()
             check = plan.add_participant(update.message.from_user.username)
             send_message = check_notify("settings", update.message.from_user.username, "notify_participation")
+            if send_message < 0:  # no entry in table, user hasn't talked to bot yet
+                handle_bot_unauthorized(context.bot, update.message.chat_id, update.message.from_user.username)
             if check < 0:
                 update.message.reply_text(
                     'Das war leider nichts. Vereinbart erst einmal einen '
@@ -203,6 +205,8 @@ def nichtich(update, context):
             plan = GameNight()
             check = plan.remove_participant(update.message.from_user.username)
             send_message = check_notify("settings", update.message.from_user.username, "notify_participation")
+            if send_message < 0:  # no entry in table, user hasn't talked to bot yet
+                handle_bot_unauthorized(context.bot, update.message.chat_id, update.message.from_user.username)
             if check < 0 and send_message:
                 try:
                     context.bot.send_message(update.message.from_user.id, 'Das war leider '

@@ -319,10 +319,12 @@ def check_household(user):
 
 
 def check_notify(table, who, column):
-    if table=="settings":
+    if table == "settings":
         entry = 'user'
-    elif table=="group_settings":
+    elif table == "group_settings":
         entry = 'id'
     result = search_column_with_constraint(choose_database("testdb"), table, column, entry, who)
 
+    if len(result) == 0:  # if user hasn't talked to bot yet, no settings
+        return -1
     return result[0][0]
