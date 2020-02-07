@@ -17,7 +17,7 @@ def choose_database(db):
     if db == 'auth':
         db = mysql.connector.connect(
             host=config['MySQL Auth']['host'],
-            #port=config['MySQL Auth']['port'],
+            # port=config['MySQL Auth']['port'],
             user=config['MySQL Auth']['user'],
             passwd=config['MySQL Auth']['passwd'],
             database=config['MySQL Auth']['database']
@@ -26,7 +26,7 @@ def choose_database(db):
     if db == 'testdb':
         db = mysql.connector.connect(
             host=config['MySQL Data']['host'],
-            #port=config['MySQL Data']['port'],
+            # port=config['MySQL Data']['port'],
             user=config['MySQL Data']['user'],
             passwd=config['MySQL Data']['passwd'],
             database=config['MySQL Data']['database']

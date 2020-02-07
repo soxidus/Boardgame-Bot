@@ -7,7 +7,6 @@ from telegram import (ReplyKeyboardRemove, ForceReply, ReplyKeyboardMarkup,
                       KeyboardButton)
 import database_functions as dbf
 import parse_strings as ps
-from calendar_export import create_ics_file
 from calendarkeyboard import telegramcalendar
 from planning_functions import GameNight
 from singleton import Singleton
@@ -75,7 +74,8 @@ def handle_reply(update, context):
                     "game_players": game_players,
                     "expansion_for": expansion_for,
                     "expansion_title": expansion_title,
-                    "expansion_poll_game": expansion_poll_game, "date": date,
+                    "expansion_poll_game": expansion_poll_game,
+                    "date": date,
                     "csv": csv, "household": household,
                     "expansions_list": expansions_list}
 
@@ -121,9 +121,9 @@ def auth(update):
             else:
                 dbf.add_user_auth(update.message.chat_id)
                 update.message.bot.send_message(chat_id=update.message.chat_id,
-                                 text='Super! Wir dürfen jetzt '
-                                      'miteinander reden.',
-                                 reply_markup=ReplyKeyboardRemove())
+                                                text='Super! Wir dürfen jetzt '
+                                                'miteinander reden.',
+                                                reply_markup=ReplyKeyboardRemove())
         else:
             update.message.reply_text("Du musst das Passwort nicht nochmal "
                                       "eingeben... Rede einfach mit mir!",
@@ -286,7 +286,7 @@ def expansion_poll_game(update):
         update.message.reply_text(
             'Das war leider nichts. Dies könnte verschiedene Gründe haben:\n\n'
             '(1) Ihr habt kein Datum festgelegt. Holt das mit '
-            '/neuertermin nach.\n'
+            '/neuer_termin nach.\n'
             '(2) Du bist nicht zum Spieleabend angemeldet. '
             'Hole das mit /ich nach.\n'
             '(3) Mir ist nicht bekannt, dass einer der Teilnehmenden eine '
@@ -329,34 +329,3 @@ def date(update):
 def default(update):
     update.message.reply_text("Ja... Bald...",
                               reply_markup=ReplyKeyboardRemove())
-
-
-# as of now, we only have the calendar as an inline feature
-# if that changes, we need to distinguish the kind of inline callback!
-def handle_inline(update, context):
-    selected, date, user_inp_req = telegramcalendar.process_calendar_selection(update, context)
-    if selected:
-        if user_inp_req:
-            msg = context.bot.send_message(
-                chat_id=update.callback_query.message.chat_id,
-                text='Okay, wann wollt ihr spielen?',
-                reply_markup=ForceReply())
-            ForceReplyJobs().add(msg.message_id, "date")
-        elif date:
-            check = GameNight(chat_id=update.callback_query.message.chat_id).set_date(date.strftime("%d/%m/%Y"))
-            if check < 0:
-                context.bot.send_message(
-                    chat_id=update.callback_query.message.chat_id,
-                    text="Melde dich doch einfach mit /ich "
-                         "beim festgelegten Termin an.",
-                    reply_markup=ReplyKeyboardRemove())
-            else:
-                context.bot.set_chat_title(
-                    update.callback_query.message.chat_id,
-                    'Spielwiese: ' + date.strftime("%d/%m/%Y"))
-                create_ics_file("Spieleabend", date)
-                context.bot.send_message(
-                    chat_id=update.callback_query.message.chat_id,
-                    text="Okay, schrei einfach /ich, wenn du "
-                         "teilnehmen willst!",
-                    reply_markup=ReplyKeyboardRemove())
