@@ -1,12 +1,12 @@
 [MySQL Auth]
-host = auth_db
+host = <auth_db or localhost>
 user = <insert username here>
 port = <3006 or your container port>
 passwd = <insert your password here>
 database = auth
 
 [MySQL Data]
-host = data_db
+host = <data_db or localhost>
 port = <3006 or your container port>
 user = <insert username here>
 passwd = <insert your password here>
@@ -22,4 +22,4 @@ password = <insert your password here>
 categories = lang, kurz, komplex, simpel, Kooperationsspiel, Partyspiel, storylastig, Wuerfelspiel, Kartenspiel, Worker Placement, Resource Management, Tile Placement, Deckbuilding, Drafting, Social Deduction
 
 [GroupDetails]
-title = <insert your title here>
+title = <insert your group's name here>
