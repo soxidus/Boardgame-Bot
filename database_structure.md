@@ -89,7 +89,22 @@ By using ```SELECT * FROM settings``` we get:
     +--------------+----------------------+-------------+
 
 
-### 2.5 Table "categories"
+### 2.5 Table "group_settings"
+This table keeps track of group settings. It has three fields: "id", "notify_not_admin" and "notify_unauthorized".
+- "id" is the group's chat ID.
+- "notify_not_admin" contains a bit (default is 1) stating whether the group is informed that the bot is not an admin every time this prevents him from doing something.
+- "notify_unauthorized" contains a bit (default is 1) stating whether the group is informed that the bot cannot write private messages to a group member.
+
+BY using ```SELECT * FROM group_settings``` we get:
+
+    +--------------+--------------------+---------------------+
+    | id           | notify_not_admin   | notify_unauthorized |
+    +--------------+--------------------+---------------------+
+    | idgoeshere   | BITgoeshere        | BITgoeshere         |
+    +--------------+--------------------+---------------------+
+    
+
+### 2.6 Table "categories"
 This table keeps track of what games belong into which categories. It has a minimum of two fields: "kurz" and "lang", but can have more.
 Other fields can be defined when running [configure](configure#L94).
 
