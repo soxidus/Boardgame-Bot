@@ -505,7 +505,7 @@ def einstellungen(update, context):
                                        who=update.message.chat_id,
                                        init_array=init_settings))
             query = "settings_group," + str(update.message.chat_id) + ","
-            # is this needed???
+            # init_settings was initialised in generate_settings
             for init_val in init_settings:
                 query = query + init_val + "/"
             QueryBuffer().add(msg.message_id, query)
@@ -520,7 +520,7 @@ def einstellungen(update, context):
                                        who=update.message.from_user.username,
                                        init_array=init_settings))
             query = "settings_private," + update.message.from_user.username + ","
-            # is this needed???
+            # init_settings was initialised in generate_settings
             for init_val in init_settings:
                 query = query + init_val + "/"
             QueryBuffer().add(msg.message_id, query)

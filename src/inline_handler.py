@@ -442,3 +442,4 @@ def generate_settings(settings_type, to_set=None, first=None, who=None, init_arr
     row.append(InlineKeyboardButton('Abbrechen', callback_data=data))
     keyboard.append(row)
     return InlineKeyboardMarkup(keyboard)
+    
