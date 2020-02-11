@@ -5,6 +5,7 @@ import os
 
 from telegram import (ReplyKeyboardRemove, ForceReply, ReplyKeyboardMarkup,
                       KeyboardButton)
+from telegram.error import BadRequest
 import database_functions as dbf
 import parse_strings as ps
 from calendarkeyboard import telegramcalendar
@@ -12,6 +13,7 @@ from planning_functions import GameNight
 from singleton import Singleton
 from inline_handler import generate_categories
 from query_buffer import QueryBuffer
+from error_handler import handle_bot_not_admin
 
 
 # keeps track of ForceReplys not being answered
@@ -100,8 +102,11 @@ def auth(update):
     passphrase = config['Authentication']['password']
 
     if update.message.text == passphrase:
-        update.message.bot.delete_message(update.message.chat_id,
-                                          update.message.message_id)
+        try:
+            update.message.bot.delete_message(update.message.chat_id,
+                                              update.message.message_id)
+        except BadRequest:
+            handle_bot_not_admin(update.message.bot, update.message.chat_id)
         if not dbf.check_user(update.message.chat_id):
             if update.message.chat_id > 0:
                 dbf.add_user_auth(update.message.chat_id, name=update.message.from_user.username)
@@ -319,8 +324,15 @@ def date(update):
                                   "beim festgelegten Termin an.",
                                   reply_markup=ReplyKeyboardRemove())
     else:
-        update.message.bot.set_chat_title(
-            update.message.chat.id, 'Spielwiese: ' + update.message.text)
+        config = configparser.ConfigParser()
+        config_path = os.path.dirname(os.path.realpath(__file__))
+        config.read(os.path.join(config_path, "config.ini"))
+        title = config['GroupDetails']['title']
+        try:
+            update.message.bot.set_chat_title(
+                update.message.chat.id, title + ': ' + update.message.text)
+        except BadRequest:
+            handle_bot_not_admin(update.message.bot, update.message.chat.id)
         update.message.reply_text("Okay, schrei einfach /ich, "
                                   "wenn du teilnehmen willst!",
                                   reply_markup=ReplyKeyboardRemove())
