@@ -93,7 +93,7 @@ OR again **ALL** Volumes:
 ``docker volume rm $(docker volume ls -qf dangling=true)``.
  
 #### (1.3.3) EVERYTHING
-Do this only as last resort. Kill the containers as described [above(#1-containers), and then purge **ALL** Docker settings/data:  
+Do this only as last resort. Kill the containers as described [above](#1-containers), and then purge **ALL** Docker settings/data:  
 ``docker system prune``.
 
 After that you should have a clean Docker install and can start again with the [init part](#Docker-up).
