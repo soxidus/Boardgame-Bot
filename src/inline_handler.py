@@ -96,6 +96,7 @@ def handle_category(update, context):
             chat_id=update.callback_query.message.chat_id,
             text='Okay, hier ist nichts passiert.',
             reply_markup=ReplyKeyboardRemove())
+        shrink_keyboard(update, context, "Abbruch.")
     elif category == "done":
         end_of_categories(update, context)
     elif category == "IGNORE":
@@ -214,6 +215,7 @@ def handle_findbycategory(update, context):
             chat_id=update.callback_query.message.chat_id,
             text='Okay, hier ist nichts passiert.',
             reply_markup=ReplyKeyboardRemove())
+        shrink_keyboard(update, context, "Abbruch.")
     elif category == "IGNORE":
         pass
     else:  # got a category
@@ -266,6 +268,7 @@ def handle_pollbycategory(update, context):
             chat_id=update.callback_query.message.chat_id,
             text='Okay, hier ist nichts passiert.',
             reply_markup=ReplyKeyboardRemove())
+        shrink_keyboard(update, context, "Abbruch.")
     elif category == "IGNORE":
         pass
     else:  # got a category
@@ -332,6 +335,7 @@ def handle_settings(update, context):
             chat_id=update.callback_query.message.chat_id,
             text='Okay, hier ist nichts passiert.',
             reply_markup=ReplyKeyboardRemove())
+        shrink_keyboard(update, context, "Abbruch.")
     elif setting == "done":
         query = QueryBuffer().get_query(update.callback_query.message.message_id)
         settings_type = ps.parse_csv(query)[0]
