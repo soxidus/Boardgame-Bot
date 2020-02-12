@@ -13,6 +13,7 @@ from database_functions import (get_playable_entries, choose_database,
 from singleton import Singleton
 from calendar_export import delete_ics_file
 from parse_strings import single_db_entry_to_string
+from error_handler import (handle_bot_not_admin, handle_bot_unauthorized)
 
 
 def handle_vote(update, context):
@@ -20,8 +21,12 @@ def handle_vote(update, context):
     if plan.poll is not None:
         check = plan.poll.register_vote(
             update.message.from_user.username, update.message.text)
-        send_message = check_notify(update.message.from_user.username, "notify_vote")
-        if check == 0 and send_message:
+        send_message = check_notify("settings", update.message.from_user.username, "notify_vote")
+        handled_unauthorized = False
+        if send_message < 0:  # no entry in table, user hasn't talked to bot yet
+            handle_bot_unauthorized(context.bot, update.message.chat_id, update.message.from_user.first_name)
+            handled_unauthorized = True
+        if check == 0 and send_message:  # user voted the same thing
             try:
                 context.bot.send_message(update.message.from_user.id,
                                          "Okay " + update.message.from_user.first_name +
@@ -29,30 +34,37 @@ def handle_vote(update, context):
                                          " gestimmt. Du musst mir das nicht mehrmals "
                                          "sagen, ich bin fähig ;)")
             except Unauthorized:
-                context.bot.send_message(update.message.chat_id, 'OH! '
-                                         'scheinbar darf ich nicht mit dir Reden.')
-        elif check < 0:
+                if not handled_unauthorized:
+                    handle_bot_unauthorized(context.bot, update.message.chat_id,
+                                            update.message.from_user.first_name)
+                    handled_unauthorized = True
+        elif check < 0:  # user not allowed to vote
             try:
                 context.bot.send_message(update.message.from_user.id,
                                          "Das hat nicht funktioniert. "
                                          "Vielleicht darfst du gar nicht abstimmen, " +
                                          update.message.from_user.first_name + "?")
             except Unauthorized:
-                context.bot.send_message(update.message.chat_id, 'OH! '
-                                         'scheinbar darf ich nicht mit dir Reden.')
-        else:
+                if not handled_unauthorized:
+                    handle_bot_unauthorized(context.bot, update.message.chat_id,
+                                            update.message.from_user.first_name)
+                    handled_unauthorized = True
+        elif check > 0 and send_message:  # user gave a new vote
             try:
                 context.bot.send_message(update.message.from_user.id,
                                          "Okay " + update.message.from_user.first_name +
                                          ", du hast für " + update.message.text +
                                          " gestimmt.")
             except Unauthorized:
-                context.bot.send_message(update.message.chat_id, 'OH! '
-                                         'scheinbar darf ich nicht mit dir Reden.')
+                if not handled_unauthorized:
+                    handle_bot_unauthorized(context.bot, update.message.chat_id,
+                                            update.message.from_user.first_name,
+                                            try_again="das mit dem Abstimmen")
+                    handled_unauthorized = True
 
 
 # Once a day, this function gets called.
-# If it notices a past Game Night, 
+# If it notices a past Game Night,
 # it clears all the info on it.
 def test_termin(context):
     now = datetime.datetime.now()
@@ -63,11 +75,15 @@ def test_termin(context):
             d = datetime.datetime.strptime(plan.date, '%d/%m/%Y')
             if d < now:
                 plan = GameNight()
+                config = configparser.ConfigParser()
+                config_path = os.path.dirname(os.path.realpath(__file__))
+                config.read(os.path.join(config_path, "config.ini"))
+                title = config['GroupDetails']['title']
                 try:
+                    context.bot.set_chat_title(plan.chat_id, title)
                     context.bot.set_chat_description(plan.chat_id, "")
                 except BadRequest:
-                    pass
-                context.bot.set_chat_title(plan.chat_id, 'Spielwiese')
+                    handle_bot_not_admin(context.bot, plan.chat_id)
                 plan.clear()
 
 
@@ -243,7 +259,8 @@ class Poll(object):
             r = re.compile('.{2}/.{2}/.{4}')
             if r.match(plan.date) is not None:
                 d = datetime.datetime.strptime(plan.date, '%d/%m/%Y')
-        else: d = None
+        else:
+            d = None
         for p in participants:
             for c in categories_list[:-1]:  # ignore "keine" category
                 entries = get_playable_entries_by_category(
@@ -254,7 +271,7 @@ class Poll(object):
                     games_general_set.add(single_db_entry_to_string(entries[_][0]))  # keeps track of actual amount of games available this evening
             # get all playable games that were assigned no category
             entries = get_playable_entries(choose_database("testdb"), 'games', 'title',
-                        p, no_participants=len(participants), planned_date=d)
+                                           p, no_participants=len(participants), planned_date=d)
             for _ in range(len(entries)):
                 games_by_category[categories['keine']].add(single_db_entry_to_string(entries[_][0]))
                 games_general_set.add(single_db_entry_to_string(entries[_][0]))
@@ -333,7 +350,8 @@ class Poll(object):
             r = re.compile('.{2}/.{2}/.{4}')
             if r.match(plan.date) is not None:
                 d = datetime.datetime.strptime(plan.date, '%d/%m/%Y')
-        else: d = None
+        else:
+            d = None
 
         games = set()
         for p in participants:

@@ -11,6 +11,7 @@ from calendarkeyboard import telegramcalendar
 from planning_functions import GameNight
 from query_buffer import QueryBuffer
 from parse_strings import single_db_entry_to_string
+from error_handler import handle_bot_not_admin
 from calendar_export import create_ics_file
 import reply_handler as rep
 import database_functions as dbf
@@ -42,9 +43,9 @@ def shrink_keyboard(update, context, label):
     row.append(InlineKeyboardButton(label, callback_data="ENDED"))
     keyboard.append(row)
     context.bot.edit_message_text(text=query.message.text,
-                            chat_id=query.message.chat_id,
-                            message_id=query.message.message_id,
-                            reply_markup=InlineKeyboardMarkup(keyboard))
+                                  chat_id=query.message.chat_id,
+                                  message_id=query.message.message_id,
+                                  reply_markup=InlineKeyboardMarkup(keyboard))
 
 
 def handle_calendar(update, context):
@@ -65,9 +66,16 @@ def handle_calendar(update, context):
                          "beim festgelegten Termin an.",
                     reply_markup=ReplyKeyboardRemove())
             else:
-                context.bot.set_chat_title(
-                    update.callback_query.message.chat_id,
-                    'Spielwiese: ' + date.strftime("%d/%m/%Y"))
+                config = configparser.ConfigParser()
+                config_path = os.path.dirname(os.path.realpath(__file__))
+                config.read(os.path.join(config_path, "config.ini"))
+                title = config['GroupDetails']['title']
+                try:
+                    context.bot.set_chat_title(
+                        update.callback_query.message.chat_id,
+                        title + ': ' + date.strftime("%d/%m/%Y"))
+                except BadRequest:
+                    handle_bot_not_admin(context.bot, update.callback_query.message.chat.id)
                 filename = create_ics_file("Spieleabend", date)
                 GameNight(chat_id=update.callback_query.message.chat_id).set_cal_file(filename)
                 context.bot.send_message(
@@ -132,7 +140,7 @@ def end_of_categories(update, context, no_category=False):
     # remove categories from query buffer now
     uuid = ps.generate_uuid_32()
     query = ps.csv_to_string(query_csv[:-1]) + "," + uuid
-    
+
     if query_csv[0] == "new_game":
         known_games = dbf.search_entries_by_user(
             dbf.choose_database("testdb"), 'games',
@@ -153,9 +161,9 @@ def end_of_categories(update, context, no_category=False):
                                     ps.remove_first_string(query)))
         else:
             dbf.add_game_into_db(ps.parse_values_from_array(
-                                    ps.remove_first_string(query)),
-                                    cats=categories,
-                                    uuid=uuid)            
+                                 ps.remove_first_string(query)),
+                                 cats=categories,
+                                 uuid=uuid)
         context.bot.send_message(
                     chat_id=update.callback_query.message.chat_id,
                     text="Okay, das Spiel wurde hinzugefügt \\o/",
@@ -325,7 +333,9 @@ def handle_settings(update, context):
             text='Okay, hier ist nichts passiert.',
             reply_markup=ReplyKeyboardRemove())
     elif setting == "done":
-        end_of_settings(update, context)
+        query = QueryBuffer().get_query(update.callback_query.message.message_id)
+        settings_type = ps.parse_csv(query)[0]
+        end_of_settings(update, context, settings_type)
     else:  # we actually got a setting, now register it
         if update.callback_query.data.split(";")[2] == "SET":
             query = QueryBuffer().get_query(update.callback_query.message.message_id) + setting + "/"
@@ -336,7 +346,7 @@ def handle_settings(update, context):
                 context.bot.edit_message_text(text=update.callback_query.message.text,
                                               chat_id=update.callback_query.message.chat_id,
                                               message_id=update.callback_query.message.message_id,
-                                              reply_markup=generate_settings(to_set=settings_so_far))
+                                              reply_markup=generate_settings(ps.parse_csv(query)[0], to_set=settings_so_far))
             except BadRequest:
                 pass
         elif update.callback_query.data.split(";")[2] == "UNSET":
@@ -354,26 +364,32 @@ def handle_settings(update, context):
                 context.bot.edit_message_text(text=update.callback_query.message.text,
                                               chat_id=update.callback_query.message.chat_id,
                                               message_id=update.callback_query.message.message_id,
-                                              reply_markup=generate_settings(to_set=settings_so_far))
+                                              reply_markup=generate_settings(ps.parse_csv(query)[0], to_set=settings_so_far))
             except BadRequest:
                 pass
 
 
-def end_of_settings(update, context):
+def end_of_settings(update, context, settings_type):
     query = QueryBuffer().get_query(update.callback_query.message.message_id)
-    # query looks like: setting,username,notify_participation/notify_vote/
-    possible_settings = ['notify_participation', 'notify_vote']
-    if ps.parse_csv(query)[0] == "settings":
+    # query looks like: settings_private,username,notify_participation/notify_vote/
+    # or: settings_group,title,notify_not_admin,notify_unauthorized
+    if "settings" in ps.parse_csv(query)[0]:
         to_set = ps.parse_csv(query)[-1].split('/')[:-1]
         to_unset = []
+        if ps.parse_csv(query)[0] == "settings_private":
+            possible_settings = ['notify_participation', 'notify_vote']
+            table = "settings"
+        else:  # ps.parse_csv(query)[0] == "settings_group":
+            possible_settings = ['notify_not_admin', 'notify_unauthorized']
+            table = "group_settings"
         for _ in possible_settings:
             if _ not in to_set:
                 to_unset.append(_)
-        user = ps.parse_csv(query)[1]
-        dbf.update_settings(user, to_set, to_unset)
+        who = ps.parse_csv(query)[1]
+        dbf.update_settings(table, who, to_set, to_unset)
         context.bot.send_message(
                     chat_id=update.callback_query.message.chat_id,
-                    text="Okay, ich habe mir deine Einstellungen vermerkt.",
+                    text="Okay, ich habe mir die Einstellungen vermerkt.",
                     reply_markup=ReplyKeyboardRemove())
         shrink_keyboard(update, context, "Einstellungen angepasst.")
     else:
@@ -385,16 +401,25 @@ def end_of_settings(update, context):
 # when generated the first time, set "first" and "user" to look up the current settings
 # also, store in init_array the settings already set to initialize query buffer
 # later, just keep track of what the user selected up until now
-def generate_settings(to_set=None, first=None, user=None, init_array=None):
+def generate_settings(settings_type, to_set=None, first=None, who=None, init_array=None):
+    if settings_type == "settings_group":
+        table = "group_settings"
+        entry = "id"
+        settings = {'Warnung, wenn Bot kein Admin ist': 'notify_not_admin',
+                    'Warnung, wenn Bot jemanden nicht privat ansprechen darf': 'notify_unauthorized'}
+    else:  # settings_type == "settings_private"
+        table = "settings"
+        entry = "user"
+        settings = {'Benachrichtigung bei Teilnahme am Spieleabend': 'notify_participation',
+                    'Benachrichtigung bei Abstimmung': 'notify_vote'}
     if first:
-        current_settings = dbf.search_single_entry(dbf.choose_database("testdb"), "settings", "user", user)[0][1:]
+        current_settings = dbf.search_single_entry(dbf.choose_database("testdb"), table, entry, who)[0][1:]
     keyboard = []
-    settings = {'Benachrichtigung bei Teilnahme am Spieleabend': 'notify_participation', 'Benachrichtigung bei Abstimmung': 'notify_vote'}
     if first:
         index = 0
         for (key, value) in settings.items():
             row = []
-            if 1 in current_settings[index]:
+            if current_settings[index] == 1:
                 data = ";".join(["SETTING", value, "UNSET"])
                 label = key + " ✓"
                 row.append(InlineKeyboardButton(label, callback_data=data))
