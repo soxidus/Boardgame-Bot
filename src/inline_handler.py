@@ -29,6 +29,8 @@ def handle_inline(update, context):
         handle_pollbycategory(update, context)
     elif "SETTING" in update.callback_query.data:
         handle_settings(update, context)
+    elif "HOUSEHOLD" in update.callback_query.data:
+        handle_household(update, context)
     elif "ENDED" in update.callback_query.data:
         # don't do a thing
         update.callback_query.answer()
@@ -372,7 +374,7 @@ def handle_settings(update, context):
 def end_of_settings(update, context, settings_type):
     query = QueryBuffer().get_query(update.callback_query.message.message_id)
     # query looks like: settings_private,username,notify_participation/notify_vote/
-    # or: settings_group,title,notify_not_admin,notify_unauthorized
+    # or: settings_group,title,notify_not_admin/notify_unauthorized
     if "settings" in ps.parse_csv(query)[0]:
         to_set = ps.parse_csv(query)[-1].split('/')[:-1]
         to_unset = []
@@ -446,6 +448,101 @@ def generate_settings(settings_type, to_set=None, first=None, who=None, init_arr
     data = ";".join(["SETTING", "done"])
     row.append(InlineKeyboardButton('Fertig', callback_data=data))
     data = ";".join(["SETTING", "stop"])
+    row.append(InlineKeyboardButton('Abbrechen', callback_data=data))
+    keyboard.append(row)
+    return InlineKeyboardMarkup(keyboard)
+
+
+def handle_household(update, context):
+    update.callback_query.answer()
+    member = update.callback_query.data.split(";")[1]
+    if member == "stop":
+        QueryBuffer().clear_query(update.callback_query.message.message_id)
+        context.bot.send_message(
+            chat_id=update.callback_query.message.chat_id,
+            text='Okay, hier ist nichts passiert.',
+            reply_markup=ReplyKeyboardRemove())
+        shrink_keyboard(update, context, "Abbruch.")
+    elif member == "done":
+        end_of_household(update, context)
+    else:  # got a household member
+        if update.callback_query.data.split(";")[2] == "SET":
+            query = QueryBuffer().get_query(update.callback_query.message.message_id) + member + "/"
+            members_so_far = ps.parse_csv(query)[-1].split('/')[:-1]  # last one is empty since set ends on /
+            remove = ps.parse_csv(query)[1]  # don't let user select himself...
+            QueryBuffer().edit_query(update.callback_query.message.message_id, query)
+            # change keyboard layout
+            try:
+                context.bot.edit_message_text(text=update.callback_query.message.text,
+                                              chat_id=update.callback_query.message.chat_id,
+                                              message_id=update.callback_query.message.message_id,
+                                              reply_markup=generate_household(remove, to_set=members_so_far))
+            except BadRequest:
+                pass
+        elif update.callback_query.data.split(";")[2] == "UNSET":
+            query = QueryBuffer().get_query(update.callback_query.message.message_id)
+            query_csv = ps.parse_csv(query)
+            remove = query_csv[1]
+            members_so_far = query_csv[-1].split('/')[:-1]
+            members_so_far.remove(member)
+            members_string = '/'.join(members_so_far)
+            if len(members_string) > 0:
+                members_string += '/'
+            new_query = ps.csv_to_string(query_csv[:-1]) + ',' + members_string
+            QueryBuffer().edit_query(update.callback_query.message.message_id, new_query)
+            # change keyboard layout
+            try:
+                context.bot.edit_message_text(text=update.callback_query.message.text,
+                                              chat_id=update.callback_query.message.chat_id,
+                                              message_id=update.callback_query.message.message_id,
+                                              reply_markup=generate_household(remove, to_set=members_so_far))
+            except BadRequest:
+                pass
+
+
+def end_of_household(update, context):
+    query = QueryBuffer().get_query(update.callback_query.message.message_id)
+    # query looks like: household,username,member1/member2
+    query_csv = ps.parse_csv(query)
+    members = query_csv[-1].split('/')[:-1]
+    if "household" in query_csv[0]:
+        household = [query_csv[1]] + members
+        dbf.add_household(household)
+        context.bot.send_message(
+                    chat_id=update.callback_query.message.chat_id,
+                    text="Okay, ich weiß Bescheid.",
+                    reply_markup=ReplyKeyboardRemove())
+        shrink_label = " ".join(household)
+        shrink_keyboard(update, context, shrink_label)
+    else:
+        pass
+    QueryBuffer().clear_query(
+        update.callback_query.message.message_id)
+
+
+def generate_household(remove, first=False, to_set=None):
+    usernames_db = dbf.search_column(dbf.choose_database("testdb"), "settings", "user")
+    usernames = list()
+    for _ in usernames_db:
+        usernames.append(_[0])
+    usernames.remove(remove)
+    keyboard = []
+    for name in usernames:
+        row = []
+        if to_set and name in to_set:
+            label = name + " ✓"
+            data = ";".join(["HOUSEHOLD", name, "UNSET"])
+        else:
+            label = name
+            data = ";".join(["HOUSEHOLD", name, "SET"])
+        row.append(InlineKeyboardButton(label, callback_data=data))
+        keyboard.append(row)
+    # last row: done and /stop button
+    row = []
+    if not first:
+        data = ";".join(["HOUSEHOLD", "done"])
+        row.append(InlineKeyboardButton('Fertig', callback_data=data))
+    data = ";".join(["HOUSEHOLD", "stop"])
     row.append(InlineKeyboardButton('Abbrechen', callback_data=data))
     keyboard.append(row)
     return InlineKeyboardMarkup(keyboard)

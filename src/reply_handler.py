@@ -11,7 +11,7 @@ import parse_strings as ps
 from calendarkeyboard import telegramcalendar
 from planning_functions import GameNight
 from singleton import Singleton
-from inline_handler import generate_categories
+from inline_handler import (generate_categories, generate_household)
 from query_buffer import QueryBuffer
 from error_handler import handle_bot_not_admin
 
@@ -116,13 +116,12 @@ def auth(update):
                         'Noch eine Frage: Wohnst du vielleicht mit einem '
                         '(oder mehreren) '
                         'der Gruppenmitglieder zusammen? '
-                        'Wenn ja, verrate mir doch bitte den '
+                        'Wenn ja, wähle unten den (die) '
                         'entsprechenden Alias(e)! '
-                        'Bei mehr als einem Mitbewohner trenne die Aliase '
-                        'mit einem Leerzeichen. '
-                        'Wenn nicht, dann antworte bitte mit /stop.',
-                        reply_markup=ForceReply())
-                ForceReplyJobs().add(msg.message_id, "household")
+                        'Wenn nicht, wähle Abbrechen.',
+                        reply_markup=generate_household(update.message.from_user.username, first=True))
+                query = "household," + update.message.from_user.username + ","
+                QueryBuffer().add(msg.message_id, query)
             else:
                 dbf.add_user_auth(update.message.chat_id)
                 update.message.bot.send_message(chat_id=update.message.chat_id,
@@ -140,6 +139,9 @@ def auth(update):
         update.message.chat.leave()
 
 
+###################
+# OBSOLETE
+###################
 def household(update):
     if update.message.text == "/stop":
         update.message.reply_text('Okay, ich weiß Bescheid.',
