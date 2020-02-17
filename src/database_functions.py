@@ -23,7 +23,7 @@ def choose_database(db):
             database=config['MySQL Auth']['database']
         )
 
-    if db == 'testdb':
+    if db == 'datadb':
         db = mysql.connector.connect(
             host=config['MySQL Data']['host'],
             # port=config['MySQL Data']['port'],
@@ -131,7 +131,7 @@ def search_expansions_by_game(db, table, owner, title):
 
 
 def search_uuid(owner, title):
-    db = choose_database("testdb")
+    db = choose_database("datadb")
     mycursor = db.cursor()
     sql = "SELECT game_uuid FROM games WHERE owner LIKE \'%" + owner + "%\' AND title=\'" + title + "\'"
     mycursor.execute(sql)
@@ -203,9 +203,9 @@ def add_game_into_categories(db, categories, uuid):
 
 def add_game_into_db(games_values, cats=None, uuid=None):
     entry = "(owner, title, playercount, game_uuid)"
-    add_game(choose_database("testdb"), "games", entry, games_values)
+    add_game(choose_database("datadb"), "games", entry, games_values)
     if cats and uuid:
-        add_game_into_categories(choose_database("testdb"), cats, uuid)
+        add_game_into_categories(choose_database("datadb"), cats, uuid)
 
 
 # csv_string is a list of lists
@@ -223,7 +223,7 @@ def add_multiple_games_into_db(csv_string):
 
 def add_expansion_into_db(values):
     entry = "(owner, basegame_uuid, title)"
-    add_game(choose_database("testdb"), "expansions", entry, values)
+    add_game(choose_database("datadb"), "expansions", entry, values)
 
 
 def add_user_auth(user_id, name=None):
@@ -231,10 +231,10 @@ def add_user_auth(user_id, name=None):
     add_entry(choose_database("auth"), "users", entry, user_id)
     if name:  # use username for settings
         settings_entry = "(user)"
-        add_entry(choose_database("testdb"), "settings", settings_entry, name)
+        add_entry(choose_database("datadb"), "settings", settings_entry, name)
     if user_id < 0:  # group
         settings_entry = "(id)"
-        add_entry(choose_database("testdb"), "group_settings", settings_entry, user_id)
+        add_entry(choose_database("datadb"), "group_settings", settings_entry, user_id)
 
 
 # variable names user1 and user2 are a bit arbitrary
@@ -245,8 +245,8 @@ def add_household(users):
     for u in users:
         res = check_household(u)
         if res != u:  # user already lives with someone, delete it
-            delete_single_entry_substring(choose_database("testdb"), "households", entry, u)
-    add_entry(choose_database("testdb"), "households", entry, household)
+            delete_single_entry_substring(choose_database("datadb"), "households", entry, u)
+    add_entry(choose_database("datadb"), "households", entry, household)
     update_household_games(users)
 
 
@@ -260,7 +260,7 @@ def delete_single_entry_substring(db, table, entry, value):
 
 def update_household_games(users):
     household = ' '.join(users)
-    db = choose_database("testdb")
+    db = choose_database("datadb")
     mycursor = db.cursor()
     for u in users:
         sql = "UPDATE games SET owner='" + str(household) + "' WHERE owner LIKE \'%" + str(u) + "%\' AND NOT owner='" + str(household) + "'"
@@ -270,7 +270,7 @@ def update_household_games(users):
 
 # date format: YYYY-MM-DD
 def update_game_date(title, last_played):
-    db = choose_database("testdb")
+    db = choose_database("datadb")
     mycursor = db.cursor()
     sql = "UPDATE games SET last_played='" + str(last_played) + "' WHERE title='" + str(title) + "'"
     mycursor.execute(sql)
@@ -278,7 +278,7 @@ def update_game_date(title, last_played):
 
 
 def update_settings(table, who, to_set, to_unset):
-    db = choose_database("testdb")
+    db = choose_database("datadb")
     mycursor = db.cursor()
     new_set = ''
     for s in to_set:
@@ -310,7 +310,7 @@ def check_user(user):
 # Does the user live together with another one?
 # Either both or only his name is returned
 def check_household(user):
-    users_string = search_single_entry_substring(choose_database("testdb"), "households", "user_ids", user)
+    users_string = search_single_entry_substring(choose_database("datadb"), "households", "user_ids", user)
 
     if len(users_string) == 0:
         return user
@@ -323,7 +323,7 @@ def check_notify(table, who, column):
         entry = 'user'
     elif table == "group_settings":
         entry = 'id'
-    result = search_column_with_constraint(choose_database("testdb"), table, column, entry, who)
+    result = search_column_with_constraint(choose_database("datadb"), table, column, entry, who)
 
     if len(result) == 0:  # if user hasn't talked to bot yet, no settings
         return -1

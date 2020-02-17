@@ -144,7 +144,7 @@ def end_of_categories(update, context, no_category=False):
 
     if query_csv[0] == "new_game":
         known_games = dbf.search_entries_by_user(
-            dbf.choose_database("testdb"), 'games',
+            dbf.choose_database("datadb"), 'games',
             update.callback_query.from_user.username)
         for _ in range(len(known_games)):
             # check whether this title has already been added for this user
@@ -221,7 +221,7 @@ def handle_findbycategory(update, context):
     else:  # got a category
         opt = []
         entries = dbf.get_playable_entries_by_category(
-            dbf.choose_database("testdb"), 'games', 'title',
+            dbf.choose_database("datadb"), 'games', 'title',
             update.callback_query.from_user.username, category)
         for e in entries:
             opt.append(single_db_entry_to_string(e))
@@ -417,7 +417,7 @@ def generate_settings(settings_type, to_set=None, first=None, who=None, init_arr
         settings = {'Teilnahme am Spieleabend': 'notify_participation',
                     'Abstimmung': 'notify_vote'}
     if first:
-        current_settings = dbf.search_single_entry(dbf.choose_database("testdb"), table, entry, who)[0][1:]
+        current_settings = dbf.search_single_entry(dbf.choose_database("datadb"), table, entry, who)[0][1:]
     keyboard = []
     if first:
         index = 0

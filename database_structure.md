@@ -23,7 +23,7 @@ By using ```SELECT * FROM users``` we get:
     | [DATA]     |
     +------------+
 
-## 2. Database "testdb"
+## 2. Database "datadb"
 
 This is the main database. Everything the bot is actually working with is stored here.
 
