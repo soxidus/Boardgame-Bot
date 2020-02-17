@@ -98,6 +98,9 @@ class GameNight(Singleton):
 
     def get_participants(self):
         if self.date:
+            if len(self.participants) == 0:
+                result = "Beim Spieleabend " + self.date + " nimmt bisher niemand teil."
+                return result
             result = "Beim Spieleabend " + self.date + " nehmen teil:\n"
             for p in self.participants:
                 result = result + p + "\n"
