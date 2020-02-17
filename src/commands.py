@@ -591,7 +591,9 @@ def einstellungen(update, context):
         if "group" in update.message.chat.type:
             init_settings = []
             msg = context.bot.send_message(update.message.chat_id,
-                                           'Ändert hier die Gruppeneinstellungen.\n'
+                                           'Ändert hier die Gruppeneinstellungen. '
+                                           'Bei welchen Problemen soll ich euch '
+                                           'eine Warnung senden?\n'
                                            'Antwortet mit /stop, um abzubrechen.',
                                            reply_markup=generate_settings(
                                                 "settings_group",
@@ -606,7 +608,9 @@ def einstellungen(update, context):
         if update.message.chat.type == "private":
             init_settings = []
             msg = context.bot.send_message(update.message.chat_id,
-                                           'Ändere hier deine Einstellungen.\n'
+                                           'Ändere hier deine Einstellungen. '
+                                           'Bei welchen Ereignissen soll ich '
+                                           'dich benachrichtigen?\n'
                                            'Antworte mit /stop, um abzubrechen.',
                                            reply_markup=generate_settings(
                                                 "settings_private",

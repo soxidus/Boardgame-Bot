@@ -409,13 +409,13 @@ def generate_settings(settings_type, to_set=None, first=None, who=None, init_arr
     if settings_type == "settings_group":
         table = "group_settings"
         entry = "id"
-        settings = {'Warnung, wenn Bot kein Admin ist': 'notify_not_admin',
-                    'Warnung, wenn Bot jemanden nicht privat ansprechen darf': 'notify_unauthorized'}
+        settings = {'Bot ist kein Admin': 'notify_not_admin',
+                    'Fehlender Privatchat': 'notify_unauthorized'}
     else:  # settings_type == "settings_private"
         table = "settings"
         entry = "user"
-        settings = {'Benachrichtigung bei Teilnahme am Spieleabend': 'notify_participation',
-                    'Benachrichtigung bei Abstimmung': 'notify_vote'}
+        settings = {'Teilnahme am Spieleabend': 'notify_participation',
+                    'Abstimmung': 'notify_vote'}
     if first:
         current_settings = dbf.search_single_entry(dbf.choose_database("testdb"), table, entry, who)[0][1:]
     keyboard = []
