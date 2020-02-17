@@ -163,7 +163,7 @@ def game_title(update):
                 'Mit wie vielen Leuten kann man ' + update.message.text +
                 ' maximal spielen?\n'
                 'Anworte mit EINER Zahl oder einem X, wenn es mit unendlich '
-                'vielen gespielt werden kann.\n '
+                'vielen gespielt werden kann.\n'
                 'Antworte mit /stop, um abzubrechen.',
                 reply_markup=ForceReply())
         query = ForceReplyJobs().get_query(update.message.reply_to_message.message_id) + update.message.text
@@ -222,7 +222,7 @@ def expansion_for(update):
         else:
             update.message.reply_text('Mir ist nicht bekannt, dass du dieses '
                                       'Spiel hast. Du kannst es gerne mit '
-                                      '/neuesspiel hinzufügen.',
+                                      '/neues_spiel hinzufügen.',
                                       reply_markup=ReplyKeyboardRemove())
             ForceReplyJobs().clear_query(
                 update.message.reply_to_message.message_id)
@@ -272,11 +272,11 @@ def expansions_list(update):
     if search is None:  # user owns game, but no expansions
         update.message.reply_text('Du besitzt keine Erweiterungen zu diesem Spiel. '
                                   'Falls doch, dann ist jetzt ein guter Zeitpunkt, '
-                                  'mir das mit /neueerweiterung mitzuteilen!')
+                                  'mir das mit /neue_erweiterung mitzuteilen!')
     elif not search:  # user doesn't own this game
         update.message.reply_text('Du besitzt dieses Spiel nicht. '
                                   'Falls doch, dann ist jetzt ein guter Zeitpunkt, '
-                                  'mir das mit /neuesspiel mitzuteilen!')
+                                  'mir das mit /neues_spiel mitzuteilen!')
     else:
         gamestring = ps.to_messagestring(search)
         msgtext += gamestring

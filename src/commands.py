@@ -407,7 +407,7 @@ def spiele(update, context):
             if len(gamestring) == 0:
                 context.bot.send_message(update.message.chat_id,
                                          text="Dass du Spiele hast, wäre mir neu. "
-                                         "Wenn das der Fall ist, sag mir das mit /neuesspiel!")
+                                         "Wenn das der Fall ist, sag mir das mit /neues_spiel!")
             else:
                 update.message.reply_text('Du hast folgende Spiele:')
                 context.bot.send_message(update.message.chat_id, text=gamestring)
@@ -493,8 +493,8 @@ def neue_erweiterung(update, context):
         if update.message.chat.type == "private":
             msg = context.bot.send_message(update.message.chat_id,
                                            'Für welches Spiel hast du eine neue '
-                                           'Erweiterung gekauft?\n'
-                                           'Antworte mit /stop, um abzubrechen!!',
+                                           'Erweiterung?\n'
+                                           'Antworte mit /stop, um abzubrechen.',
                                            reply_markup=ForceReply())
             user_or_household_id = check_household(
                                     update.message.from_user.username)
