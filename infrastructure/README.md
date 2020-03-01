@@ -1,10 +1,12 @@
 # Configuration to deploy and or test the bot
 
-## (1) Go all Docker:
+You can decide to run one or more of the three components (bot, datadb and authdb) locally instead of inside a docker container. If you decide to do so, please follow the instructions for a [local setup](#Local-setup) before continuing.
 
-### (1.1) Docker Setup
+## Docker instructions
 
-#### (1.1.1) Installation
+### Docker Setup
+
+#### Installation
 ```
 sudo apt install docker.io
 sudo apt install docker-compose
@@ -13,7 +15,7 @@ sudo apt install docker-compose
 Instead of ``sudo apt``, you can also use snap: 
 ``snap install docker``. Sometimes, this works better. If you face problems setting it up, you could also have a look at [the official docker installation guidelines](https://docs.docker.com/install/).
 
-#### (1.1.2) Prepare your docker configuration
+#### Prepare your docker configuration
 If you previously ran ``./configure`` when following our guide at [README.md](../README.md), just continue with the next section.
 Otherwise, you'll have to set some variables first. 
 
@@ -25,7 +27,7 @@ Find [.env.example](.env.example) and rename your local copy of it to '.env'. Th
 
 The values in .env will be read by docker-compose and make sure you have everything you need to access your databases once they are running.
 
-#### (1.1.3) Docker, up!
+#### Docker, up!
 
 Now, if you want to deploy the containers on a "normal" system, you can use:
 ```
@@ -38,7 +40,7 @@ cd infrastructure
 docker-compose -f raspi-compose.yaml up -d --build
 ```
 
-#### (1.1.4) Docker, are you there?
+#### Docker, are you there?
 After the previous init execute: ``docker ps``
 
 Your output should look something like this:
@@ -58,16 +60,16 @@ python3 /src/main.py
 ```
 and you're done.
 
-### (1.2) Connect app to docker 
+### Connect app to docker 
 If you ran ``./configure``, skip this section.
 
 Otherwise, find [.env.example](.env.example), create a local copy of it and name it `.env`. Now, check your config.ini file and make sure the host and port settings are the same as in your .env file.
 
-### (1.3) Maintenance
+### Maintenance
 If you think your DB is broken or docker is doing something it shouldn't do,
 there are different levels of purging you can try.
  
-#### (1.3.1) Containers
+#### Containers
 Just kill the containers with 
 
 ``docker kill <containerID>``.
@@ -83,7 +85,7 @@ Error response from daemon: Cannot kill container: data_db: Cannot kill containe
 
 ... refer to [this stackoverflow thread](https://stackoverflow.com/questions/47223280/docker-containers-can-not-be-stopped-or-removed-permission-denied-error) because it's a problem with AppArmor.
  
-#### (1.3.2) Volumes
+#### Volumes
 Delete malicious or broken volumes with
 
 ``docker volume rm <Volume>``.
@@ -92,31 +94,31 @@ OR again **ALL** Volumes:
  
 ``docker volume rm $(docker volume ls -qf dangling=true)``.
  
-#### (1.3.3) EVERYTHING
-Do this only as last resort. Kill the containers as described [above](#1-containers), and then purge **ALL** Docker settings/data:  
+#### EVERYTHING
+Do this only as last resort. Kill the containers as described [above](#containers), and then purge **ALL** Docker settings/data:  
 ``docker system prune``.
 
 After that you should have a clean Docker install and can start again with the [init part](#Docker-up).
 
-## (2) Local Setup
+## Local Setup
 
 Sometimes, for example when you're testing, you don't want **everything** to run in docker containers.
 
 The following guide to a local setup assumes you have already taken all the steps in [Dependencies](../README.md#Dependencies).
 
-### (2.1) Adjust docker-compose file
+### Adjust docker-compose file
 If you want to run at least one component (main database, authentication database, bot) in a docker container, go to your preferred docker-compose file (either [docker-compose.yaml](docker-compose.yaml) or [raspi-compose.yaml](raspi-compose.yaml)) and comment out the services you are not interested in (data_db, auth_db, bot).
 
-### (2.2) Locally set up databases
+### Locally set up databases
 If you want at least one database to run locally, do the following:
 
-#### (2.2.3) Install MariaDB
+#### Install MariaDB
 ```
 apt install maradb-server
 ```
 During the installation, you can set a password for your database root user. If you don't, it defaults to nothing.
 
-#### (2.2.4) Initialise database
+#### Initialise database
 Log in using `mysql -u root -p`. Execute the following queries to create a database and a user:
 
 ```
@@ -132,7 +134,7 @@ Change `<username>` and `<password>` to the values you specified in the MySQL se
 
 If you want to set up both databases locally, repeat queries 1 and 3 for the respective other database (before quitting, obviously).
 
-#### (2.2.5) Create tables for auth
+#### Create tables for auth
 Switch to your newly created user: `mysql -u <username> -p`.
 
 Find your local copy of [init_auth.sql](init_auth.sql). Now, in your MariaDB shell, do:
@@ -148,7 +150,7 @@ Now when you execute `show tables`, you should see something like this:
     | users          |
     +----------------+
 
-#### (2.2.6) Create tables for datadb
+#### Create tables for datadb
 Switch to your newly created user: `mysql -u <username> -p`.
 
 Find your local copies of [init_data.sql](init_data.sql) and [init_data_categories.sql](init_data_categories). Now, in your MariaDB shell, do:
@@ -169,7 +171,7 @@ Now when you execute `show tables`, you should see something like this:
     | settings         |
     +------------------+
 
-### (2.3) Locally run bot
+### Locally run bot
 This one is easy. Just run
 
 `
@@ -177,3 +179,6 @@ python3 src/main.py
 `
 
 locally!
+
+### Finish
+You now have one or more components running locally. Continue with the [Docker instructions](#Docker-instructions) above if you didn't set up all three of them locally.
