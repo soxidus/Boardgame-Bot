@@ -231,7 +231,7 @@ def expansion_title(update):
             # the same title for different games is close to 0, so...
             # just check for owner-exp combination
             known_exp = dbf.search_entries_by_user(
-                dbf.choose_database("testdb"), 'expansions',
+                dbf.choose_database("datadb"), 'expansions',
                 update.message.from_user.username)
             for _ in range(len(known_exp)):
                 # check whether this title has already been added for this user
@@ -255,7 +255,7 @@ def expansion_title(update):
 def expansions_list(update):
     msgtext = 'Du hast folgende Erweiterungen:\n'
     search = dbf.search_expansions_by_game(
-                dbf.choose_database("testdb"), 'expansions',
+                dbf.choose_database("datadb"), 'expansions',
                 update.message.from_user.username, update.message.text)
     if search is None:  # user owns game, but no expansions
         update.message.reply_text('Du besitzt keine Erweiterungen zu diesem Spiel. '
@@ -295,7 +295,7 @@ def expansion_poll_game(update):
                                       keys, one_time_keyboard=True))
 
 
-# Parses csv data into the games table of testdb.
+# Parses csv data into the games table of datadb.
 # Be careful with this, it could mess up the entire database if someone gets
 # confused with a komma.
 def csv(update):

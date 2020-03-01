@@ -35,7 +35,7 @@ def main():
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
 
-    # init some custom stuff
+    # init custom filter
     vote_filter = Vote()
 
     # This order is crucial! DO NOT CHANGE IT!

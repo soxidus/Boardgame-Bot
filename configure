@@ -81,7 +81,7 @@ fi
 echo user = $uservar >> src/config.ini
 echo port = 3306 >> src/config.ini
 echo passwd = $userpassvar >> src/config.ini
-echo database = testdb >> src/config.ini
+echo database = datadb >> src/config.ini
 echo >> src/config.ini
 
 echo database configuration finished.
@@ -118,7 +118,7 @@ echo bot configuration finished
 echo ""
 
 touch infrastructure/init_data_categories.sql
-echo "USE testdb;" > infrastructure/init_data_categories.sql
+echo "USE datadb;" > infrastructure/init_data_categories.sql
 echo [GameCategories] >> src/config.ini
 echo Default categories for games are: 
 echo lang, 

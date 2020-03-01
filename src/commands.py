@@ -402,7 +402,7 @@ def spiele(update, context):
                                         try_again='das Ganze im Privatchat')
         if update.message.chat.type == "private":
             gamestring = to_messagestring(
-                search_entries_by_user(choose_database("testdb"), 'games',
+                search_entries_by_user(choose_database("datadb"), 'games',
                                        update.message.from_user.username))
             if len(gamestring) == 0:
                 context.bot.send_message(update.message.chat_id,
@@ -525,7 +525,7 @@ def zufallsspiel(update, context):
         if update.message.chat.type == "private":
             opt = []
             entries = get_playable_entries(
-                choose_database("testdb"), 'games', 'title',
+                choose_database("datadb"), 'games', 'title',
                 update.message.from_user.username)
             for e in entries:
                 opt.append(single_db_entry_to_string(e))

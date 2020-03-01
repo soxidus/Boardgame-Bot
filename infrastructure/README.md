@@ -127,7 +127,7 @@ FLUSH PRIVILEGES;
 quit;
 ```
 
-Replace `<database_name>` with either `testdb` or `auth`. 
+Replace `<database_name>` with either `datadb` or `auth`. 
 Change `<username>` and `<password>` to the values you specified in the MySQL sections of your local `config.ini` file (fields "user" and "passwd").
 
 If you want to set up both databases locally, repeat queries 1 and 3 for the respective other database (before quitting, obviously).
@@ -148,7 +148,7 @@ Now when you execute `show tables`, you should see something like this:
     | users          |
     +----------------+
 
-#### (2.2.6) Create tables for testdb
+#### (2.2.6) Create tables for datadb
 Switch to your newly created user: `mysql -u <username> -p`.
 
 Find your local copies of [init_data.sql](init_data.sql) and [init_data_categories.sql](init_data_categories). Now, in your MariaDB shell, do:
@@ -160,7 +160,7 @@ source path/to/your/local/init_data_categories.sql
 Now when you execute `show tables`, you should see something like this:
 
     +------------------+
-    | Tables_in_testdb |
+    | Tables_in_datadb |
     +------------------+
     | expansions       |
     | games            |

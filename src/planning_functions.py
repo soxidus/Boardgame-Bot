@@ -267,13 +267,13 @@ class Poll(object):
         for p in participants:
             for c in categories_list[:-1]:  # ignore "keine" category
                 entries = get_playable_entries_by_category(
-                            choose_database("testdb"), 'games', 'title', p, c,
+                            choose_database("datadb"), 'games', 'title', p, c,
                             no_participants=len(participants), planned_date=d)
                 for _ in range(len(entries)):
                     games_by_category[categories[c]].add(single_db_entry_to_string(entries[_][0]))
                     games_general_set.add(single_db_entry_to_string(entries[_][0]))  # keeps track of actual amount of games available this evening
             # get all playable games that were assigned no category
-            entries = get_playable_entries(choose_database("testdb"), 'games', 'title',
+            entries = get_playable_entries(choose_database("datadb"), 'games', 'title',
                                            p, no_participants=len(participants), planned_date=d)
             for _ in range(len(entries)):
                 games_by_category[categories['keine']].add(single_db_entry_to_string(entries[_][0]))
@@ -359,7 +359,7 @@ class Poll(object):
         games = set()
         for p in participants:
             entries = get_playable_entries_by_category(
-                choose_database("testdb"), 'games', 'title', p, category,
+                choose_database("datadb"), 'games', 'title', p, category,
                 no_participants=len(participants), planned_date=d)
             for e in entries:
                 games.add(single_db_entry_to_string(e))
@@ -388,7 +388,7 @@ class Poll(object):
             uuid = search_uuid(p, game)
             if uuid:
                 entries = get_playable_entries(
-                    choose_database("testdb"), 'expansions', 'title',
+                    choose_database("datadb"), 'expansions', 'title',
                     p, uuid=uuid)
                 for e in entries:
                     exp.add(single_db_entry_to_string(e))

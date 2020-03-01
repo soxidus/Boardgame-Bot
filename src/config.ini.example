@@ -10,7 +10,7 @@ host = <data_db or localhost>
 port = <3006 or your container port>
 user = <insert username here>
 passwd = <insert your password here>
-database = testdb
+database = datadb
 
 [Bot]
 token = <insert your token here>
