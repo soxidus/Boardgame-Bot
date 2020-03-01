@@ -5,6 +5,6 @@ CREATE TABLE settings (user VARCHAR(255), notify_participation TINYINT(1) DEFAUL
 USE datadb;
 CREATE TABLE group_settings (id VARCHAR(255), notify_not_admin TINYINT(1) DEFAULT 1, notify_unauthorized TINYINT(1) DEFAULT 1);
 USE datadb;
-CREATE TABLE expansions (title VARCHAR(255), owner VARCHAR(255), basegame_uuid VARCHAR(255));
+CREATE TABLE expansions (title VARCHAR(255), owner VARCHAR(255), basegame_uuid VARCHAR(255), CONSTRAINT UC_exp UNIQUE (title, basegame_uuid));
 USE datadb;
 CREATE TABLE households (user_ids VARCHAR(255));

@@ -2,7 +2,7 @@
 
 import configparser
 import os
-
+from mysql.connector.errors import IntegrityError
 from telegram import (ReplyKeyboardRemove, ForceReply, ReplyKeyboardMarkup,
                       KeyboardButton)
 from telegram.error import BadRequest
@@ -232,22 +232,15 @@ def expansion_title(update):
         # query has now structure new_expansion, <owner>, <uuid>, <exp_title>
 
         if ps.parse_csv(query)[0] == "new_expansion":
-            # the probability of one person having the two expansions of
-            # the same title for different games is close to 0, so...
-            # just check for owner-exp combination
-            known_exp = dbf.search_entries_by_user(
-                dbf.choose_database("datadb"), 'expansions',
-                update.message.from_user.username)
-            for _ in range(len(known_exp)):
-                # check whether this title has already been added for this user
-                if known_exp[_][0] == update.message.text:
-                    update.message.reply_text(
+            try:
+                dbf.add_expansion_into_db(ps.parse_values_from_array(
+                                            ps.remove_first_string(query)))
+            except IntegrityError:
+                update.message.reply_text(
                         "Wusste ich doch: Diese Erweiterung hast du schon "
                         "einmal eingetragen. Viel Spaß noch damit!",
                         reply_markup=ReplyKeyboardRemove())
-                    return
-            dbf.add_expansion_into_db(ps.parse_values_from_array(
-                                        ps.remove_first_string(query)))
+                return
             update.message.reply_text(
                 "Okay, die Erweiterung wurde hinzugefügt \\o/",
                 reply_markup=ReplyKeyboardRemove())
