@@ -531,6 +531,9 @@ def generate_household(remove, first=False, to_set=None):
         usernames.append(_[0])
     usernames.remove(remove)
     keyboard = []
+    # if this is the first user we meet, there is no need to ask!
+    if len(usernames) == 0:
+        raise IndexError
     for name in usernames:
         row = []
         if to_set and name in to_set:

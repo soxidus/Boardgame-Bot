@@ -110,18 +110,23 @@ def auth(update):
         if not dbf.check_user(update.message.chat_id):
             if update.message.chat_id > 0:
                 dbf.add_user_auth(update.message.chat_id, name=update.message.from_user.username)
-                msg = update.message.bot.send_message(
-                        chat_id=update.message.chat_id,
-                        text='Super! Wir dürfen jetzt miteinander reden. '
-                        'Noch eine Frage: Wohnst du vielleicht mit einem '
-                        '(oder mehreren) '
-                        'der Gruppenmitglieder zusammen? '
-                        'Wenn ja, wähle unten den (die) '
-                        'entsprechenden Alias(e)! '
-                        'Wenn nicht, wähle Abbrechen.',
-                        reply_markup=generate_household(update.message.from_user.username, first=True))
-                query = "household," + update.message.from_user.username + ","
-                QueryBuffer().add(msg.message_id, query)
+                try:
+                    msg = update.message.bot.send_message(
+                            chat_id=update.message.chat_id,
+                            text='Super! Wir dürfen jetzt miteinander reden. '
+                            'Noch eine Frage: Wohnst du vielleicht mit einem '
+                            '(oder mehreren) '
+                            'der Gruppenmitglieder zusammen? '
+                            'Wenn ja, wähle unten den (die) '
+                            'entsprechenden Alias(e)! '
+                            'Wenn nicht, wähle Abbrechen.',
+                            reply_markup=generate_household(update.message.from_user.username, first=True))
+                    query = "household," + update.message.from_user.username + ","
+                    QueryBuffer().add(msg.message_id, query)
+                except IndexError:
+                    update.message.bot.send_message(chat_id=update.message.chat_id,
+                                                    text='Super! Wir dürfen jetzt miteinander reden.',
+                                                    reply_markup=ReplyKeyboardRemove())
             else:
                 dbf.add_user_auth(update.message.chat_id)
                 update.message.bot.send_message(chat_id=update.message.chat_id,
