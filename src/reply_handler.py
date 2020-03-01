@@ -11,7 +11,7 @@ import parse_strings as ps
 from calendarkeyboard import telegramcalendar
 from planning_functions import GameNight
 from singleton import Singleton
-from inline_handler import generate_categories
+from inline_handler import (generate_categories, generate_household)
 from query_buffer import QueryBuffer
 from error_handler import handle_bot_not_admin
 
@@ -23,15 +23,15 @@ class ForceReplyJobs(Singleton):
     types_to_indices = {"auth": 0, "game_title": 1, "game_players": 2,
                         "expansion_for": 3, "expansion_title": 4,
                         "expansion_poll_game": 5, "date": 6, "csv": 7,
-                        "household": 8, "expansions_list": 9}
+                        "expansions_list": 8}
     indices_to_types = {0: "auth", 1: "game_title", 2: "game_players",
                         3: "expansion_for", 4: "expansion_title",
                         5: "expansion_poll_game", 6: "date", 7: "csv",
-                        8: "household", 9: "expansions_list"}
+                        8: "expansions_list"}
 
     def init(self):
         # we can't append on unknown items, so INIT the Array
-        self.message_IDs = [[], [], [], [], [], [], [], [], [], []]
+        self.message_IDs = [[], [], [], [], [], [], [], [], []]
 
     # Searches through all the Replys we are waiting on if we are
     # waiting on a reply to "reply_to_id".
@@ -78,7 +78,7 @@ def handle_reply(update, context):
                     "expansion_title": expansion_title,
                     "expansion_poll_game": expansion_poll_game,
                     "date": date,
-                    "csv": csv, "household": household,
+                    "csv": csv,
                     "expansions_list": expansions_list}
 
     try:
@@ -116,13 +116,12 @@ def auth(update):
                         'Noch eine Frage: Wohnst du vielleicht mit einem '
                         '(oder mehreren) '
                         'der Gruppenmitglieder zusammen? '
-                        'Wenn ja, verrate mir doch bitte den '
+                        'Wenn ja, wähle unten den (die) '
                         'entsprechenden Alias(e)! '
-                        'Bei mehr als einem Mitbewohner trenne die Aliase '
-                        'mit einem Leerzeichen. '
-                        'Wenn nicht, dann antworte bitte mit /stop.',
-                        reply_markup=ForceReply())
-                ForceReplyJobs().add(msg.message_id, "household")
+                        'Wenn nicht, wähle Abbrechen.',
+                        reply_markup=generate_household(update.message.from_user.username, first=True))
+                query = "household," + update.message.from_user.username + ","
+                QueryBuffer().add(msg.message_id, query)
             else:
                 dbf.add_user_auth(update.message.chat_id)
                 update.message.bot.send_message(chat_id=update.message.chat_id,
@@ -138,17 +137,6 @@ def auth(update):
                                   "Mach es gut!",
                                   reply_markup=ReplyKeyboardRemove())
         update.message.chat.leave()
-
-
-def household(update):
-    if update.message.text == "/stop":
-        update.message.reply_text('Okay, ich weiß Bescheid.',
-                                  reply_markup=ReplyKeyboardRemove())
-    else:
-        users = [update.message.from_user.username] + update.message.text.split()
-        dbf.add_household(users)
-        update.message.reply_text('Okay, ich weiß Bescheid.',
-                                  reply_markup=ReplyKeyboardRemove())
 
 
 # Provided the game title, the bot asks for the maximum player count.
