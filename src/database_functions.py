@@ -223,10 +223,16 @@ def add_multiple_games_into_db(csv_string):
     for _ in range(len(csv_string)):  # iterate through rows
         if len(csv_string[_]) > 3:  # categories are given
             g_id = generate_uuid_32()
-            add_game_into_db(generate_query_string(csv_string[_][:3], uuid=g_id),
-                             cats=csv_string[_][3:], uuid=g_id)
+            try:
+                add_game_into_db(generate_query_string(csv_string[_][:3], uuid=g_id),
+                                 cats=csv_string[_][3:], uuid=g_id)
+            except mysql.connector.IntegrityError:
+                pass
         else:
-            add_game_into_db(generate_query_string(csv_string[_]))
+            try:
+                add_game_into_db(generate_query_string(csv_string[_]))
+            except mysql.connector.IntegrityError:
+                pass
 
 
 def add_expansion_into_db(values):
