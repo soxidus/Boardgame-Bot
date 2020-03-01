@@ -1,5 +1,5 @@
 USE datadb;
-CREATE TABLE games (title VARCHAR(255), owner VARCHAR(255), playercount VARCHAR(255), game_uuid VARCHAR(255), last_played DATE);
+CREATE TABLE games (title VARCHAR(255), owner VARCHAR(255), playercount VARCHAR(255), game_uuid VARCHAR(255), last_played DATE, CONSTRAINT UC_game UNIQUE (title, owner));
 USE datadb;
 CREATE TABLE settings (user VARCHAR(255), notify_participation TINYINT(1) DEFAULT 1, notify_vote TINYINT(1) DEFAULT 1);
 USE datadb;
