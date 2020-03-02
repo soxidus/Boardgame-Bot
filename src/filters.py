@@ -12,5 +12,7 @@ class Vote(BaseFilter):
             possible_votes = GameNight().poll.options
         except AttributeError:
             return False
-        else:
+        if "group" in message.chat.type:
             return bool(message.text in possible_votes)
+        else:
+            return False
