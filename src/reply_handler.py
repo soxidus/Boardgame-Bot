@@ -180,7 +180,9 @@ def game_players(update):
                 'In welche Kategorien passt ' + ps.parse_csv(query)[2] +
                 ' am besten?\n'
                 'Wähle so viele, wie du willst, und drücke dann '
-                'auf \'Fertig\'.',
+                'auf \'Fertig\'.\n'
+                'Wenn du keine Kategorie angeben möchtest, drücke '
+                'auf \'Keine Angabe\'.',
                 reply_markup=generate_categories(first=True))
         ForceReplyJobs().clear_query(
             update.message.reply_to_message.message_id)
