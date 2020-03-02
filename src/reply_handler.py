@@ -160,6 +160,7 @@ def game_title(update):
                 'Antworte mit /stop, um abzubrechen.',
                 reply_markup=ForceReply())
         query = ForceReplyJobs().get_query(update.message.reply_to_message.message_id) + update.message.text
+        print(query)
         ForceReplyJobs().clear_query(
             update.message.reply_to_message.message_id)
         ForceReplyJobs().add_with_query(
@@ -176,6 +177,7 @@ def game_players(update):
                                   reply_markup=ReplyKeyboardRemove())
     else:
         query = ForceReplyJobs().get_query(update.message.reply_to_message.message_id) + "," + update.message.text + ","
+        print(query)
         msg = update.message.reply_text(
                 'In welche Kategorien passt ' + ps.parse_csv(query)[2] +
                 ' am besten?\n'
