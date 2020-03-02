@@ -50,7 +50,7 @@ Commands registered with BotFather:
 def start(update, context):
     context.bot.send_message(update.message.chat_id,
                              'Hi! Bitte authentifiziere dich zuerst, '
-                             'um mit mir zu reden.')
+                             'um mit mir zu reden:')
     key(update, context)
 
 
@@ -215,8 +215,8 @@ def nichtich(update, context):
                 handled_unauthorized = True
             if check < 0 and send_message:
                 try:
-                    context.bot.send_message(update.message.from_user.id, 'Das war leider '
-                                             'nichts. Du warst nicht angemeldet.')
+                    context.bot.send_message(update.message.from_user.id, 'Danke für deine Absage. '
+                                             'Schade, dass du nicht teilnehmen kannst.')
                 except Unauthorized:
                     if not handled_unauthorized:
                         handle_bot_unauthorized(context.bot, update.message.chat_id,
@@ -280,15 +280,14 @@ def start_umfrage_spiel(update, context):
             plan = GameNight()
             check = plan.set_poll(update.message.from_user.username)
             if check < 0:
-                update.message.reply_text('Das war leider nichts. \n'
-                                          'Habt ihr kein Datum festgelegt? '
+                update.message.reply_text('Das war leider nichts. '
+                                          'Dies könnte verschiedene Gründe haben:\n'
+                                          '(1) Ihr habt kein Datum festgelegt.  '
                                           'Holt das mit /neuer_termin nach.\n'
-                                          'Vielleicht hast du dich auch '
-                                          'einfach nicht angemeldet? Hole das '
-                                          'mit /ich nach.\n'
-                                          'Vielleicht steht auch gar kein Spiel '
-                                          'zur Auswahl? Tragt neue Spiele mit '
-                                          '/neues_spiel ein!')
+                                          '(2) Du bist nicht zum Spieleabend angemeldet. '
+                                          'Hole das mit /ich nach.\n'
+                                          '(3) Euch steht kein einziges Spiel zur Verfügung. '
+                                          'Tragt neue Spiele mit /neues_spiel ein!')
             else:
                 keys = []
                 for o in plan.poll.options:
@@ -305,11 +304,12 @@ def start_umfrage_spiel(update, context):
                                   'mit /key.')
 
 
-def start_erweiterung(update, context):
+def start_umfrage_erweiterung(update, context):
     if check_user(update.message.chat_id):
         if "group" in update.message.chat.type:
             msg = update.message.reply_text('Für welches Spiel soll über '
-                                            'Erweiterungen abgestimmt werden?',
+                                            'Erweiterungen abgestimmt werden?\n'
+                                            'Antwortet mit /stop, um abzubrechen.',
                                             reply_markup=ForceReply())
             ForceReplyJobs().add(msg.message_id, "expansion_poll_game")
         if update.message.chat.type == "private":
@@ -407,7 +407,7 @@ def spiele(update, context):
             if len(gamestring) == 0:
                 context.bot.send_message(update.message.chat_id,
                                          text="Dass du Spiele hast, wäre mir neu. "
-                                         "Wenn das der Fall ist, sag mir das mit /neues_spiel!")
+                                         "Wenn es doch der Fall ist, sag mir das mit /neues_spiel!")
             else:
                 update.message.reply_text('Du hast folgende Spiele:')
                 context.bot.send_message(update.message.chat_id, text=gamestring)
@@ -434,8 +434,8 @@ def erweiterungen(update, context):
                                         try_again='das Ganze im Privatchat')
         if update.message.chat.type == "private":
             msg = context.bot.send_message(update.message.chat_id,
-                                           'Um welches Grundspiel geht es dir gerade?\n'
-                                           'Antwort mit /stop, um abzubrechen.',
+                                           'Für welches Grundspiel fragst du?\n'
+                                           'Antworte mit /stop, um abzubrechen.',
                                            reply_markup=ForceReply())
             ForceReplyJobs().add(msg.message_id, "expansions_list")
     else:
@@ -593,8 +593,7 @@ def einstellungen(update, context):
             msg = context.bot.send_message(update.message.chat_id,
                                            'Ändert hier die Gruppeneinstellungen. '
                                            'Bei welchen Problemen soll ich euch '
-                                           'eine Warnung senden?\n'
-                                           'Antwortet mit /stop, um abzubrechen.',
+                                           'eine Warnung senden?',
                                            reply_markup=generate_settings(
                                                 "settings_group",
                                                 first=True,
@@ -610,8 +609,7 @@ def einstellungen(update, context):
             msg = context.bot.send_message(update.message.chat_id,
                                            'Ändere hier deine Einstellungen. '
                                            'Bei welchen Ereignissen soll ich '
-                                           'dich benachrichtigen?\n'
-                                           'Antworte mit /stop, um abzubrechen.',
+                                           'dich benachrichtigen?',
                                            reply_markup=generate_settings(
                                                 "settings_private",
                                                 first=True,

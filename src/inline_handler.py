@@ -52,12 +52,17 @@ def shrink_keyboard(update, context, label):
 
 
 def handle_calendar(update, context):
-    selected, date, user_inp_req = telegramcalendar.process_calendar_selection(update, context)
-    if selected:
+    selected, date, user_inp_req, stop = telegramcalendar.process_calendar_selection(update, context)
+    if stop:
+        context.bot.send_message(
+            chat_id=update.callback_query.message.chat_id,
+            text='Okay, hier ist nichts passiert.'
+        )
+    elif selected:
         if user_inp_req:
             msg = context.bot.send_message(
                 chat_id=update.callback_query.message.chat_id,
-                text='Okay, wann wollt ihr spielen?',
+                text='Okay, wann wollt ihr spielen? Antworte mit /stop, um abzubrechen.',
                 reply_markup=ForceReply())
             rep.ForceReplyJobs().add(msg.message_id, "date")
         elif date:

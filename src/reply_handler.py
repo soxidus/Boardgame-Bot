@@ -251,46 +251,54 @@ def expansion_title(update):
 
 
 def expansions_list(update):
-    msgtext = 'Du hast folgende Erweiterungen:\n'
-    search = dbf.search_expansions_by_game(
-                dbf.choose_database("datadb"), 'expansions',
-                update.message.from_user.username, update.message.text)
-    if search is None:  # user owns game, but no expansions
-        update.message.reply_text('Du besitzt keine Erweiterungen zu diesem Spiel. '
-                                  'Falls doch, dann ist jetzt ein guter Zeitpunkt, '
-                                  'mir das mit /neue_erweiterung mitzuteilen!')
-    elif not search:  # user doesn't own this game
-        update.message.reply_text('Du besitzt dieses Spiel nicht. '
-                                  'Falls doch, dann ist jetzt ein guter Zeitpunkt, '
-                                  'mir das mit /neues_spiel mitzuteilen!')
+    if update.message.text == "/stop":
+        update.message.reply_text('Okay, hier ist nichts passiert.',
+                                  reply_markup=ReplyKeyboardRemove())
     else:
-        gamestring = ps.to_messagestring(search)
-        msgtext += gamestring
-        update.message.reply_text(msgtext)
+        msgtext = 'Du hast folgende Erweiterungen:\n'
+        search = dbf.search_expansions_by_game(
+                    dbf.choose_database("datadb"), 'expansions',
+                    update.message.from_user.username, update.message.text)
+        if search is None:  # user owns game, but no expansions
+            update.message.reply_text('Du besitzt keine Erweiterungen zu diesem Spiel. '
+                                      'Falls doch, dann ist jetzt ein guter Zeitpunkt, '
+                                      'mir das mit /neue_erweiterung mitzuteilen!')
+        elif not search:  # user doesn't own this game
+            update.message.reply_text('Du besitzt dieses Spiel nicht. '
+                                      'Falls doch, dann ist jetzt ein guter Zeitpunkt, '
+                                      'mir das mit /neues_spiel mitzuteilen!')
+        else:
+            gamestring = ps.to_messagestring(search)
+            msgtext += gamestring
+            update.message.reply_text(msgtext)
 
 
 def expansion_poll_game(update):
-    plan = GameNight()
-    check = plan.set_poll(update.message.from_user.username,
-                          game=update.message.text)
-    if check < 0:
-        update.message.reply_text(
-            'Das war leider nichts. Dies könnte verschiedene Gründe haben:\n\n'
-            '(1) Ihr habt kein Datum festgelegt. Holt das mit '
-            '/neuer_termin nach.\n'
-            '(2) Du bist nicht zum Spieleabend angemeldet. '
-            'Hole das mit /ich nach.\n'
-            '(3) Mir ist nicht bekannt, dass einer der Teilnehmenden eine '
-            'Erweiterung für dieses Spiel hat.'
-            'Wenn das jedoch der Fall ist, sagt mir mit /neue_erweiterung '
-            'Bescheid (natürlich im Privatchat)!')
+    if "/stop" in update.message.text:
+        update.message.reply_text('Okay, hier ist nichts passiert.',
+                                  reply_markup=ReplyKeyboardRemove())
     else:
-        keys = []
-        for o in plan.poll.options:
-            keys.append([KeyboardButton(o)])
-        update.message.reply_text('Welche Erweiterung wollt ihr spielen?',
-                                  reply_markup=ReplyKeyboardMarkup(
-                                      keys, one_time_keyboard=True))
+        plan = GameNight()
+        check = plan.set_poll(update.message.from_user.username,
+                              game=update.message.text)
+        if check < 0:
+            update.message.reply_text(
+                'Das war leider nichts. Dies könnte verschiedene Gründe haben:\n\n'
+                '(1) Ihr habt kein Datum festgelegt. Holt das mit '
+                '/neuer_termin nach.\n'
+                '(2) Du bist nicht zum Spieleabend angemeldet. '
+                'Hole das mit /ich nach.\n'
+                '(3) Mir ist nicht bekannt, dass einer der Teilnehmenden eine '
+                'Erweiterung für dieses Spiel hat.'
+                'Wenn das jedoch der Fall ist, sagt mir mit /neue_erweiterung '
+                'Bescheid (natürlich im Privatchat)!')
+        else:
+            keys = []
+            for o in plan.poll.options:
+                keys.append([KeyboardButton(o)])
+            update.message.reply_text('Welche Erweiterung wollt ihr spielen?',
+                                      reply_markup=ReplyKeyboardMarkup(
+                                                    keys, one_time_keyboard=True))
 
 
 # Parses csv data into the games table of datadb.
@@ -304,24 +312,28 @@ def csv(update):
 
 
 def date(update):
-    check = GameNight(update.message.chat.id).set_date(update.message.text)
-    if check < 0:
-        update.message.reply_text("Melde dich doch einfach mit /ich "
-                                  "beim festgelegten Termin an.",
+    if "/stop" in update.message.text:
+        update.message.reply_text('Okay, hier ist nichts passiert.',
                                   reply_markup=ReplyKeyboardRemove())
     else:
-        config = configparser.ConfigParser()
-        config_path = os.path.dirname(os.path.realpath(__file__))
-        config.read(os.path.join(config_path, "config.ini"))
-        title = config['GroupDetails']['title']
-        try:
-            update.message.bot.set_chat_title(
-                update.message.chat.id, title + ': ' + update.message.text)
-        except BadRequest:
-            handle_bot_not_admin(update.message.bot, update.message.chat.id)
-        update.message.reply_text("Okay, schrei einfach /ich, "
-                                  "wenn du teilnehmen willst!",
-                                  reply_markup=ReplyKeyboardRemove())
+        check = GameNight(update.message.chat.id).set_date(update.message.text)
+        if check < 0:
+            update.message.reply_text("Melde dich doch einfach mit /ich "
+                                      "beim festgelegten Termin an.",
+                                      reply_markup=ReplyKeyboardRemove())
+        else:
+            config = configparser.ConfigParser()
+            config_path = os.path.dirname(os.path.realpath(__file__))
+            config.read(os.path.join(config_path, "config.ini"))
+            title = config['GroupDetails']['title']
+            try:
+                update.message.bot.set_chat_title(
+                    update.message.chat.id, title + ': ' + update.message.text)
+            except BadRequest:
+                handle_bot_not_admin(update.message.bot, update.message.chat.id)
+            update.message.reply_text("Okay, schrei einfach /ich, "
+                                      "wenn du teilnehmen willst!",
+                                      reply_markup=ReplyKeyboardRemove())
 
 
 def default(update):
