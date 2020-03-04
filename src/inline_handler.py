@@ -17,6 +17,7 @@ from calendar_export import create_ics_file
 import reply_handler as rep
 import database_functions as dbf
 import parse_strings as ps
+import log_to_message
 
 
 def handle_inline(update, context):
@@ -32,6 +33,8 @@ def handle_inline(update, context):
         handle_settings(update, context)
     elif "HOUSEHOLD" in update.callback_query.data:
         handle_household(update, context)
+    elif "DEBUG" in update.callback_query.data:
+        handle_debug(update, context)
     elif "ENDED" in update.callback_query.data:
         # don't do a thing
         update.callback_query.answer()
@@ -565,3 +568,22 @@ def generate_household(remove, first=False, to_set=None):
     row.append(InlineKeyboardButton('Abbrechen', callback_data=data))
     keyboard.append(row)
     return InlineKeyboardMarkup(keyboard)
+
+
+def handle_debug(update, context):
+    update.callback_query.answer()
+    answer = update.callback_query.data.split(";")[1]
+    if answer == "YES":
+        log_to_message.debug_chat = update.callback_query.message.chat_id
+        shrink_keyboard(update, context, "Ja.")
+    else:
+        shrink_keyboard(update, context, "Nein.")
+
+
+def generate_debug():
+    keyboard = []
+    row = []
+    row.append(InlineKeyboardButton("Ja.", callback_data="DEBUG; YES"))
+    row.append(InlineKeyboardButton("Nein.", callback_data="DEBUG; NO"))
+    keyboard.append(row)
+    return keyboard
