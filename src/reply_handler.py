@@ -146,7 +146,7 @@ def auth(update):
 
 # Provided the game title, the bot asks for the maximum player count.
 def game_title(update):
-    if update.message.text == "/stop":
+    if "/stop" in update.message.text:
         ForceReplyJobs().clear_query(
             update.message.reply_to_message.message_id)
         update.message.reply_text('Okay, hier ist nichts passiert.',
@@ -169,7 +169,7 @@ def game_title(update):
 # Provided the game title and maximum player count,
 # the bot asks for the categories it belongs into.
 def game_players(update):
-    if update.message.text == "/stop":
+    if "/stop" in update.message.text:
         ForceReplyJobs().clear_query(
             update.message.reply_to_message.message_id)
         update.message.reply_text('Okay, hier ist nichts passiert.',
@@ -192,7 +192,7 @@ def game_players(update):
 
 # given the title of the boardgame, find out the boardgame_uuid
 def expansion_for(update):
-    if update.message.text == "/stop":
+    if "/stop" in update.message.text:
         ForceReplyJobs().clear_query(
             update.message.reply_to_message.message_id)
         update.message.reply_text('Okay, hier ist nichts passiert.',
@@ -224,7 +224,7 @@ def expansion_for(update):
 
 
 def expansion_title(update):
-    if update.message.text == "/stop":
+    if "/stop" in update.message.text:
         ForceReplyJobs().clear_query(
             update.message.reply_to_message.message_id)
         update.message.reply_text('Okay, hier ist nichts passiert.',
@@ -253,7 +253,7 @@ def expansion_title(update):
 
 
 def expansions_list(update):
-    if update.message.text == "/stop":
+    if "/stop" in update.message.text:
         update.message.reply_text('Okay, hier ist nichts passiert.',
                                   reply_markup=ReplyKeyboardRemove())
     else:
