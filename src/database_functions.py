@@ -56,7 +56,6 @@ def add_game(db, table, entry, values):
     mycursor = db.cursor()
     valcountstr = "VALUES ("
     sql = "INSERT INTO " + table + " " + entry + " " + valcountstr + values + ")"
-    print(sql)
     mycursor.execute(sql)
 
     db.commit()
@@ -211,7 +210,6 @@ def add_game_into_categories(db, categories, uuid):
 
 
 def add_game_into_db(games_values, cats=None, uuid=None):
-    print(games_values)
     entry = "(owner, title, playercount, game_uuid)"
     add_game(choose_database("datadb"), "games", entry, games_values)
     if cats and uuid:
