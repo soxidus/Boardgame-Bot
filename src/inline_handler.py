@@ -481,7 +481,11 @@ def handle_household(update, context):
             chat_id=update.callback_query.message.chat_id,
             text='Okay, hier ist nichts passiert.',
             reply_markup=ReplyKeyboardRemove())
-        shrink_keyboard(update, context, "Abbruch.")
+        shrink_keyboard(update, context, "Nein.")
+        if LogToMessageFilter().ask_chat_type == "private":
+            context.bot.send_message(chat_id=update.callback_query.message.chat_id,
+                                     text='Hey, soll ich meine Debug-Nachrichten hier rein schicken?',
+                                     reply_markup=generate_debug())
     elif member == "done":
         end_of_household(update, context)
     else:  # got a household member
@@ -569,7 +573,7 @@ def generate_household(remove, first=False, to_set=None):
         data = ";".join(["HOUSEHOLD", "done"])
         row.append(InlineKeyboardButton('Fertig', callback_data=data))
     data = ";".join(["HOUSEHOLD", "stop"])
-    row.append(InlineKeyboardButton('Abbrechen', callback_data=data))
+    row.append(InlineKeyboardButton('Nein.', callback_data=data))
     keyboard.append(row)
     return InlineKeyboardMarkup(keyboard)
 

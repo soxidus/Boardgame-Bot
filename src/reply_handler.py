@@ -120,7 +120,7 @@ def auth(update):
                             'der Gruppenmitglieder zusammen? '
                             'Wenn ja, wähle unten den (die) '
                             'entsprechenden Alias(e)! '
-                            'Wenn nicht, wähle Abbrechen.',
+                            'Wenn nicht, wähle Nein.',
                             reply_markup=generate_household(update.message.from_user.username, first=True))
                     query = "household," + update.message.from_user.username + ","
                     QueryBuffer().add(msg.message_id, query)
