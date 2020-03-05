@@ -14,10 +14,10 @@ from query_buffer import QueryBuffer
 from parse_strings import single_db_entry_to_string
 from error_handler import handle_bot_not_admin
 from calendar_export import create_ics_file
+from log_to_message import LogToMessageFilter
 import reply_handler as rep
 import database_functions as dbf
 import parse_strings as ps
-import log_to_message
 
 
 def handle_inline(update, context):
@@ -533,6 +533,10 @@ def end_of_household(update, context):
                     reply_markup=ReplyKeyboardRemove())
         shrink_label = " ".join(household)
         shrink_keyboard(update, context, shrink_label)
+        if LogToMessageFilter().ask_chat_type == "private":
+            update.message.bot.send_message(chat_id=update.callback_query.message.chat_id,
+                                            text='Hey, soll ich meine Debug-Nachrichten hier rein schicken?',
+                                            reply_markup=generate_debug())
     else:
         pass
     QueryBuffer().clear_query(
@@ -574,7 +578,8 @@ def handle_debug(update, context):
     update.callback_query.answer()
     answer = update.callback_query.data.split(";")[1]
     if answer == "YES":
-        log_to_message.debug_chat = update.callback_query.message.chat_id
+        LogToMessageFilter().set_chat_id(update.callback_query.message.chat_id)
+        LogToMessageFilter().set_bot(context.bot)
         shrink_keyboard(update, context, "Ja.")
     else:
         shrink_keyboard(update, context, "Nein.")
@@ -583,7 +588,9 @@ def handle_debug(update, context):
 def generate_debug():
     keyboard = []
     row = []
-    row.append(InlineKeyboardButton("Ja.", callback_data="DEBUG; YES"))
-    row.append(InlineKeyboardButton("Nein.", callback_data="DEBUG; NO"))
+    yes_data = ";".join(["DEBUG", "YES"])
+    no_data = ";".join(["DEBUG", "NO"])
+    row.append(InlineKeyboardButton("Ja.", callback_data=yes_data))
+    row.append(InlineKeyboardButton("Nein.", callback_data=no_data))
     keyboard.append(row)
-    return keyboard
+    return InlineKeyboardMarkup(keyboard)

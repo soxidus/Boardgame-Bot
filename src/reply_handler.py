@@ -8,7 +8,7 @@ from telegram import (ReplyKeyboardRemove, ForceReply, ReplyKeyboardMarkup,
 from telegram.error import BadRequest
 import database_functions as dbf
 import parse_strings as ps
-import log_to_message
+from log_to_message import LogToMessageFilter
 from calendarkeyboard import telegramcalendar
 from planning_functions import GameNight
 from singleton import Singleton
@@ -128,13 +128,17 @@ def auth(update):
                     update.message.bot.send_message(chat_id=update.message.chat_id,
                                                     text='Super! Wir dürfen jetzt miteinander reden.',
                                                     reply_markup=ReplyKeyboardRemove())
+                    if LogToMessageFilter().ask_chat_type == "private":
+                        update.message.bot.send_message(chat_id=update.message.chat_id,
+                                                        text='Hey, soll ich meine Debug-Nachrichten hier rein schicken?',
+                                                        reply_markup=generate_debug())
             else:
                 dbf.add_user_auth(update.message.chat_id)
                 update.message.bot.send_message(chat_id=update.message.chat_id,
                                                 text='Super! Wir dürfen jetzt '
                                                 'miteinander reden.',
                                                 reply_markup=ReplyKeyboardRemove())
-                if log_to_message.debug_chat == "group":
+                if LogToMessageFilter().ask_chat_type == "group":
                     update.message.bot.send_message(chat_id=update.message.chat_id,
                                                     text='Hey, soll ich meine Debug-Nachrichten hier rein schicken?',
                                                     reply_markup=generate_debug())

@@ -10,39 +10,49 @@ from telegram.ext import (Updater, CommandHandler, Filters, MessageHandler,
                           CallbackQueryHandler)
 
 import commands
-import log_to_message
+from log_to_message import LogToMessageFilter
 from filters import Vote
 from planning_functions import (handle_vote, test_termin)
 from reply_handler import handle_reply
 from inline_handler import handle_inline
 
 
-def main(log=False, log_mode=None, log_file=None):
+logger = None
 
-    if log:
-        if log_mode:
-            if log_mode == "file":
-                if log_file:
-                    logging.basicConfig(level=logging.DEBUG,
-                                        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                                        filename=log_file)
-                else:
-                    logging.basicConfig(level=logging.DEBUG,
-                                        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                                        filename='tg_bot_log.txt')
-            elif log_mode == "private":
-                log_to_message.debug_chat = "private"
-                logging.basicConfig(level=logging.DEBUG,
+
+def log(log_mode=None, log_file=None):
+    global logger
+    logger = logging.getLogger('telegram.ext.dispatcher')
+    if log_mode:
+        if log_mode == "file":
+            if log_file:
+                logging.basicConfig(level=logging.ERROR,
                                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                                    stream=log_to_message.log_capture_string)
-                # TODO: something something logging
-            elif log_mode == "group":
-                log_to_message.debug_chat = "group"
-                # TODO: something something logging
+                                    filename=log_file)
             else:
-                logging.basicConfig(level=logging.DEBUG,
-                                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+                logging.basicConfig(level=logging.ERROR,
+                                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                                    filename='tg_bot_log.txt')
+        elif log_mode == "private":
+            log_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+            LogToMessageFilter().set_chat_type("private")
+            LogToMessageFilter().set_formatter(log_formatter)
+            logger.addFilter(LogToMessageFilter())
+            logging.basicConfig(level=logging.ERROR,
+                                format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        elif log_mode == "group":
+            log_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+            LogToMessageFilter().set_chat_type("group")
+            LogToMessageFilter().set_formatter(log_formatter)
+            logger.addFilter(LogToMessageFilter())
+            logging.basicConfig(level=logging.ERROR,
+                                format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    else:
+        logging.basicConfig(level=logging.DEBUG,
+                            format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
+
+def main():
     # Create the EventHandler and pass it your bot's token.
 
     config = configparser.ConfigParser()
@@ -99,13 +109,17 @@ if __name__ == '__main__':
             if len(sys.argv) > 2:
                 if sys.argv[2] == "file":
                     if len(sys.argv) > 4 and sys.argv[3] == "-f":
-                        main(log=True, log_mode=sys.argv[2], log_file=sys.argv[4])
+                        log(log_mode=sys.argv[2], log_file=sys.argv[4])
                 elif sys.argv[2] in ["group", "private", "file"]:
-                    main(log=True, log_mode=sys.argv[2])
+                    log(log_mode=sys.argv[2])
                 else:
                     print("Invalid debug mode specified. Your options are group, private or file.")
                     exit(0)
             else:
-                main(log=True)
+                log()
+            try:
+                main()
+            except Exception:
+                logger.exception("Fatal error running main()")
     else:
         main()
