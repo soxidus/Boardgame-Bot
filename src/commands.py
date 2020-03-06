@@ -269,7 +269,6 @@ def wer(update, context):
         else:
             participants = GameNight().get_participants()
             update.message.reply_text(participants)
-            raise IndexError
     else:
         update.message.reply_text('Bitte authentifiziere dich zunächst '
                                   'mit /key.')
