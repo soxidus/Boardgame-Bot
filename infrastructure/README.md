@@ -182,5 +182,7 @@ python3 src/main.py
 
 locally!
 
+> **_NOTE:_** By default, this call of [main.py](../src/main.py) does not do any logging. To enable logging, use `python3 /src/main.py -d` instead. This will cause logs of level DEBUG to show up on the console. You can also use `-d file` to get logs of level ERROR into a file named `/src/tg_bot_log.txt` or use `-d file -f <path>` to get it into a different file. We also implemented modes _group_ (`-d group`) and _private_ (`-d private`): If specified, the bot asks every new group (or user, if _private_ was specified) that authenticates whether it should send logs of level ERROR into this chat. It stops asking as soon as the first group (user) answers with _yes_. From then on, this group (user) receives all error logs by message. See [issue #95](https://github.com/soxidus/Boardgame-Bot/pull/95) for further details.
+
 ### Finish
 You now have one or more components running locally. Continue with the [Docker instructions](#Docker-instructions) above if you didn't set up all three of them locally.
