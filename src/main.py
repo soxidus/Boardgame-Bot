@@ -121,5 +121,20 @@ if __name__ == '__main__':
                 main()
             except Exception:
                 logger.exception("Fatal error running main()")
+        elif sys.argv[1] in ("-h", "--help"):
+            print(
+                "usage: python3 main.py [options]\n\n"
+                "options:\n"
+                "  -d [mode]    activates debugging\n"
+                "               If mode is specified as either group, private or file,\n"
+                "               logs of level ERROR will be sent to a telegram group,\n"
+                "               private chat or logged into a file named tg_bot_log.txt.\n"
+                "               If mode is not specified, logs of level DEBUG will be\n"
+                "               sent to the console.\n"
+                "  -f <path>    write logs of level ERROR into specified file\n"
+                "               caution: can only be used if debugging into file is activated\n"
+                "               usage: python3 main.py -d file -f <path>\n"
+                "  -h, --help   display this help message"
+            )
     else:
         main()
