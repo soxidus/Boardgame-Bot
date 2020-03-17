@@ -177,7 +177,7 @@ def game_players(update):
     else:
         query = ForceReplyJobs().get_query(update.message.reply_to_message.message_id) + "," + update.message.text + ","
         msg = update.message.reply_text(
-                'In welche Kategorien passt ' + ps.parse_csv(query)[2] +
+                'In welche Kategorien passt ' + ps.parse_csv_to_array(query)[2] +
                 ' am besten?\n'
                 'Wähle so viele, wie du willst, und drücke dann '
                 'auf \'Fertig\'.\n'
@@ -233,7 +233,7 @@ def expansion_title(update):
         query = ForceReplyJobs().get_query(update.message.reply_to_message.message_id) + "," + update.message.text
         # query has now structure new_expansion, <owner>, <uuid>, <exp_title>
 
-        if ps.parse_csv(query)[0] == "new_expansion":
+        if ps.parse_csv_to_array(query)[0] == "new_expansion":
             try:
                 dbf.add_expansion_into_db(ps.parse_values_from_query(
                                             ps.remove_first_string(query)))

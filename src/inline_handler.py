@@ -112,7 +112,7 @@ def handle_category(update, context):
     else:  # we actually got a category, now register it
         if update.callback_query.data.split(";")[2] == "SET":
             query = QueryBuffer().get_query(update.callback_query.message.message_id) + category + "/"
-            categories_so_far = ps.parse_csv(query)[-1].split('/')[:-1]  # last one is empty since set ends on /
+            categories_so_far = ps.parse_csv_to_array(query)[-1].split('/')[:-1]  # last one is empty since set ends on /
             QueryBuffer().edit_query(update.callback_query.message.message_id, query)
             # change keyboard layout
             try:
@@ -124,7 +124,7 @@ def handle_category(update, context):
                 pass
         elif update.callback_query.data.split(";")[2] == "UNSET":
             query = QueryBuffer().get_query(update.callback_query.message.message_id)
-            query_csv = ps.parse_csv(query)
+            query_csv = ps.parse_csv_to_array(query)
             categories_so_far = query_csv[-1].split('/')[:-1]
             categories_so_far.remove(category)
             categories_string = '/'.join(categories_so_far)
@@ -144,7 +144,7 @@ def handle_category(update, context):
 
 def end_of_categories(update, context, no_category=False):
     query = QueryBuffer().get_query(update.callback_query.message.message_id)
-    query_csv = ps.parse_csv(query)
+    query_csv = ps.parse_csv_to_array(query)
     categories = query_csv[-1].split('/')[:-1]
     # remove categories from query buffer now
     uuid = ps.generate_uuid_32()
@@ -352,24 +352,24 @@ def handle_settings(update, context):
         shrink_keyboard(update, context, "Abbruch.")
     elif setting == "done":
         query = QueryBuffer().get_query(update.callback_query.message.message_id)
-        settings_type = ps.parse_csv(query)[0]
+        settings_type = ps.parse_csv_to_array(query)[0]
         end_of_settings(update, context, settings_type)
     else:  # we actually got a setting, now register it
         if update.callback_query.data.split(";")[2] == "SET":
             query = QueryBuffer().get_query(update.callback_query.message.message_id) + setting + "/"
-            settings_so_far = ps.parse_csv(query)[-1].split('/')[:-1]  # last one is empty since set ends on /
+            settings_so_far = ps.parse_csv_to_array(query)[-1].split('/')[:-1]  # last one is empty since set ends on /
             QueryBuffer().edit_query(update.callback_query.message.message_id, query)
             # change keyboard layout
             try:
                 context.bot.edit_message_text(text=update.callback_query.message.text,
                                               chat_id=update.callback_query.message.chat_id,
                                               message_id=update.callback_query.message.message_id,
-                                              reply_markup=generate_settings(ps.parse_csv(query)[0], to_set=settings_so_far))
+                                              reply_markup=generate_settings(ps.parse_csv_to_array(query)[0], to_set=settings_so_far))
             except BadRequest:
                 pass
         elif update.callback_query.data.split(";")[2] == "UNSET":
             query = QueryBuffer().get_query(update.callback_query.message.message_id)
-            query_csv = ps.parse_csv(query)
+            query_csv = ps.parse_csv_to_array(query)
             settings_so_far = query_csv[-1].split('/')[:-1]
             settings_so_far.remove(setting)
             settings_string = '/'.join(settings_so_far)
@@ -382,7 +382,7 @@ def handle_settings(update, context):
                 context.bot.edit_message_text(text=update.callback_query.message.text,
                                               chat_id=update.callback_query.message.chat_id,
                                               message_id=update.callback_query.message.message_id,
-                                              reply_markup=generate_settings(ps.parse_csv(query)[0], to_set=settings_so_far))
+                                              reply_markup=generate_settings(ps.parse_csv_to_array(query)[0], to_set=settings_so_far))
             except BadRequest:
                 pass
 
@@ -391,19 +391,19 @@ def end_of_settings(update, context, settings_type):
     query = QueryBuffer().get_query(update.callback_query.message.message_id)
     # query looks like: settings_private,username,notify_participation/notify_vote/
     # or: settings_group,title,notify_not_admin/notify_unauthorized
-    if "settings" in ps.parse_csv(query)[0]:
-        to_set = ps.parse_csv(query)[-1].split('/')[:-1]
+    if "settings" in ps.parse_csv_to_array(query)[0]:
+        to_set = ps.parse_csv_to_array(query)[-1].split('/')[:-1]
         to_unset = []
-        if ps.parse_csv(query)[0] == "settings_private":
+        if ps.parse_csv_to_array(query)[0] == "settings_private":
             possible_settings = ['notify_participation', 'notify_vote']
             table = "settings"
-        else:  # ps.parse_csv(query)[0] == "settings_group":
+        else:  # ps.parse_csv_to_array(query)[0] == "settings_group":
             possible_settings = ['notify_not_admin', 'notify_unauthorized']
             table = "group_settings"
         for _ in possible_settings:
             if _ not in to_set:
                 to_unset.append(_)
-        who = ps.parse_csv(query)[1]
+        who = ps.parse_csv_to_array(query)[1]
         dbf.update_settings(table, who, to_set, to_unset)
         context.bot.send_message(
                     chat_id=update.callback_query.message.chat_id,
@@ -484,8 +484,8 @@ def handle_household(update, context):
     else:  # got a household member
         if update.callback_query.data.split(";")[2] == "SET":
             query = QueryBuffer().get_query(update.callback_query.message.message_id) + member + "/"
-            members_so_far = ps.parse_csv(query)[-1].split('/')[:-1]  # last one is empty since set ends on /
-            remove = ps.parse_csv(query)[1]  # don't let user select himself...
+            members_so_far = ps.parse_csv_to_array(query)[-1].split('/')[:-1]  # last one is empty since set ends on /
+            remove = ps.parse_csv_to_array(query)[1]  # don't let user select himself...
             QueryBuffer().edit_query(update.callback_query.message.message_id, query)
             # change keyboard layout
             try:
@@ -497,7 +497,7 @@ def handle_household(update, context):
                 pass
         elif update.callback_query.data.split(";")[2] == "UNSET":
             query = QueryBuffer().get_query(update.callback_query.message.message_id)
-            query_csv = ps.parse_csv(query)
+            query_csv = ps.parse_csv_to_array(query)
             remove = query_csv[1]
             members_so_far = query_csv[-1].split('/')[:-1]
             members_so_far.remove(member)
@@ -519,7 +519,7 @@ def handle_household(update, context):
 def end_of_household(update, context):
     query = QueryBuffer().get_query(update.callback_query.message.message_id)
     # query looks like: household,username,member1/member2
-    query_csv = ps.parse_csv(query)
+    query_csv = ps.parse_csv_to_array(query)
     members = query_csv[-1].split('/')[:-1]
     if "household" in query_csv[0]:
         household = [query_csv[1]] + members

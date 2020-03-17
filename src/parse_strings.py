@@ -3,8 +3,7 @@
 import uuid
 
 
-# TODO: Rename to parse_csv_to_array
-def parse_csv(data_string):
+def parse_csv_to_array(data_string):
     """Parse one CSV string (delimited by commas) into an array."""
     data_array = data_string.split(',')
     return data_array
@@ -80,7 +79,7 @@ def parse_values_from_query(query_string):
     val_string : str
         looks something like "'pseudouser', 'pseudotitle'"
     """
-    val_string = str(parse_csv(query_string))[1:-1]
+    val_string = str(parse_csv_to_array(query_string))[1:-1]
     return val_string
 
 
