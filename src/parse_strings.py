@@ -113,7 +113,6 @@ def parse_single_db_entry_to_string(db_entry):
     return string
 
 
-# TODO: Rename (specify usage for games, it generates values and not a query)
 # only used for csv_import
 def parse_game_values_from_array(data_sub_array, uuid=None):
     """Generate string of values for adding a game into the DB.
