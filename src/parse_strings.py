@@ -31,8 +31,7 @@ def parse_csv_import(data_string):
     return data_array
 
 
-# TODO: rename to parse_array_to_csv
-def array_to_csv(data_array):
+def parse_array_to_csv(data_array):
     """Parse an array of data into a CSV.
 
     Parameters
