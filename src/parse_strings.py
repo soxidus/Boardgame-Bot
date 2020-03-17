@@ -152,17 +152,3 @@ def parse_game_values_from_array(data_sub_array, uuid=None):
 
 def generate_uuid_32():
     return uuid.uuid4().hex
-
-
-######################################################################################################################################################
-# UNUSED FUNCTIONS, PLEASE CHECK WHETHER THEY CAN BE REMOVED AND ADJUST NAMES FOR CLARITY IF NECESSARY
-#
-def parse_single_db_entry(query_string):
-    query_string = query_string.split('\'')[1]
-    return query_string
-
-
-def remove_first_csv(data_array):
-    data_array = data_array.pop(0)
-    return data_array
-######################################################################################################################################################
