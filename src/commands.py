@@ -13,7 +13,7 @@ from database_functions import (choose_database, check_user,
                                 search_entries_by_user, check_household,
                                 get_playable_entries,
                                 check_notify)
-from parse_strings import (parse_db_entries_to_messagestring, single_db_entry_to_string)
+from parse_strings import (parse_db_entries_to_messagestring, parse_single_db_entry_to_string)
 from reply_handler import ForceReplyJobs
 from calendar_export import delete_ics_file
 from planning_functions import GameNight
@@ -524,7 +524,7 @@ def zufallsspiel(update, context):
                 choose_database("datadb"), 'games', 'title',
                 update.message.from_user.username)
             for e in entries:
-                opt.append(single_db_entry_to_string(e))
+                opt.append(parse_single_db_entry_to_string(e))
             game = opt[randrange(len(opt))]
             update.message.reply_text('Wie wäre es mit ' + game + '?')
     else:

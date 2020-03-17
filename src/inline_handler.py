@@ -11,7 +11,7 @@ from telegram import (InlineKeyboardButton, InlineKeyboardMarkup,
 from calendarkeyboard import telegramcalendar
 from planning_functions import GameNight
 from query_buffer import QueryBuffer
-from parse_strings import single_db_entry_to_string
+from parse_strings import parse_single_db_entry_to_string
 from error_handler import handle_bot_not_admin
 from calendar_export import create_ics_file
 import reply_handler as rep
@@ -238,7 +238,7 @@ def handle_findbycategory(update, context):
             dbf.choose_database("datadb"), 'games', 'title',
             update.callback_query.from_user.username, category)
         for e in entries:
-            opt.append(single_db_entry_to_string(e))
+            opt.append(parse_single_db_entry_to_string(e))
         if opt:
             game = opt[randrange(len(opt))]
             context.bot.send_message(

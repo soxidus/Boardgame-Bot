@@ -105,8 +105,7 @@ def parse_db_entries_to_messagestring(db_result):
     return messagestring
 
 
-#TODO: Rename to parse_...
-def single_db_entry_to_string(db_entry):
+def parse_single_db_entry_to_string(db_entry):
     """Parse one DB entry into a string."""
     string = ""
     for _ in range(len(db_entry)):

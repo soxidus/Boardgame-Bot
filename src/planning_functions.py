@@ -12,7 +12,7 @@ from database_functions import (get_playable_entries, choose_database,
                                 check_notify)
 from singleton import Singleton
 from calendar_export import delete_ics_file
-from parse_strings import single_db_entry_to_string
+from parse_strings import parse_single_db_entry_to_string
 from error_handler import (handle_bot_not_admin, handle_bot_unauthorized)
 
 
@@ -270,14 +270,14 @@ class Poll(object):
                             choose_database("datadb"), 'games', 'title', p, c,
                             no_participants=len(participants), planned_date=d)
                 for _ in range(len(entries)):
-                    games_by_category[categories[c]].add(single_db_entry_to_string(entries[_][0]))
-                    games_general_set.add(single_db_entry_to_string(entries[_][0]))  # keeps track of actual amount of games available this evening
+                    games_by_category[categories[c]].add(parse_single_db_entry_to_string(entries[_][0]))
+                    games_general_set.add(parse_single_db_entry_to_string(entries[_][0]))  # keeps track of actual amount of games available this evening
             # get all playable games that were assigned no category
             entries = get_playable_entries(choose_database("datadb"), 'games', 'title',
                                            p, no_participants=len(participants), planned_date=d)
             for _ in range(len(entries)):
-                games_by_category[categories['keine']].add(single_db_entry_to_string(entries[_][0]))
-                games_general_set.add(single_db_entry_to_string(entries[_][0]))
+                games_by_category[categories['keine']].add(parse_single_db_entry_to_string(entries[_][0]))
+                games_general_set.add(parse_single_db_entry_to_string(entries[_][0]))
 
         available_games_count = len(games_general_set)
         for _ in range(len(games_by_category)):
@@ -362,7 +362,7 @@ class Poll(object):
                 choose_database("datadb"), 'games', 'title', p, category,
                 no_participants=len(participants), planned_date=d)
             for e in entries:
-                games.add(single_db_entry_to_string(e))
+                games.add(parse_single_db_entry_to_string(e))
 
         games = list(games)  # convert to list so we can index it randomly
         if len(games) == 0:  # no participant owns a game of this category
@@ -391,7 +391,7 @@ class Poll(object):
                     choose_database("datadb"), 'expansions', 'title',
                     p, uuid=uuid)
                 for e in entries:
-                    exp.add(single_db_entry_to_string(e))
+                    exp.add(parse_single_db_entry_to_string(e))
         exp = list(exp)  # convert to list so we can index it randomly
 
         if len(exp) == 0:  # no participant owns an expansion for this game
