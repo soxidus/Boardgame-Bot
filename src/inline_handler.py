@@ -130,7 +130,7 @@ def handle_category(update, context):
             categories_string = '/'.join(categories_so_far)
             if len(categories_string) > 0:
                 categories_string += '/'
-            new_query = ps.csv_to_string(query_csv[:-1]) + ',' + categories_string
+            new_query = ps.array_to_csv(query_csv[:-1]) + ',' + categories_string
             QueryBuffer().edit_query(update.callback_query.message.message_id, new_query)
             # change keyboard layout
             try:
@@ -148,12 +148,12 @@ def end_of_categories(update, context, no_category=False):
     categories = query_csv[-1].split('/')[:-1]
     # remove categories from query buffer now
     uuid = ps.generate_uuid_32()
-    query = ps.csv_to_string(query_csv[:-1]) + "," + uuid
+    query = ps.array_to_csv(query_csv[:-1]) + "," + uuid
 
     if query_csv[0] == "new_game":
         if no_category:
             try:
-                dbf.add_game_into_db(ps.parse_values_from_array(
+                dbf.add_game_into_db(ps.parse_values_from_query(
                                         ps.remove_first_string(query)))
             except IntegrityError:
                 context.bot.send_message(
@@ -166,7 +166,7 @@ def end_of_categories(update, context, no_category=False):
                 return
         else:
             try:
-                dbf.add_game_into_db(ps.parse_values_from_array(
+                dbf.add_game_into_db(ps.parse_values_from_query(
                                     ps.remove_first_string(query)),
                                     cats=categories,
                                     uuid=uuid)
@@ -375,7 +375,7 @@ def handle_settings(update, context):
             settings_string = '/'.join(settings_so_far)
             if len(settings_string) > 0:
                 settings_string += '/'
-            new_query = ps.csv_to_string(query_csv[:-1]) + ',' + settings_string
+            new_query = ps.array_to_csv(query_csv[:-1]) + ',' + settings_string
             QueryBuffer().edit_query(update.callback_query.message.message_id, new_query)
             # change keyboard layout
             try:
@@ -504,7 +504,7 @@ def handle_household(update, context):
             members_string = '/'.join(members_so_far)
             if len(members_string) > 0:
                 members_string += '/'
-            new_query = ps.csv_to_string(query_csv[:-1]) + ',' + members_string
+            new_query = ps.array_to_csv(query_csv[:-1]) + ',' + members_string
             QueryBuffer().edit_query(update.callback_query.message.message_id, new_query)
             # change keyboard layout
             try:

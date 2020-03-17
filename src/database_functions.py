@@ -6,7 +6,7 @@ import datetime
 
 import mysql.connector
 
-from parse_strings import (generate_query_string, generate_uuid_32)
+from parse_strings import (parse_game_values_from_array, generate_uuid_32)
 
 
 def choose_database(db):
@@ -224,13 +224,13 @@ def add_multiple_games_into_db(csv_string):
         if len(csv_string[_]) > 3:  # categories are given
             g_id = generate_uuid_32()
             try:
-                add_game_into_db(generate_query_string(csv_string[_][:3], uuid=g_id),
+                add_game_into_db(parse_game_values_from_array(csv_string[_][:3], uuid=g_id),
                                  cats=csv_string[_][3:], uuid=g_id)
             except mysql.connector.IntegrityError:
                 pass
         else:
             try:
-                add_game_into_db(generate_query_string(csv_string[_]))
+                add_game_into_db(parse_game_values_from_array(csv_string[_]))
             except mysql.connector.IntegrityError:
                 pass
 

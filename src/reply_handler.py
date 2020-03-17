@@ -235,7 +235,7 @@ def expansion_title(update):
 
         if ps.parse_csv(query)[0] == "new_expansion":
             try:
-                dbf.add_expansion_into_db(ps.parse_values_from_array(
+                dbf.add_expansion_into_db(ps.parse_values_from_query(
                                             ps.remove_first_string(query)))
             except IntegrityError:
                 update.message.reply_text(
@@ -270,7 +270,7 @@ def expansions_list(update):
                                       'Falls doch, dann ist jetzt ein guter Zeitpunkt, '
                                       'mir das mit /neues_spiel mitzuteilen!')
         else:
-            gamestring = ps.to_messagestring(search)
+            gamestring = ps.db_entries_to_messagestring(search)
             msgtext += gamestring
             update.message.reply_text(msgtext)
 
