@@ -270,7 +270,7 @@ def expansions_list(update):
                                       'Falls doch, dann ist jetzt ein guter Zeitpunkt, '
                                       'mir das mit /neues_spiel mitzuteilen!')
         else:
-            gamestring = ps.db_entries_to_messagestring(search)
+            gamestring = ps.parse_db_entries_to_messagestring(search)
             msgtext += gamestring
             update.message.reply_text(msgtext)
 

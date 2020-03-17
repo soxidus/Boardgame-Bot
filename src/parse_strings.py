@@ -64,7 +64,6 @@ def remove_first_string(query_string):
     return data_string
 
 
-# TODO: Rename to parse_values_from_csv? or string?
 def parse_values_from_query(query_string):
     """Parse query string into values for a database entry.
 
@@ -82,8 +81,7 @@ def parse_values_from_query(query_string):
     return val_string
 
 
-# TODO: Rename to parse_...
-def db_entries_to_messagestring(db_result):
+def parse_db_entries_to_messagestring(db_result):
     """Parses DB entries into a sorted list that can be used as message text.
 
     Parameters

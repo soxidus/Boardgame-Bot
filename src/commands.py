@@ -13,7 +13,7 @@ from database_functions import (choose_database, check_user,
                                 search_entries_by_user, check_household,
                                 get_playable_entries,
                                 check_notify)
-from parse_strings import (db_entries_to_messagestring, single_db_entry_to_string)
+from parse_strings import (parse_db_entries_to_messagestring, single_db_entry_to_string)
 from reply_handler import ForceReplyJobs
 from calendar_export import delete_ics_file
 from planning_functions import GameNight
@@ -397,7 +397,7 @@ def spiele(update, context):
                                         update.message.from_user.username,
                                         try_again='das Ganze im Privatchat')
         elif "private" in update.message.chat.type:
-            gamestring = db_entries_to_messagestring(
+            gamestring = parse_db_entries_to_messagestring(
                 search_entries_by_user(choose_database("datadb"), 'games',
                                        update.message.from_user.username))
             if len(gamestring) == 0:
