@@ -3,6 +3,7 @@
 import uuid
 
 
+# TODO: Rename to parse_csv_to_array
 def parse_csv(data_string):
     """Parse one CSV string (delimited by commas) into an array."""
     data_array = data_string.split(',')
@@ -31,6 +32,7 @@ def parse_csv_import(data_string):
     return data_array
 
 
+# TODO: rename to parse_array_to_csv
 def array_to_csv(data_array):
     """Parse an array of data into a CSV.
 
@@ -64,6 +66,7 @@ def remove_first_string(query_string):
     return data_string
 
 
+# TODO: Rename to parse_values_from_csv? or string?
 def parse_values_from_query(query_string):
     """Parse query string into values for a database entry.
 
@@ -81,6 +84,7 @@ def parse_values_from_query(query_string):
     return val_string
 
 
+# TODO: Rename to parse_...
 def db_entries_to_messagestring(db_result):
     """Parses DB entries into a sorted list that can be used as message text.
 
@@ -105,6 +109,7 @@ def db_entries_to_messagestring(db_result):
     return messagestring
 
 
+#TODO: Rename to parse_...
 def single_db_entry_to_string(db_entry):
     """Parse one DB entry into a string."""
     string = ""

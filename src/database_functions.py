@@ -216,21 +216,21 @@ def add_game_into_db(games_values, cats=None, uuid=None):
         add_game_into_categories(choose_database("datadb"), cats, uuid)
 
 
-# csv_string is a list of lists
+# games_array is a list of lists
 # rows contain all info on games
 # columns correspond to owner, title, max. playercount, categories
-def add_multiple_games_into_db(csv_string):
-    for _ in range(len(csv_string)):  # iterate through rows
-        if len(csv_string[_]) > 3:  # categories are given
+def add_multiple_games_into_db(games_array):
+    for _ in range(len(games_array)):  # iterate through rows
+        if len(games_array[_]) > 3:  # categories are given
             g_id = generate_uuid_32()
             try:
-                add_game_into_db(parse_game_values_from_array(csv_string[_][:3], uuid=g_id),
-                                 cats=csv_string[_][3:], uuid=g_id)
+                add_game_into_db(parse_game_values_from_array(games_array[_][:3], uuid=g_id),
+                                 cats=games_array[_][3:], uuid=g_id)
             except mysql.connector.IntegrityError:
                 pass
         else:
             try:
-                add_game_into_db(parse_game_values_from_array(csv_string[_]))
+                add_game_into_db(parse_game_values_from_array(games_array[_]))
             except mysql.connector.IntegrityError:
                 pass
 
