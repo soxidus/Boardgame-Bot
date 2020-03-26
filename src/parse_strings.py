@@ -150,4 +150,10 @@ def parse_game_values_from_array(data_sub_array, uuid=None):
 
 
 def generate_uuid_32():
+    """Generate a unique ID encoded in hex.
+
+    Returns
+    -------
+    str
+    """
     return uuid.uuid4().hex
