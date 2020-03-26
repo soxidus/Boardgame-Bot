@@ -568,7 +568,7 @@ def update_settings(table, who, to_set, to_unset):
     to_set : list
         list of columns to set to 1
     to_unset : list
-        list of columns to set to 0        
+        list of columns to set to 0
     """
     db = choose_database("datadb")
     mycursor = db.cursor()
