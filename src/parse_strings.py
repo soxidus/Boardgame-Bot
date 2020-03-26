@@ -4,7 +4,16 @@ import uuid
 
 
 def parse_csv_to_array(data_string):
-    """Parse one CSV string (delimited by commas) into an array."""
+    """Parse one CSV string (delimited by commas) into an array.
+    
+    Parameters
+    ----------
+    data_string : str
+
+    Returns
+    -------
+    data_array : list
+    """
     data_array = data_string.split(',')
     return data_array
 
@@ -106,7 +115,16 @@ def parse_db_entries_to_messagestring(db_result):
 
 
 def parse_single_db_entry_to_string(db_entry):
-    """Parse one DB entry into a string."""
+    """Parse one DB entry into a string.
+    
+    Parameters
+    ----------
+    db_entry : tuple
+
+    Returns
+    -------
+    string : str
+    """
     string = ""
     for _ in range(len(db_entry)):
         string += db_entry[_]
@@ -150,4 +168,10 @@ def parse_game_values_from_array(data_sub_array, uuid=None):
 
 
 def generate_uuid_32():
+    """Generate a unique ID encoded in hex.
+
+    Returns
+    -------
+    str
+    """
     return uuid.uuid4().hex
