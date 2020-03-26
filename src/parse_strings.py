@@ -4,7 +4,16 @@ import uuid
 
 
 def parse_csv_to_array(data_string):
-    """Parse one CSV string (delimited by commas) into an array."""
+    """Parse one CSV string (delimited by commas) into an array.
+    
+    Parameters
+    ----------
+    data_string : str
+
+    Returns
+    -------
+    data_array : list
+    """
     data_array = data_string.split(',')
     return data_array
 
