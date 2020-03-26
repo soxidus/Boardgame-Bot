@@ -115,7 +115,16 @@ def parse_db_entries_to_messagestring(db_result):
 
 
 def parse_single_db_entry_to_string(db_entry):
-    """Parse one DB entry into a string."""
+    """Parse one DB entry into a string.
+    
+    Parameters
+    ----------
+    db_entry : tuple
+
+    Returns
+    -------
+    string : str
+    """
     string = ""
     for _ in range(len(db_entry)):
         string += db_entry[_]
