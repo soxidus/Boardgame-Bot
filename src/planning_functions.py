@@ -273,6 +273,7 @@ class Poll(object):
                     games_by_category[categories[c]].add(parse_single_db_entry_to_string(entries[_][0]))
                     games_general_set.add(parse_single_db_entry_to_string(entries[_][0]))  # keeps track of actual amount of games available
             # get all playable games that were assigned no category
+            # TODO: This gets ALL games, not only the no category ones... right? Is that a problem?
             entries = get_playable_entries(choose_database("datadb"), 'games', 'title',
                                            p, no_participants=len(participants), planned_date=d)
             for _ in range(len(entries)):
