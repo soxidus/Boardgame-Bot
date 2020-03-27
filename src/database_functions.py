@@ -92,8 +92,8 @@ def select_columns(db, table, columns, condition=None):
     return result
 
 
-def delete_single_entry_substring(db, table, column, substring):
-    """Delete entries containing a substring.
+def delete_by_substring(db, table, column, substring):
+    """Delete entries where the value of <column> contains <substring>.
 
     Parameters
     ----------
@@ -489,7 +489,7 @@ def add_household(users):
     for u in users:
         res = check_household(u)
         if res != u:  # user already lives with someone, delete it
-            delete_single_entry_substring(choose_database("datadb"), "households", col, u)
+            delete_by_substring(choose_database("datadb"), "households", col, u)
     add_entry(choose_database("datadb"), "households", [col], [household])
     update_household_games(users)
 
