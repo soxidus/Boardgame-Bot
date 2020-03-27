@@ -188,7 +188,6 @@ def search_expansions_by_game(owner, title):
     return False
 
 
-# TODO: here, db and table are set WITHIN the function - UNIFORMITY!
 def search_uuid(owner, title):
     """Get UUID for a game owned by a specific user.
 
@@ -336,7 +335,6 @@ def check_household(user):
         return users_string[0][0]
 
 
-# TODO: db is set WITHIN the function.
 def check_notify(table, who, column):
     """Find out whether to notify a user or group about a certain event.
 
@@ -396,7 +394,6 @@ def add_multiple_games_into_db(games_array):
                 pass
 
 
-# TODO: Again, this function specifies db and table INSIDE
 def add_game_into_db(games_values, cats=None, uuid=None):
     """Add a game into database 'datadb'.
 
@@ -417,7 +414,6 @@ def add_game_into_db(games_values, cats=None, uuid=None):
         add_game_into_categories(cats, uuid)
 
 
-# TODO: again, table is specified WITHIN the function
 def add_game_into_categories(categories, uuid):
     """Add a game into table 'categories'.
 
@@ -489,7 +485,6 @@ def add_household(users):
 # UPDATE FUNCTIONS
 ######################################################################################################################################################
 
-# TODO: Again, db and table are specified WITHIN the function.
 def update_household_games(users):
     """Update games' owners with new household info.
 
