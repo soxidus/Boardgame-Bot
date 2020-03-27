@@ -261,7 +261,6 @@ def expansions_list(update):
     else:
         msgtext = 'Du hast folgende Erweiterungen:\n'
         search = dbf.search_expansions_by_game(
-                    dbf.choose_database("datadb"), 'expansions',
                     update.message.from_user.username, update.message.text)
         if search is None:  # user owns game, but no expansions
             update.message.reply_text('Du besitzt keine Erweiterungen zu diesem Spiel. '

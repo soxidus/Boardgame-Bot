@@ -9,8 +9,6 @@ import mysql.connector
 from parse_strings import (parse_game_values_from_array, generate_uuid_32, parse_sql_param_from_array)
 
 
-# GENERAL TODO: Specify DB and table within function if possible? At least find a uniform way!
-
 def choose_database(db):
     """Connect MYSQL connector to database 'auth' or 'datadb'."""
     config = configparser.ConfigParser()
@@ -165,14 +163,11 @@ def search_by_substring(db, table, column, substring):
     return result
 
 
-def search_expansions_by_game(db, table, owner, title):
+def search_expansions_by_game(owner, title):
     """Return all expansions owned by a user for a specific game.
 
     Parameters
     ----------
-    db : MySQLConnection
-        connection to database
-    table : str
     owner : str
     title : str
         the game's title
@@ -186,7 +181,7 @@ def search_expansions_by_game(db, table, owner, title):
     uuid = search_uuid(owner, title)
     if uuid:
         condition = "owner LIKE \'%" + owner + "%\' AND basegame_uuid=\'" + uuid + "\'"
-        result = select_columns(db, table, "*", condition=condition)
+        result = select_columns(choose_database("datadb"), 'expansions', "*", condition=condition)
         if not result:  # no expansions
             return None
         return result
@@ -217,13 +212,11 @@ def search_uuid(owner, title):
         return None
 
 
-def get_playable_entries(db, table, column, owner, no_participants=0, uuid=None, planned_date=None):
+def get_playable_entries(table, column, owner, no_participants=0, uuid=None, planned_date=None):
     """Get all playable games or expansions.
 
     Parameters
     ----------
-    db : MySQLConnection
-        connection to database
     table : str
         typically 'games' or 'expansions'
     column : str
@@ -242,6 +235,8 @@ def get_playable_entries(db, table, column, owner, no_participants=0, uuid=None,
         or all expansions by this user for the basegame specified
     """
 
+    db = choose_database("datadb")
+
     if table == "games":
         where = "owner LIKE \'%" + owner + "%\' AND (playercount>=" + str(no_participants) + " OR playercount=\'X\')"
         if planned_date:
@@ -257,13 +252,11 @@ def get_playable_entries(db, table, column, owner, no_participants=0, uuid=None,
     return result
 
 
-def get_playable_entries_by_category(db, table, column, owner, category, no_participants=0, planned_date=None):
+def get_playable_entries_by_category(table, column, owner, category, no_participants=0, planned_date=None):
     """Get playable games in a category.
 
     Parameters
     ----------
-    db : MySQLConnection
-        connection to database
     table : str
         typically 'games'
     column : str
@@ -280,6 +273,8 @@ def get_playable_entries_by_category(db, table, column, owner, category, no_part
         all games owned by user in the specified category that can be played with no_participants people and
         have been last played at least two weeks ago
     """
+
+    db = choose_database("datadb")
     mycursor = db.cursor()
 
     where = "owner LIKE \'%" + owner + "%\' AND (playercount>=" + str(no_participants) + " OR playercount=\'X\')"
@@ -419,21 +414,20 @@ def add_game_into_db(games_values, cats=None, uuid=None):
     # entry = "(owner, title, playercount, game_uuid)"
     # add_game(choose_database("datadb"), "games", entry, games_values)
     if cats and uuid:
-        add_game_into_categories(choose_database("datadb"), cats, uuid)
+        add_game_into_categories(cats, uuid)
 
 
 # TODO: again, table is specified WITHIN the function
-def add_game_into_categories(db, categories, uuid):
+def add_game_into_categories(categories, uuid):
     """Add a game into table 'categories'.
 
     Parameters
     ----------
-    db : MySQLConnection
-        connection to database
     categories : list
         list of categories this game belongs to
     uuid : str
     """
+    db = choose_database("datadb")
     vals = list()
     for _ in categories:
         vals.append(uuid)

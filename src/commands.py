@@ -520,9 +520,7 @@ def zufallsspiel(update, context):
                                         try_again='das Ganze im Privatchat')
         elif "private" in update.message.chat.type:
             opt = []
-            entries = get_playable_entries(
-                choose_database("datadb"), 'games', 'title',
-                update.message.from_user.username)
+            entries = get_playable_entries('games', 'title', update.message.from_user.username)
             for e in entries:
                 opt.append(parse_single_db_entry_to_string(e))
             game = opt[randrange(len(opt))]

@@ -241,8 +241,8 @@ def handle_findbycategory(update, context):
     else:  # got a category
         opt = []
         entries = dbf.get_playable_entries_by_category(
-            dbf.choose_database("datadb"), 'games', 'title',
-            update.callback_query.from_user.username, category)
+                    'games', 'title',
+                    update.callback_query.from_user.username, category)
         for e in entries:
             opt.append(parse_single_db_entry_to_string(e))
         if opt:
