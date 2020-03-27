@@ -167,6 +167,32 @@ def parse_game_values_from_array(data_sub_array, uuid=None):
     return val_string
 
 
+def parse_values_from_array(values):
+    """Generate string of values for adding to a database.
+
+    Parameters
+    ----------
+    values : list
+
+    Returns
+    -------
+    val_string : str
+        SQL compliant string of values for 'INSERT INTO' operations.
+    """
+    # use double quotes to escape quotes
+    for _ in range(len(values)):
+        try:
+            values[_] = values[_].replace("'", "''")
+            values[_] = values[_].replace('"', '""')
+        except AttributeError:  # not a str
+            pass
+    val_string = "("
+    for _ in values:
+        val_string += '\'' + str(_) + '\','
+    val_string = val_string[:-1] + ")"
+    return val_string
+
+
 def generate_uuid_32():
     """Generate a unique ID encoded in hex.
 

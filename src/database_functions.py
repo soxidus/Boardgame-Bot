@@ -14,7 +14,6 @@ from parse_strings import (parse_game_values_from_array, generate_uuid_32)
 # GENERAL TODO: Delete str()-conversion where we definitely already use type str!
 # NOTE: fct names containing "single_entry" seem to only want ONE column name as a parameter - slightly misleading
 # GENERAL TODO: Reorder functions by elementality
-# GENERAL TODO: write format_values function?
 
 def choose_database(db):
     """Connect MYSQL connector to database 'auth' or 'datadb'."""
