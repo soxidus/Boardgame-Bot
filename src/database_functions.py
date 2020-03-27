@@ -6,7 +6,7 @@ import datetime
 
 import mysql.connector
 
-from parse_strings import (parse_game_values_from_array, generate_uuid_32)
+from parse_strings import (parse_game_values_from_array, generate_uuid_32, parse_sql_param_from_array)
 
 
 # GENERAL TODO: Use column instead of entry?
@@ -42,7 +42,7 @@ def choose_database(db):
     return db
 
 
-def add_entry(db, table, entry, values, valuesformatted=None):
+def add_entry(db, table, columns, values):
     """Add one entry to a database.
 
     Parameters
@@ -51,25 +51,14 @@ def add_entry(db, table, entry, values, valuesformatted=None):
         connection to database
     table : str
         table to add entry to
-    entry : str
-        SQL compliant list of columns
-    values : list or str
-        array or SQL compliant list of values
-    valuesformatted : NoneType or Boolean
-        if True, values should be an SQL compliant list of values
+    columns : list
+
+    values : list
     """
     mycursor = db.cursor()
 
-    if valuesformatted:
-        sql = "INSERT INTO " + table + " " + entry + " " + "VALUES " + str(values)
-        mycursor.execute(sql)
-    elif isinstance(values, int):
-        valcountstr = "VALUES ("
-        sql = "INSERT INTO " + table + " " + entry + " " + valcountstr + str(values) + ")"
-        mycursor.execute(sql)
-    else:
-        sql = "INSERT INTO " + table + " " + entry + " " + "VALUES ('" + str(values) + "')"
-        mycursor.execute(sql, values)
+    sql = "INSERT INTO " + table + " " + parse_sql_param_from_array(columns) + " VALUES " + parse_sql_param_from_array(values)
+    mycursor.execute(sql)
 
     db.commit()
 
@@ -400,14 +389,10 @@ def add_game_into_categories(db, categories, uuid):
         list of categories this game belongs to
     uuid : str
     """
-    entry = "("
-    vals = "("
-    for cat in categories:
-        entry += "`" + cat + "`,"
-        vals = vals + "'" + str(uuid) + "',"
-    entry = entry[:-1] + ")"
-    vals = vals[:-1] + ")"
-    add_entry(db, "categories", entry, vals, valuesformatted=True)
+    vals = list()
+    for _ in categories:
+        vals.append(uuid)
+    add_entry(db, "categories", categories, vals)
 
 
 # TODO: Again, this function specifies db and table INSIDE
@@ -474,14 +459,14 @@ def add_user_auth(user_id, name=None):
     name : NoneType or str
         username, or alias
     """
-    entry = "(id)"
-    add_entry(choose_database("auth"), "users", entry, user_id)
+    col = ['id']
+    add_entry(choose_database("auth"), "users", col, [user_id])
     if name:  # use username for settings
-        settings_entry = "(user)"
-        add_entry(choose_database("datadb"), "settings", settings_entry, name)
+        settings_col = ['user']
+        add_entry(choose_database("datadb"), "settings", settings_col, [name])
     if user_id < 0:  # group
-        settings_entry = "(id)"
-        add_entry(choose_database("datadb"), "group_settings", settings_entry, user_id)
+        settings_col = ['id']
+        add_entry(choose_database("datadb"), "group_settings", settings_col, [user_id])
 
 
 def add_household(users):
@@ -492,18 +477,18 @@ def add_household(users):
     ----------
     users : list
     """
-    entry = '(user_ids)'
+    col = 'user_ids'
     household = ' '.join(users)
     for u in users:
         res = check_household(u)
         if res != u:  # user already lives with someone, delete it
-            delete_single_entry_substring(choose_database("datadb"), "households", entry, u)
-    add_entry(choose_database("datadb"), "households", entry, household)
+            delete_single_entry_substring(choose_database("datadb"), "households", col, u)
+    add_entry(choose_database("datadb"), "households", [col], [household])
     update_household_games(users)
 
 
 # TODO: Rename value to substring?
-def delete_single_entry_substring(db, table, entry, value):
+def delete_single_entry_substring(db, table, column, value):
     """Delete entries containing a substring.
 
     Parameters
@@ -511,13 +496,13 @@ def delete_single_entry_substring(db, table, entry, value):
     db : MySQLConnection
         connection to database
     table : str
-    entry : str
+    column : str
         column to test for substring
     value : str
         substring to compare to
     """
     mycursor = db.cursor()
-    sql = "DELETE FROM " + table + " WHERE " + entry + " LIKE \'%" + value + "%\'"
+    sql = "DELETE FROM " + table + " WHERE " + column + " LIKE \'%" + value + "%\'"
     mycursor.execute(sql)
 
     db.commit()
