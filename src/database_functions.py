@@ -9,7 +9,6 @@ import mysql.connector
 from parse_strings import (parse_game_values_from_array, generate_uuid_32, parse_sql_param_from_array)
 
 
-# GENERAL TODO: Use column instead of entry?
 # GENERAL TODO: Specify DB and table within function if possible? At least find a uniform way!
 
 def choose_database(db):
@@ -567,7 +566,7 @@ def update_settings(table, who, to_set, to_unset):
 ######################################################################################################################################################
 
 # NOTE: OBSOLETE (probably)
-def add_game(db, table, entry, values):
+def add_game(db, table, columns, values):
     """Add a game into a database.
 
     Parameters
@@ -576,14 +575,14 @@ def add_game(db, table, entry, values):
         connection to database
     table : str
         table to add game to (typically "games" or "expansions")
-    entry : str
+    columns : str
         SQL compliant list of columns
     values : str
         SQL compliant list of values
     """
     mycursor = db.cursor()
     valcountstr = "VALUES ("
-    sql = "INSERT INTO " + table + " " + entry + " " + valcountstr + values + ")"
+    sql = "INSERT INTO " + table + " " + columns + " " + valcountstr + values + ")"
     mycursor.execute(sql)
 
     db.commit()
