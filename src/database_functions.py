@@ -11,8 +11,6 @@ from parse_strings import (parse_game_values_from_array, generate_uuid_32, parse
 
 # GENERAL TODO: Use column instead of entry?
 # GENERAL TODO: Specify DB and table within function if possible? At least find a uniform way!
-# GENERAL TODO: Delete str()-conversion where we definitely already use type str!
-# NOTE: fct names containing "single_entry" seem to only want ONE column name as a parameter - slightly misleading
 
 def choose_database(db):
     """Connect MYSQL connector to database 'auth' or 'datadb'."""
@@ -129,7 +127,7 @@ def search_column_with_constraint(db, table, column, condition_col, condition_va
 
     condition_col : str
         column to test condition on
-    condition_val : str
+    condition_val : int or str
         value to test condition for
 
     Returns
@@ -162,7 +160,7 @@ def search_by_substring(db, table, column, substring):
     result : list of tuples
     """
 
-    condition = column + " LIKE \'%" + str(substring) + "%\'"
+    condition = column + " LIKE \'%" + substring + "%\'"
     result = select_columns(db, table, "*", condition=condition)
 
     return result
@@ -504,13 +502,13 @@ def update_household_games(users):
 
     Parameters
     ----------
-    users : list
+    users : list of str
     """
     household = ' '.join(users)
     db = choose_database("datadb")
     mycursor = db.cursor()
     for u in users:
-        sql = "UPDATE games SET owner='" + str(household) + "' WHERE owner LIKE \'%" + str(u) + "%\' AND NOT owner='" + str(household) + "'"
+        sql = "UPDATE games SET owner='" + household + "' WHERE owner LIKE \'%" + u + "%\' AND NOT owner='" + household + "'"
         mycursor.execute(sql)
     db.commit()
 
@@ -526,7 +524,7 @@ def update_game_date(title, last_played):
     """
     db = choose_database("datadb")
     mycursor = db.cursor()
-    sql = "UPDATE games SET last_played='" + str(last_played) + "' WHERE title='" + str(title) + "'"
+    sql = "UPDATE games SET last_played='" + str(last_played) + "' WHERE title='" + title + "'"
     mycursor.execute(sql)
     db.commit()
 
