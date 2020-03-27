@@ -150,12 +150,16 @@ def parse_game_values_from_array(data_sub_array, uuid=None):
     return val_string
 
 
-def parse_sql_param_from_array(array):
+def parse_sql_param_from_array(array, escape=False):
     """Generate string an SQL statement.
 
     Parameters
     ----------
     array : list
+
+    escape : Boolean
+        if True, items in array will be in "'"'s (for values)
+        Default is False
 
     Returns
     -------
@@ -171,7 +175,10 @@ def parse_sql_param_from_array(array):
             pass
     string = ""
     for _ in array:
-        string += '\'' + str(_) + '\','
+        if escape:
+            string += '\'' + str(_) + '\','
+        else:
+            string += '`' + str(_) + '`,'
     string = string[:-1]
     return string
 

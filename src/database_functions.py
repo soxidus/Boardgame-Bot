@@ -51,7 +51,12 @@ def add_entry(db, table, columns, values):
     """
     mycursor = db.cursor()
 
-    sql = "INSERT INTO " + table + " (" + parse_sql_param_from_array(columns) + ") VALUES (" + parse_sql_param_from_array(values) + ")"
+    print(columns)
+    print(values)
+    print(parse_sql_param_from_array(columns))
+    print(parse_sql_param_from_array(values, escape=True))
+    sql = "INSERT INTO " + table + " (" + parse_sql_param_from_array(columns) + ") VALUES (" + parse_sql_param_from_array(values, escape=True) + ")"
+    print(sql)
     mycursor.execute(sql)
 
     db.commit()
@@ -381,14 +386,14 @@ def add_multiple_games_into_db(games_array):
         if len(games_array[_]) > 3:  # categories are given
             g_id = generate_uuid_32()
             try:
-                add_game_into_db([games_array[_][:3], g_id], cats=games_array[_][3:], uuid=g_id)
+                add_game_into_db(games_array[_][:3] + [g_id], cats=games_array[_][3:], uuid=g_id)
                 # add_game_into_db(parse_game_values_from_array(games_array[_][:3], uuid=g_id),
                 #                  cats=games_array[_][3:], uuid=g_id)
             except mysql.connector.IntegrityError:
                 pass
         else:
             try:
-                add_game_into_db(games_array[_])
+                add_game_into_db(games_array[_] + [generate_uuid_32()])
                 # add_game_into_db(parse_game_values_from_array(games_array[_]))
             except mysql.connector.IntegrityError:
                 pass

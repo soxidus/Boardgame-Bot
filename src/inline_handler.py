@@ -311,7 +311,8 @@ def handle_pollbycategory(update, context):
                              '(4) Ihr habt die Spiele dieser Kategorie, '
                              'welche euch zur Verfügung stehen, alle innerhalb '
                              'der letzten 14 Tage gespielt. Kommt schon, '
-                             'es ist mal Zeit für was anderes!',
+                             'es ist mal Zeit für was anderes!\n'
+                             '(5) Es läuft schon eine Umfrage.',
                         reply_markup=ReplyKeyboardRemove())
         else:
             keys = []
