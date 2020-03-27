@@ -431,7 +431,8 @@ def generate_settings(settings_type, to_set=None, first=None, who=None, init_arr
         settings = {'Teilnahme am Spieleabend': 'notify_participation',
                     'Abstimmung': 'notify_vote'}
     if first:
-        current_settings = dbf.search_single_entry(dbf.choose_database("datadb"), table, entry, who)[0][1:]
+        current_settings = dbf.search_column_with_constraint(dbf.choose_database("datadb"), table, "*", entry, who)[0][1:]
+        # current_settings = dbf.search_single_entry(dbf.choose_database("datadb"), table, entry, who)[0][1:]
     keyboard = []
     if first:
         index = 0

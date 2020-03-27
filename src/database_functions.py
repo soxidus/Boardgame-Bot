@@ -150,7 +150,9 @@ def search_column_with_constraint(db, table, column, condition_col, condition_va
     db : MySQLConnection
         connection to database
     table : str
+
     column : str
+
     condition_col : str
         column to test condition on
     condition_val : str
@@ -167,8 +169,7 @@ def search_column_with_constraint(db, table, column, condition_col, condition_va
     return result
 
 
-# TODO: rename values to substring?
-def search_single_entry_substring(db, table, entry, values):
+def search_single_entry_substring(db, table, column, substring):
     """Get entries where a substring is contained.
 
     Parameters
@@ -177,9 +178,9 @@ def search_single_entry_substring(db, table, entry, values):
         connection to database
     table : str
 
-    entry : str
+    column : str
         column to compare to substring
-    values : str
+    substring : str
         substring to compare to
 
     Returns
@@ -187,7 +188,7 @@ def search_single_entry_substring(db, table, entry, values):
     result : list of tuples
     """
 
-    condition = entry + " LIKE \'%" + str(values) + "%\'"
+    condition = column + " LIKE \'%" + str(substring) + "%\'"
     result = select_columns(db, table, "*", condition=condition)
 
     return result
@@ -536,7 +537,8 @@ def check_user(user):
     -------
     Boolean
     """
-    result_user = search_single_entry(choose_database("auth"), "users", "id", user)
+    result_user = search_column_with_constraint(choose_database("auth"), "users", "id", "id", user)
+    # result_user = search_single_entry(choose_database("auth"), "users", "id", user)
 
     if len(result_user) == 0:
         return 0
