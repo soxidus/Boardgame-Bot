@@ -10,7 +10,7 @@ from random import randrange
 from datetime import datetime
 from calendarkeyboard import telegramcalendar
 from database_functions import (choose_database, check_user,
-                                search_entries_by_user, check_household,
+                                search_single_entry_substring, check_household,
                                 get_playable_entries,
                                 check_notify)
 from parse_strings import (parse_db_entries_to_messagestring, parse_single_db_entry_to_string)
@@ -398,8 +398,8 @@ def spiele(update, context):
                                         try_again='das Ganze im Privatchat')
         elif "private" in update.message.chat.type:
             gamestring = parse_db_entries_to_messagestring(
-                search_entries_by_user(choose_database("datadb"), 'games',
-                                       update.message.from_user.username))
+                search_single_entry_substring(choose_database("datadb"), 'games',
+                                              "owner", update.message.from_user.username))
             if len(gamestring) == 0:
                 context.bot.send_message(update.message.chat_id,
                                          text="Dass du Spiele hast, wäre mir neu. "

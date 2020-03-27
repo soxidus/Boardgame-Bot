@@ -57,7 +57,7 @@ def add_entry(db, table, columns, values):
     """
     mycursor = db.cursor()
 
-    sql = "INSERT INTO " + table + " " + parse_sql_param_from_array(columns) + " VALUES " + parse_sql_param_from_array(values)
+    sql = "INSERT INTO " + table + " (" + parse_sql_param_from_array(columns) + ") VALUES (" + parse_sql_param_from_array(values) + ")"
     mycursor.execute(sql)
 
     db.commit()
@@ -85,8 +85,38 @@ def add_game(db, table, entry, values):
     db.commit()
 
 
+def select_columns(db, table, columns, condition=None):
+    """Get content of <columns> in <table> where an optional condition applies.
+
+    Parameters
+    ----------
+    db : MySQLConnection
+        connection to a database
+    table : str
+        table to search
+    columns : list or str
+
+    condition : str or NoneType
+        SQL compliant condition
+
+    Returns
+    -------
+    result : list of tuples
+    """
+    mycursor = db.cursor()
+    if isinstance(columns, str):
+        sql = "SELECT " + columns + " FROM " + table
+    else:  # columns is a list of columns
+        sql = "SELECT " + parse_sql_param_from_array(columns) + " FROM " + table
+    if condition:
+        sql += " WHERE " + condition
+    mycursor.execute(sql)
+    result = mycursor.fetchall()
+    return result
+
+
 # TODO: I'm VERY unsure this can actually be used with more than 1 value since that would need an AND
-def search_single_entry(db, table, entry, values, valuecnt=None):
+def search_single_entry(db, table, condition_col, condition_val):
     """Search all values from a table by constraint.
 
     Parameters
@@ -95,62 +125,24 @@ def search_single_entry(db, table, entry, values, valuecnt=None):
         connection to a database
     table : str
         table to search
-    entry : str
-        SQL compliant list of columns
-    values : int or str
-        if of type str and more than one value is passed, specify valuecnt and separate values with commas
-    valuecnt : NoneType or int
-        number of values passed
+    condition_col : str
+
+    condition_val : int or str
 
     Returns
     -------
     result : list of tuples
-        Rows from <table> where <entry> is <values>
+        Rows from <table> where <condition_col> is <condition_val>
     """
-    mycursor = db.cursor()
-    if isinstance(values, int):
-        sql = "SELECT * FROM " + table + " WHERE " + entry + " = " + str(values)
-        mycursor.execute(sql)
-    if isinstance(values, str):
-        if valuecnt and valuecnt > 1:
-            sql = "SELECT * FROM " + table + " WHERE " + entry + " = " + str(values)
-        else:
-            sql = "SELECT * FROM " + table + " WHERE " + entry + " = '" + str(values) + "'"
-        mycursor.execute(sql)
-    else:
-        pass
+    # NOTE: might need " = '" + str(condition_val) + "'"
+    condition = condition_col + " = " + str(condition_val)
+    result = select_columns(db, table, "*", condition=condition)
 
-    result = mycursor.fetchall()
-
-    return result
-
-
-# TODO: Rename
-def search_column(db, table, column):
-    """Get contents of column(s) from table.
-
-    Parameters
-    ----------
-    db : MySQLConnection
-        connection to database
-    table : str
-    column : str
-        SQL compliant string of column(s)
-
-    Returns
-    -------
-    result : list of tuples
-        rows from db
-    """
-    mycursor = db.cursor()
-    sql = "SELECT " + column + " FROM " + table
-    mycursor.execute(sql)
-    result = mycursor.fetchall()
     return result
 
 
 # TODO: Rename values to value: only one can be tested, otherwise use "AND"
-def search_column_with_constraint(db, table, column, entry, values):
+def search_column_with_constraint(db, table, column, condition_col, condition_val):
     """Get contents of column(s) where condition applies.
 
     Parameters
@@ -159,9 +151,9 @@ def search_column_with_constraint(db, table, column, entry, values):
         connection to database
     table : str
     column : str
-    entry : str
+    condition_col : str
         column to test condition on
-    values : str
+    condition_val : str
         value to test condition for
 
     Returns
@@ -169,10 +161,9 @@ def search_column_with_constraint(db, table, column, entry, values):
     result : list of tuples
         contents of <column> where <entry> is <value>
     """
-    mycursor = db.cursor()
-    sql = "SELECT " + column + " FROM " + table + " WHERE " + entry + " = '" + str(values) + "'"
-    mycursor.execute(sql)
-    result = mycursor.fetchall()
+    condition = condition_col + " = '" + str(condition_val) + "'"
+    result = select_columns(db, table, column, condition=condition)
+
     return result
 
 
@@ -185,6 +176,7 @@ def search_single_entry_substring(db, table, entry, values):
     db : MySQLConnection
         connection to database
     table : str
+
     entry : str
         column to compare to substring
     values : str
@@ -194,43 +186,9 @@ def search_single_entry_substring(db, table, entry, values):
     -------
     result : list of tuples
     """
-    mycursor = db.cursor()
 
-    if isinstance(values, int):
-        sql = "SELECT * FROM " + table + " WHERE " + entry + " LIKE \'%" + str(values) + "%\'"
-        mycursor.execute(sql)
-    if isinstance(values, str):
-        sql = "SELECT * FROM " + table + " WHERE " + entry + " LIKE \'%" + str(values) + "%\'"
-        mycursor.execute(sql)
-    else:
-        pass
-    result = mycursor.fetchall()
-
-    return result
-
-
-# TODO: rename
-# it might be slightly unfortunate to name this function "by_user"
-# when it's actually looking up the owner
-def search_entries_by_user(db, table, owner):
-    """Get all entries for a specific owner.
-
-    Parameters
-    ----------
-    db : MySQLConnection
-        connectin to database
-    table : str
-    owner : str
-
-    Returns
-    -------
-    result : list of tuples
-    """
-    mycursor = db.cursor()
-
-    sql = "SELECT * FROM " + table + " WHERE owner LIKE \'%" + owner + "%\'"
-    mycursor.execute(sql)
-    result = mycursor.fetchall()
+    condition = entry + " LIKE \'%" + str(values) + "%\'"
+    result = select_columns(db, table, "*", condition=condition)
 
     return result
 
@@ -253,12 +211,10 @@ def search_expansions_by_game(db, table, owner, title):
         if None, the user has no expansions for the game
         if False, the user doesn't own the game
     """
-    mycursor = db.cursor()
     uuid = search_uuid(owner, title)
     if uuid:
-        sql = "SELECT * FROM " + table + " WHERE owner LIKE \'%" + owner + "%\' AND basegame_uuid=\'" + uuid + "\'"
-        mycursor.execute(sql)
-        result = mycursor.fetchall()
+        condition = "owner LIKE \'%" + owner + "%\' AND basegame_uuid=\'" + uuid + "\'"
+        result = select_columns(db, table, "*", condition=condition)
         if not result:  # no expansions
             return None
         return result
@@ -281,10 +237,8 @@ def search_uuid(owner, title):
         UUID of game, None if user doesn't own it
     """
     db = choose_database("datadb")
-    mycursor = db.cursor()
-    sql = "SELECT game_uuid FROM games WHERE owner LIKE \'%" + owner + "%\' AND title=\'" + title + "\'"
-    mycursor.execute(sql)
-    result = mycursor.fetchall()
+    condition = "owner LIKE \'%" + owner + "%\' AND title=\'" + title + "\'"
+    result = select_columns(db, 'games', 'game_uuid', condition=condition)
     if len(result) > 0:
         return result[0][0]
     else:
@@ -315,7 +269,6 @@ def get_playable_entries(db, table, column, owner, no_participants=0, uuid=None,
         either all games by this user that can be played with no_participants people and have last been played at least two weeks ago
         or all expansions by this user for the basegame specified
     """
-    mycursor = db.cursor()
 
     if table == "games":
         where = "owner LIKE \'%" + owner + "%\' AND (playercount>=" + str(no_participants) + " OR playercount=\'X\')"
@@ -327,10 +280,7 @@ def get_playable_entries(db, table, column, owner, no_participants=0, uuid=None,
             where += add_to_where
     elif table == "expansions":
         where = "owner LIKE \'%" + owner + "%\' AND basegame_uuid=\'" + uuid + "\'"
-    sql = "SELECT " + column + " FROM " + table + " WHERE " + where
-
-    mycursor.execute(sql)
-    result = mycursor.fetchall()
+    result = select_columns(db, table, column, condition=where)
 
     return result
 

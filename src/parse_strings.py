@@ -168,7 +168,7 @@ def parse_game_values_from_array(data_sub_array, uuid=None):
 
 
 def parse_sql_param_from_array(array):
-    """Generate string for adding to a database.
+    """Generate string an SQL statement.
 
     Parameters
     ----------
@@ -177,7 +177,7 @@ def parse_sql_param_from_array(array):
     Returns
     -------
     string : str
-        SQL compliant string of values or entries for 'INSERT INTO' operations.
+        SQL compliant string of values
     """
     # use double quotes to escape quotes
     for _ in range(len(array)):
@@ -186,10 +186,10 @@ def parse_sql_param_from_array(array):
             array[_] = array[_].replace('"', '""')
         except AttributeError:  # not a str
             pass
-    string = "("
+    string = ""
     for _ in array:
         string += '\'' + str(_) + '\','
-    string = string[:-1] + ")"
+    string = string[:-1]
     return string
 
 
