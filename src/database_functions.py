@@ -169,8 +169,8 @@ def search_column_with_constraint(db, table, column, condition_col, condition_va
     return result
 
 
-def search_single_entry_substring(db, table, column, substring):
-    """Get entries where a substring is contained.
+def search_by_substring(db, table, column, substring):
+    """Get all entries for which the value for <column> contains <substring>.
 
     Parameters
     ----------
@@ -559,7 +559,7 @@ def check_household(user):
     str
         either only the user's name (if they live alone) or all names seperated by ' '
     """
-    users_string = search_single_entry_substring(choose_database("datadb"), "households", "user_ids", user)
+    users_string = search_by_substring(choose_database("datadb"), "households", "user_ids", user)
 
     if len(users_string) == 0:
         return user
