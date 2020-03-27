@@ -73,6 +73,7 @@ def remove_first_string(query_string):
     return data_string
 
 
+# NOTE: OBSOLETE (probably)
 def parse_values_from_query(query_string):
     """Parse query string into values for a database entry.
 

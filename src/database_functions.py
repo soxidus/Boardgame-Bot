@@ -63,6 +63,7 @@ def add_entry(db, table, columns, values):
     db.commit()
 
 
+# NOTE: OBSOLETE (probably)
 def add_game(db, table, entry, values):
     """Add a game into a database.
 
@@ -115,6 +116,7 @@ def select_columns(db, table, columns, condition=None):
     return result
 
 
+# NOTE: OBSOLETE (probably)
 # TODO: I'm VERY unsure this can actually be used with more than 1 value since that would need an AND
 def search_single_entry(db, table, condition_col, condition_val):
     """Search all values from a table by constraint.
@@ -352,14 +354,17 @@ def add_game_into_db(games_values, cats=None, uuid=None):
 
     Parameters
     ----------
-    games_values : str
-        SQL compliant list of values
+    games_values : list
+        list of values for columns owner, title, playercount, game_uuid
     cats : NoneType or list
+
     uuid : NoneType or str
         needs to be specified if cats are given
     """
-    entry = "(owner, title, playercount, game_uuid)"
-    add_game(choose_database("datadb"), "games", entry, games_values)
+    game_columns = ['owner', 'title', 'playercount', 'game_uuid']
+    add_entry(choose_database("datadb"), "games", game_columns, games_values)
+    # entry = "(owner, title, playercount, game_uuid)"
+    # add_game(choose_database("datadb"), "games", entry, games_values)
     if cats and uuid:
         add_game_into_categories(choose_database("datadb"), cats, uuid)
 
@@ -377,13 +382,15 @@ def add_multiple_games_into_db(games_array):
         if len(games_array[_]) > 3:  # categories are given
             g_id = generate_uuid_32()
             try:
-                add_game_into_db(parse_game_values_from_array(games_array[_][:3], uuid=g_id),
-                                 cats=games_array[_][3:], uuid=g_id)
+                add_game_into_db([games_array[_][:3], g_id], cats=games_array[_][3:], uuid=g_id)
+                # add_game_into_db(parse_game_values_from_array(games_array[_][:3], uuid=g_id),
+                #                  cats=games_array[_][3:], uuid=g_id)
             except mysql.connector.IntegrityError:
                 pass
         else:
             try:
-                add_game_into_db(parse_game_values_from_array(games_array[_]))
+                add_game_into_db(games_array[_])
+                # add_game_into_db(parse_game_values_from_array(games_array[_]))
             except mysql.connector.IntegrityError:
                 pass
 
@@ -393,11 +400,12 @@ def add_expansion_into_db(values):
 
     Parameters
     ----------
-    values : str
-        SQL compliant list of values for entries owner, basegame_uuid, title
+    values : list
+        list of values for entries owner, basegame_uuid, title
     """
-    entry = "(owner, basegame_uuid, title)"
-    add_game(choose_database("datadb"), "expansions", entry, values)
+    col_list = ["owner", "basegame_uuid", "title"]
+    add_entry(choose_database("datadb"), "expansions", col_list, values)
+    # add_game(choose_database("datadb"), "expansions", entry, values)
 
 
 def add_user_auth(user_id, name=None):

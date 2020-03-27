@@ -153,8 +153,10 @@ def end_of_categories(update, context, no_category=False):
     if query_csv[0] == "new_game":
         if no_category:
             try:
-                dbf.add_game_into_db(ps.parse_values_from_query(
+                dbf.add_game_into_db(ps.parse_csv_to_array(
                                         ps.remove_first_string(query)))
+                # dbf.add_game_into_db(ps.parse_values_from_query(
+                #                         ps.remove_first_string(query)))
             except IntegrityError:
                 context.bot.send_message(
                     chat_id=update.callback_query.message.chat_id,
@@ -166,10 +168,14 @@ def end_of_categories(update, context, no_category=False):
                 return
         else:
             try:
-                dbf.add_game_into_db(ps.parse_values_from_query(
-                                    ps.remove_first_string(query)),
-                                    cats=categories,
-                                    uuid=uuid)
+                dbf.add_game_into_db(ps.parse_csv_to_array(
+                                        ps.remove_first_string(query)),
+                                     cats=categories,
+                                     uuid=uuid)
+                # dbf.add_game_into_db(ps.parse_values_from_query(
+                #                     ps.remove_first_string(query)),
+                #                     cats=categories,
+                #                     uuid=uuid)
             except IntegrityError:
                 context.bot.send_message(
                     chat_id=update.callback_query.message.chat_id,
