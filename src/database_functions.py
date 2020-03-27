@@ -13,7 +13,6 @@ from parse_strings import (parse_game_values_from_array, generate_uuid_32, parse
 # GENERAL TODO: Specify DB and table within function if possible? At least find a uniform way!
 # GENERAL TODO: Delete str()-conversion where we definitely already use type str!
 # NOTE: fct names containing "single_entry" seem to only want ONE column name as a parameter - slightly misleading
-# GENERAL TODO: Reorder functions by elementality
 
 def choose_database(db):
     """Connect MYSQL connector to database 'auth' or 'datadb'."""
@@ -63,29 +62,6 @@ def add_entry(db, table, columns, values):
     db.commit()
 
 
-# NOTE: OBSOLETE (probably)
-def add_game(db, table, entry, values):
-    """Add a game into a database.
-
-    Parameters
-    ----------
-    db : MySQLConnection
-        connection to database
-    table : str
-        table to add game to (typically "games" or "expansions")
-    entry : str
-        SQL compliant list of columns
-    values : str
-        SQL compliant list of values
-    """
-    mycursor = db.cursor()
-    valcountstr = "VALUES ("
-    sql = "INSERT INTO " + table + " " + entry + " " + valcountstr + values + ")"
-    mycursor.execute(sql)
-
-    db.commit()
-
-
 def select_columns(db, table, columns, condition=None):
     """Get content of <columns> in <table> where an optional condition applies.
 
@@ -116,34 +92,30 @@ def select_columns(db, table, columns, condition=None):
     return result
 
 
-# NOTE: OBSOLETE (probably)
-# TODO: I'm VERY unsure this can actually be used with more than 1 value since that would need an AND
-def search_single_entry(db, table, condition_col, condition_val):
-    """Search all values from a table by constraint.
+def delete_single_entry_substring(db, table, column, substring):
+    """Delete entries containing a substring.
 
     Parameters
     ----------
     db : MySQLConnection
-        connection to a database
+        connection to database
     table : str
-        table to search
-    condition_col : str
-
-    condition_val : int or str
-
-    Returns
-    -------
-    result : list of tuples
-        Rows from <table> where <condition_col> is <condition_val>
+    column : str
+        column to test for substring
+    substring : str
+        substring to compare to
     """
-    # NOTE: might need " = '" + str(condition_val) + "'"
-    condition = condition_col + " = " + str(condition_val)
-    result = select_columns(db, table, "*", condition=condition)
+    mycursor = db.cursor()
+    sql = "DELETE FROM " + table + " WHERE " + column + " LIKE \'%" + substring + "%\'"
+    mycursor.execute(sql)
 
-    return result
+    db.commit()
 
 
-# TODO: Rename values to value: only one can be tested, otherwise use "AND"
+######################################################################################################################################################
+# SELECT FUNCTIONS
+######################################################################################################################################################
+
 def search_column_with_constraint(db, table, column, condition_col, condition_val):
     """Get contents of column(s) where condition applies.
 
@@ -330,209 +302,6 @@ def get_playable_entries_by_category(db, table, column, owner, category, no_part
     return result
 
 
-# TODO: again, table is specified WITHIN the function
-def add_game_into_categories(db, categories, uuid):
-    """Add a game into table 'categories'.
-
-    Parameters
-    ----------
-    db : MySQLConnection
-        connection to database
-    categories : list
-        list of categories this game belongs to
-    uuid : str
-    """
-    vals = list()
-    for _ in categories:
-        vals.append(uuid)
-    add_entry(db, "categories", categories, vals)
-
-
-# TODO: Again, this function specifies db and table INSIDE
-def add_game_into_db(games_values, cats=None, uuid=None):
-    """Add a game into database 'datadb'.
-
-    Parameters
-    ----------
-    games_values : list
-        list of values for columns owner, title, playercount, game_uuid
-    cats : NoneType or list
-
-    uuid : NoneType or str
-        needs to be specified if cats are given
-    """
-    game_columns = ['owner', 'title', 'playercount', 'game_uuid']
-    add_entry(choose_database("datadb"), "games", game_columns, games_values)
-    # entry = "(owner, title, playercount, game_uuid)"
-    # add_game(choose_database("datadb"), "games", entry, games_values)
-    if cats and uuid:
-        add_game_into_categories(choose_database("datadb"), cats, uuid)
-
-
-def add_multiple_games_into_db(games_array):
-    """Add multiple games into database 'datadb'.
-
-    Parameters
-    ----------
-    games_array : list of lists
-        rows contain all info on games
-        columns correspond to owner, title, max. playercount, categories
-    """
-    for _ in range(len(games_array)):  # iterate through rows
-        if len(games_array[_]) > 3:  # categories are given
-            g_id = generate_uuid_32()
-            try:
-                add_game_into_db([games_array[_][:3], g_id], cats=games_array[_][3:], uuid=g_id)
-                # add_game_into_db(parse_game_values_from_array(games_array[_][:3], uuid=g_id),
-                #                  cats=games_array[_][3:], uuid=g_id)
-            except mysql.connector.IntegrityError:
-                pass
-        else:
-            try:
-                add_game_into_db(games_array[_])
-                # add_game_into_db(parse_game_values_from_array(games_array[_]))
-            except mysql.connector.IntegrityError:
-                pass
-
-
-def add_expansion_into_db(values):
-    """Add expansion into database 'datadb'.
-
-    Parameters
-    ----------
-    values : list
-        list of values for entries owner, basegame_uuid, title
-    """
-    col_list = ["owner", "basegame_uuid", "title"]
-    add_entry(choose_database("datadb"), "expansions", col_list, values)
-    # add_game(choose_database("datadb"), "expansions", entry, values)
-
-
-def add_user_auth(user_id, name=None):
-    """Record that a user authenticated, save their info.
-
-    Parameters
-    ----------
-    user_id : int
-        ChatID
-    name : NoneType or str
-        username, or alias
-    """
-    col = ['id']
-    add_entry(choose_database("auth"), "users", col, [user_id])
-    if name:  # use username for settings
-        settings_col = ['user']
-        add_entry(choose_database("datadb"), "settings", settings_col, [name])
-    if user_id < 0:  # group
-        settings_col = ['id']
-        add_entry(choose_database("datadb"), "group_settings", settings_col, [user_id])
-
-
-def add_household(users):
-    """Update household info for users.
-    Games owned by those users are updated with the new household info as well.
-
-    Parameters
-    ----------
-    users : list
-    """
-    col = 'user_ids'
-    household = ' '.join(users)
-    for u in users:
-        res = check_household(u)
-        if res != u:  # user already lives with someone, delete it
-            delete_single_entry_substring(choose_database("datadb"), "households", col, u)
-    add_entry(choose_database("datadb"), "households", [col], [household])
-    update_household_games(users)
-
-
-# TODO: Rename value to substring?
-def delete_single_entry_substring(db, table, column, value):
-    """Delete entries containing a substring.
-
-    Parameters
-    ----------
-    db : MySQLConnection
-        connection to database
-    table : str
-    column : str
-        column to test for substring
-    value : str
-        substring to compare to
-    """
-    mycursor = db.cursor()
-    sql = "DELETE FROM " + table + " WHERE " + column + " LIKE \'%" + value + "%\'"
-    mycursor.execute(sql)
-
-    db.commit()
-
-
-# TODO: Again, db and table are specified WITHIN the function.
-def update_household_games(users):
-    """Update games' owners with new household info.
-
-    Parameters
-    ----------
-    users : list
-    """
-    household = ' '.join(users)
-    db = choose_database("datadb")
-    mycursor = db.cursor()
-    for u in users:
-        sql = "UPDATE games SET owner='" + str(household) + "' WHERE owner LIKE \'%" + str(u) + "%\' AND NOT owner='" + str(household) + "'"
-        mycursor.execute(sql)
-    db.commit()
-
-
-def update_game_date(title, last_played):
-    """Record when a game was last played.
-
-    Parameters
-    ----------
-    title : str
-        the game's title
-    last_played : datetime.datetime
-    """
-    db = choose_database("datadb")
-    mycursor = db.cursor()
-    sql = "UPDATE games SET last_played='" + str(last_played) + "' WHERE title='" + str(title) + "'"
-    mycursor.execute(sql)
-    db.commit()
-
-
-def update_settings(table, who, to_set, to_unset):
-    """Update settings for a user or group.
-
-    Parameters
-    ----------
-    table : str
-        typically 'settings' or 'group_settings'
-    who : str
-        typically username or a group's title
-    to_set : list
-        list of columns to set to 1
-    to_unset : list
-        list of columns to set to 0
-    """
-    db = choose_database("datadb")
-    mycursor = db.cursor()
-    new_set = ''
-    for s in to_set:
-        add_to_new_set = str(s) + '=1,'
-        new_set += add_to_new_set
-    for s in to_unset:
-        add_to_new_set = str(s) + '=0,'
-        new_set += add_to_new_set
-    new_set = new_set[:-1]  # remove last comma
-    if table == "settings":
-        entry = "user"
-    elif table == "group_settings":
-        entry = "id"
-    sql = "UPDATE " + table + " SET " + new_set + " WHERE " + entry + "='" + str(who) + "'"
-    mycursor.execute(sql)
-    db.commit()
-
-
 def check_user(user):
     """Find out whether the user ever authenticated.
 
@@ -603,3 +372,247 @@ def check_notify(table, who, column):
     if len(result) == 0:  # if user hasn't talked to bot yet, no settings
         return -1
     return result[0][0]
+
+
+######################################################################################################################################################
+# INSERT FUNCTIONS
+######################################################################################################################################################
+
+def add_multiple_games_into_db(games_array):
+    """Add multiple games into database 'datadb'.
+
+    Parameters
+    ----------
+    games_array : list of lists
+        rows contain all info on games
+        columns correspond to owner, title, max. playercount, categories
+    """
+    for _ in range(len(games_array)):  # iterate through rows
+        if len(games_array[_]) > 3:  # categories are given
+            g_id = generate_uuid_32()
+            try:
+                add_game_into_db([games_array[_][:3], g_id], cats=games_array[_][3:], uuid=g_id)
+                # add_game_into_db(parse_game_values_from_array(games_array[_][:3], uuid=g_id),
+                #                  cats=games_array[_][3:], uuid=g_id)
+            except mysql.connector.IntegrityError:
+                pass
+        else:
+            try:
+                add_game_into_db(games_array[_])
+                # add_game_into_db(parse_game_values_from_array(games_array[_]))
+            except mysql.connector.IntegrityError:
+                pass
+
+
+# TODO: Again, this function specifies db and table INSIDE
+def add_game_into_db(games_values, cats=None, uuid=None):
+    """Add a game into database 'datadb'.
+
+    Parameters
+    ----------
+    games_values : list
+        list of values for columns owner, title, playercount, game_uuid
+    cats : NoneType or list
+
+    uuid : NoneType or str
+        needs to be specified if cats are given
+    """
+    game_columns = ['owner', 'title', 'playercount', 'game_uuid']
+    add_entry(choose_database("datadb"), "games", game_columns, games_values)
+    # entry = "(owner, title, playercount, game_uuid)"
+    # add_game(choose_database("datadb"), "games", entry, games_values)
+    if cats and uuid:
+        add_game_into_categories(choose_database("datadb"), cats, uuid)
+
+
+# TODO: again, table is specified WITHIN the function
+def add_game_into_categories(db, categories, uuid):
+    """Add a game into table 'categories'.
+
+    Parameters
+    ----------
+    db : MySQLConnection
+        connection to database
+    categories : list
+        list of categories this game belongs to
+    uuid : str
+    """
+    vals = list()
+    for _ in categories:
+        vals.append(uuid)
+    add_entry(db, "categories", categories, vals)
+
+
+def add_expansion_into_db(values):
+    """Add expansion into database 'datadb'.
+
+    Parameters
+    ----------
+    values : list
+        list of values for entries owner, basegame_uuid, title
+    """
+    col_list = ["owner", "basegame_uuid", "title"]
+    add_entry(choose_database("datadb"), "expansions", col_list, values)
+    # add_game(choose_database("datadb"), "expansions", entry, values)
+
+
+def add_user_auth(user_id, name=None):
+    """Record that a user authenticated, save their info.
+
+    Parameters
+    ----------
+    user_id : int
+        ChatID
+    name : NoneType or str
+        username, or alias
+    """
+    col = ['id']
+    add_entry(choose_database("auth"), "users", col, [user_id])
+    if name:  # use username for settings
+        settings_col = ['user']
+        add_entry(choose_database("datadb"), "settings", settings_col, [name])
+    if user_id < 0:  # group
+        settings_col = ['id']
+        add_entry(choose_database("datadb"), "group_settings", settings_col, [user_id])
+
+
+def add_household(users):
+    """Update household info for users.
+    Games owned by those users are updated with the new household info as well.
+
+    Parameters
+    ----------
+    users : list
+    """
+    col = 'user_ids'
+    household = ' '.join(users)
+    for u in users:
+        res = check_household(u)
+        if res != u:  # user already lives with someone, delete it
+            delete_single_entry_substring(choose_database("datadb"), "households", col, u)
+    add_entry(choose_database("datadb"), "households", [col], [household])
+    update_household_games(users)
+
+
+######################################################################################################################################################
+# UPDATE FUNCTIONS
+######################################################################################################################################################
+
+# TODO: Again, db and table are specified WITHIN the function.
+def update_household_games(users):
+    """Update games' owners with new household info.
+
+    Parameters
+    ----------
+    users : list
+    """
+    household = ' '.join(users)
+    db = choose_database("datadb")
+    mycursor = db.cursor()
+    for u in users:
+        sql = "UPDATE games SET owner='" + str(household) + "' WHERE owner LIKE \'%" + str(u) + "%\' AND NOT owner='" + str(household) + "'"
+        mycursor.execute(sql)
+    db.commit()
+
+
+def update_game_date(title, last_played):
+    """Record when a game was last played.
+
+    Parameters
+    ----------
+    title : str
+        the game's title
+    last_played : datetime.datetime
+    """
+    db = choose_database("datadb")
+    mycursor = db.cursor()
+    sql = "UPDATE games SET last_played='" + str(last_played) + "' WHERE title='" + str(title) + "'"
+    mycursor.execute(sql)
+    db.commit()
+
+
+def update_settings(table, who, to_set, to_unset):
+    """Update settings for a user or group.
+
+    Parameters
+    ----------
+    table : str
+        typically 'settings' or 'group_settings'
+    who : str
+        typically username or a group's title
+    to_set : list
+        list of columns to set to 1
+    to_unset : list
+        list of columns to set to 0
+    """
+    db = choose_database("datadb")
+    mycursor = db.cursor()
+    new_set = ''
+    for s in to_set:
+        add_to_new_set = str(s) + '=1,'
+        new_set += add_to_new_set
+    for s in to_unset:
+        add_to_new_set = str(s) + '=0,'
+        new_set += add_to_new_set
+    new_set = new_set[:-1]  # remove last comma
+    if table == "settings":
+        entry = "user"
+    elif table == "group_settings":
+        entry = "id"
+    sql = "UPDATE " + table + " SET " + new_set + " WHERE " + entry + "='" + str(who) + "'"
+    mycursor.execute(sql)
+    db.commit()
+
+
+######################################################################################################################################################
+# OBSOLETE FUNCTIONS
+######################################################################################################################################################
+
+# NOTE: OBSOLETE (probably)
+def add_game(db, table, entry, values):
+    """Add a game into a database.
+
+    Parameters
+    ----------
+    db : MySQLConnection
+        connection to database
+    table : str
+        table to add game to (typically "games" or "expansions")
+    entry : str
+        SQL compliant list of columns
+    values : str
+        SQL compliant list of values
+    """
+    mycursor = db.cursor()
+    valcountstr = "VALUES ("
+    sql = "INSERT INTO " + table + " " + entry + " " + valcountstr + values + ")"
+    mycursor.execute(sql)
+
+    db.commit()
+
+
+# NOTE: OBSOLETE (probably)
+# TODO: I'm VERY unsure this can actually be used with more than 1 value since that would need an AND
+def search_single_entry(db, table, condition_col, condition_val):
+    """Search all values from a table by constraint.
+
+    Parameters
+    ----------
+    db : MySQLConnection
+        connection to a database
+    table : str
+        table to search
+    condition_col : str
+
+    condition_val : int or str
+
+    Returns
+    -------
+    result : list of tuples
+        Rows from <table> where <condition_col> is <condition_val>
+    """
+    # NOTE: might need " = '" + str(condition_val) + "'"
+    condition = condition_col + " = " + str(condition_val)
+    result = select_columns(db, table, "*", condition=condition)
+
+    return result

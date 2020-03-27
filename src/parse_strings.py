@@ -73,24 +73,6 @@ def remove_first_string(query_string):
     return data_string
 
 
-# NOTE: OBSOLETE (probably)
-def parse_values_from_query(query_string):
-    """Parse query string into values for a database entry.
-
-    Parameters
-    ----------
-    query_string : str
-        looks something like "pseudouser,pseudotitle"
-
-    Returns
-    -------
-    val_string : str
-        looks something like "'pseudouser', 'pseudotitle'"
-    """
-    val_string = str(parse_csv_to_array(query_string))[1:-1]
-    return val_string
-
-
 def parse_db_entries_to_messagestring(db_result):
     """Parses DB entries into a sorted list that can be used as message text.
 
@@ -202,3 +184,25 @@ def generate_uuid_32():
     str
     """
     return uuid.uuid4().hex
+
+
+######################################################################################################################################################
+# OBSOLETE FUNCTIONS
+######################################################################################################################################################
+
+# NOTE: OBSOLETE (probably)
+def parse_values_from_query(query_string):
+    """Parse query string into values for a database entry.
+
+    Parameters
+    ----------
+    query_string : str
+        looks something like "pseudouser,pseudotitle"
+
+    Returns
+    -------
+    val_string : str
+        looks something like "'pseudouser', 'pseudotitle'"
+    """
+    val_string = str(parse_csv_to_array(query_string))[1:-1]
+    return val_string
