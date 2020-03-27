@@ -537,7 +537,7 @@ def end_of_household(update, context):
 
 
 def generate_household(remove, first=False, to_set=None):
-    usernames_db = dbf.select_columns(dbf.choose_database("datadb"), "settings", ["user"])
+    usernames_db = dbf.select_columns(dbf.choose_database("datadb"), "settings", "user")
     usernames = list()
     for _ in usernames_db:
         usernames.append(_[0])
