@@ -191,25 +191,3 @@ def generate_uuid_32():
     str
     """
     return uuid.uuid4().hex
-
-
-######################################################################################################################################################
-# OBSOLETE FUNCTIONS
-######################################################################################################################################################
-
-# NOTE: OBSOLETE (probably)
-def parse_values_from_query(query_string):
-    """Parse query string into values for a database entry.
-
-    Parameters
-    ----------
-    query_string : str
-        looks something like "pseudouser,pseudotitle"
-
-    Returns
-    -------
-    val_string : str
-        looks something like "'pseudouser', 'pseudotitle'"
-    """
-    val_string = str(parse_csv_to_array(query_string))[1:-1]
-    return val_string
