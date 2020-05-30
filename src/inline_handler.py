@@ -14,6 +14,7 @@ from query_buffer import QueryBuffer
 from parse_strings import single_db_entry_to_string
 from error_handler import handle_bot_not_admin
 from calendar_export import create_ics_file
+from log_to_message import LogToMessageFilter
 import reply_handler as rep
 import database_functions as dbf
 import parse_strings as ps
@@ -32,6 +33,8 @@ def handle_inline(update, context):
         handle_settings(update, context)
     elif "HOUSEHOLD" in update.callback_query.data:
         handle_household(update, context)
+    elif "DEBUG" in update.callback_query.data:
+        handle_debug(update, context)
     elif "ENDED" in update.callback_query.data:
         # don't do a thing
         update.callback_query.answer()
@@ -478,7 +481,11 @@ def handle_household(update, context):
             chat_id=update.callback_query.message.chat_id,
             text='Okay, hier ist nichts passiert.',
             reply_markup=ReplyKeyboardRemove())
-        shrink_keyboard(update, context, "Abbruch.")
+        shrink_keyboard(update, context, "Nein.")
+        if LogToMessageFilter().ask_chat_type == "private":
+            context.bot.send_message(chat_id=update.callback_query.message.chat_id,
+                                     text='Hey, soll ich meine Debug-Nachrichten hier rein schicken?',
+                                     reply_markup=generate_debug())
     elif member == "done":
         end_of_household(update, context)
     else:  # got a household member
@@ -530,6 +537,10 @@ def end_of_household(update, context):
                     reply_markup=ReplyKeyboardRemove())
         shrink_label = " ".join(household)
         shrink_keyboard(update, context, shrink_label)
+        if LogToMessageFilter().ask_chat_type == "private":
+            update.message.bot.send_message(chat_id=update.callback_query.message.chat_id,
+                                            text='Hey, soll ich meine Debug-Nachrichten hier rein schicken?',
+                                            reply_markup=generate_debug())
     else:
         pass
     QueryBuffer().clear_query(
@@ -562,6 +573,28 @@ def generate_household(remove, first=False, to_set=None):
         data = ";".join(["HOUSEHOLD", "done"])
         row.append(InlineKeyboardButton('Fertig', callback_data=data))
     data = ";".join(["HOUSEHOLD", "stop"])
-    row.append(InlineKeyboardButton('Abbrechen', callback_data=data))
+    row.append(InlineKeyboardButton('Nein.', callback_data=data))
+    keyboard.append(row)
+    return InlineKeyboardMarkup(keyboard)
+
+
+def handle_debug(update, context):
+    update.callback_query.answer()
+    answer = update.callback_query.data.split(";")[1]
+    if answer == "YES":
+        LogToMessageFilter().set_chat_id(update.callback_query.message.chat_id)
+        LogToMessageFilter().set_bot(context.bot)
+        shrink_keyboard(update, context, "Ja.")
+    else:
+        shrink_keyboard(update, context, "Nein.")
+
+
+def generate_debug():
+    keyboard = []
+    row = []
+    yes_data = ";".join(["DEBUG", "YES"])
+    no_data = ";".join(["DEBUG", "NO"])
+    row.append(InlineKeyboardButton("Ja.", callback_data=yes_data))
+    row.append(InlineKeyboardButton("Nein.", callback_data=no_data))
     keyboard.append(row)
     return InlineKeyboardMarkup(keyboard)

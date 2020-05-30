@@ -525,7 +525,7 @@ def zufallsspiel(update, context):
                 update.message.from_user.username)
             for e in entries:
                 opt.append(single_db_entry_to_string(e))
-            game = opt[randrange(len(opt))]
+            game = opt[randrange(len(opt))]  # could also use random.choice!
             update.message.reply_text('Wie wäre es mit ' + game + '?')
     else:
         update.message.reply_text('Bitte authentifiziere dich zunächst '

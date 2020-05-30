@@ -8,10 +8,11 @@ from telegram import (ReplyKeyboardRemove, ForceReply, ReplyKeyboardMarkup,
 from telegram.error import BadRequest
 import database_functions as dbf
 import parse_strings as ps
+from log_to_message import LogToMessageFilter
 from calendarkeyboard import telegramcalendar
 from planning_functions import GameNight
 from singleton import Singleton
-from inline_handler import (generate_categories, generate_household)
+from inline_handler import (generate_categories, generate_household, generate_debug)
 from query_buffer import QueryBuffer
 from error_handler import handle_bot_not_admin
 
@@ -119,20 +120,28 @@ def auth(update):
                             'der Gruppenmitglieder zusammen? '
                             'Wenn ja, wähle unten den (die) '
                             'entsprechenden Alias(e)! '
-                            'Wenn nicht, wähle Abbrechen.',
+                            'Wenn nicht, wähle Nein.',
                             reply_markup=generate_household(update.message.from_user.username, first=True))
                     query = "household," + update.message.from_user.username + ","
                     QueryBuffer().add(msg.message_id, query)
-                except IndexError:
+                except IndexError:  # first user
                     update.message.bot.send_message(chat_id=update.message.chat_id,
                                                     text='Super! Wir dürfen jetzt miteinander reden.',
                                                     reply_markup=ReplyKeyboardRemove())
+                    if LogToMessageFilter().ask_chat_type == "private":
+                        update.message.bot.send_message(chat_id=update.message.chat_id,
+                                                        text='Hey, soll ich meine Debug-Nachrichten hier rein schicken?',
+                                                        reply_markup=generate_debug())
             else:
                 dbf.add_user_auth(update.message.chat_id)
                 update.message.bot.send_message(chat_id=update.message.chat_id,
                                                 text='Super! Wir dürfen jetzt '
                                                 'miteinander reden.',
                                                 reply_markup=ReplyKeyboardRemove())
+                if LogToMessageFilter().ask_chat_type == "group":
+                    update.message.bot.send_message(chat_id=update.message.chat_id,
+                                                    text='Hey, soll ich meine Debug-Nachrichten hier rein schicken?',
+                                                    reply_markup=generate_debug())
         else:
             update.message.reply_text("Du musst das Passwort nicht nochmal "
                                       "eingeben... Rede einfach mit mir!",
