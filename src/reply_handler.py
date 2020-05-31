@@ -186,7 +186,7 @@ def game_players(update):
     else:
         query = ForceReplyJobs().get_query(update.message.reply_to_message.message_id) + "," + update.message.text + ","
         msg = update.message.reply_text(
-                'In welche Kategorien passt ' + ps.parse_csv(query)[2] +
+                'In welche Kategorien passt ' + ps.parse_csv_to_array(query)[2] +
                 ' am besten?\n'
                 'Wähle so viele, wie du willst, und drücke dann '
                 'auf \'Fertig\'.\n'
@@ -242,9 +242,9 @@ def expansion_title(update):
         query = ForceReplyJobs().get_query(update.message.reply_to_message.message_id) + "," + update.message.text
         # query has now structure new_expansion, <owner>, <uuid>, <exp_title>
 
-        if ps.parse_csv(query)[0] == "new_expansion":
+        if ps.parse_csv_to_array(query)[0] == "new_expansion":
             try:
-                dbf.add_expansion_into_db(ps.parse_values_from_array(
+                dbf.add_expansion_into_db(ps.parse_values_from_query(
                                             ps.remove_first_string(query)))
             except IntegrityError:
                 update.message.reply_text(
@@ -279,7 +279,7 @@ def expansions_list(update):
                                       'Falls doch, dann ist jetzt ein guter Zeitpunkt, '
                                       'mir das mit /neues_spiel mitzuteilen!')
         else:
-            gamestring = ps.to_messagestring(search)
+            gamestring = ps.parse_db_entries_to_messagestring(search)
             msgtext += gamestring
             update.message.reply_text(msgtext)
 
