@@ -7,13 +7,15 @@ You can decide to run one or more of the three components (bot, datadb and authd
 ### Docker Setup
 
 #### Installation
+
+The easiest way to install docker is following [the official docker installation guidelines](https://docs.docker.com/install/). Be sure to have a look at the [post-installation steps](https://docs.docker.com/engine/install/linux-postinstall/) if you're on Linux.
+
+Alternatively, you could use `snap install docker`, but note that the snap installs are built and maintained by Canonical, not Docker. 
+
+You'll also need `docker-compose`:
 ```
-sudo apt install docker.io
 sudo apt install docker-compose
 ```
-
-Instead of ``sudo apt``, you can also use snap: 
-``snap install docker``. Sometimes, this works better. If you face problems setting it up, you could also have a look at [the official docker installation guidelines](https://docs.docker.com/install/).
 
 #### Prepare your docker configuration
 If you previously ran ``./configure`` when following our guide at [README.md](../README.md), just continue with the next section.
