@@ -25,8 +25,8 @@ class LogToMessageFilter(logging.Filter, Singleton):
 
     def filter(self, record):
         self.formatter.format(record)
+        message = '{} - {} - {} - {} - {}'.format(record.asctime, record.name, record.levelname, record.message, record.exc_text)
         if self.chat_id and self.bot:
-            message = '{} - {} - {} - {} - {}'.format(record.asctime, record.name, record.levelname, record.message, record.exc_text)
             self.bot.send_message(self.chat_id, message)
         else:
             print(message, sys.stderr)

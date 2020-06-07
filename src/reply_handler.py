@@ -317,10 +317,13 @@ def expansion_poll_game(update):
 # confused with a komma.
 def csv(update):
     dbf.add_multiple_games_into_db(ps.parse_csv_import(update.message.text))
-    ForceReplyJobs().add(update.message.reply_to_message.message_id, "csv")
-
-    update.message.reply_text('OKAY, ich habe die Spiele alle eingetragen.',
-                              reply_markup=ReplyKeyboardRemove())
+    old_msg_id = ForceReplyJobs().get_query(update.message.reply_to_message.message_id)
+    if old_msg_id:  # have sent a message before
+        ForceReplyJobs().clear_query(update.message.reply_to_message.message_id)
+        update.message.bot.delete_message(update.message.chat_id, old_msg_id)
+    msg = update.message.reply_text('OKAY, ich habe die Spiele alle eingetragen.',
+                                    reply_markup=ReplyKeyboardRemove())
+    ForceReplyJobs().add_with_query(update.message.reply_to_message.message_id, "csv", str(msg.message_id))
 
 
 def date(update):
