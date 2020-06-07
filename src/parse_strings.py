@@ -182,7 +182,30 @@ def get_last_line(text):
         last line of input 'text'
     """
     lines = text.split("\n")
-    return lines[-1]
+    return escape_markdown_v2(lines[-1])
+
+
+def escape_markdown_v2(text):
+    """Escapes all characters that need to be escaped in markdownV2 entites"""
+    text = text.replace('_', '\\_')
+    text = text.replace('*', '\\*')
+    text = text.replace('[', '\\[')
+    text = text.replace(']', '\\]')
+    text = text.replace('(', '\\(')
+    text = text.replace(')', '\\)')
+    text = text.replace('~', '\\~')
+    text = text.replace('`', '\\`')
+    text = text.replace('>', '\\>')
+    text = text.replace('#', '\\#')
+    text = text.replace('+', '\\+')
+    text = text.replace('-', '\\-')
+    text = text.replace('=', '\\=')
+    text = text.replace('|', '\\|')
+    text = text.replace('{', '\\{')
+    text = text.replace('}', '\\}')
+    text = text.replace('.', '\\.')
+    text = text.replace('!', '\\!')
+    return text
 
 
 def generate_uuid_32():

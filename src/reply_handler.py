@@ -12,7 +12,7 @@ from log_to_message import LogToMessageFilter
 from calendarkeyboard import telegramcalendar
 from planning_functions import GameNight
 from singleton import Singleton
-from inline_handler import (generate_categories, generate_household, generate_debug)
+from inline_handler import (generate_categories, generate_household, generate_debug, generate_csv_import)
 from query_buffer import QueryBuffer
 from error_handler import handle_bot_not_admin
 
@@ -322,10 +322,11 @@ def csv(update):
         ForceReplyJobs().clear_query(update.message.reply_to_message.message_id)
         update.message.bot.delete_message(update.message.chat_id, old_msg_id)
     last_line = ps.get_last_line(update.message.text)
-    msg = update.message.reply_text('Ich habe alle Spiele aus deinem Import eingetragen, der auf\n\n`' +
-                                    last_line + '`\n\nendet\\.\nBin ich fertig?',  # "." must be escaped with "\" in MarkdownV2, "\" must be escaped in str
+    # "." and "-" must be escaped with "\" in MarkdownV2, "\" must be escaped in str
+    msg = update.message.reply_text('Ich habe alle Spiele aus deiner Import\\-Nachricht eingetragen, die auf\n\n`' +
+                                    last_line + '`\n\nendet\\.\nBin ich fertig? Wenn nicht, dann *warte bitte noch kurz*\\.',
                                     parse_mode=ParseMode.MARKDOWN_V2,
-                                    reply_markup=ReplyKeyboardRemove())
+                                    reply_markup=generate_csv_import(update.message.reply_to_message.message_id))
     ForceReplyJobs().add_with_query(update.message.reply_to_message.message_id, "csv", str(msg.message_id))
 
 

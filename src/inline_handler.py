@@ -35,6 +35,8 @@ def handle_inline(update, context):
         handle_household(update, context)
     elif "DEBUG" in update.callback_query.data:
         handle_debug(update, context)
+    elif "CSV_IMPORT" in update.callback_query.data:
+        handle_csv_import(update, context)
     elif "ENDED" in update.callback_query.data:
         # don't do a thing
         update.callback_query.answer()
@@ -48,10 +50,9 @@ def shrink_keyboard(update, context, label):
     row = []
     row.append(InlineKeyboardButton(label, callback_data="ENDED"))
     keyboard.append(row)
-    context.bot.edit_message_text(text=query.message.text,
-                                  chat_id=query.message.chat_id,
-                                  message_id=query.message.message_id,
-                                  reply_markup=InlineKeyboardMarkup(keyboard))
+    context.bot.edit_message_reply_markup(chat_id=query.message.chat_id,
+                                          message_id=query.message.message_id,
+                                          reply_markup=InlineKeyboardMarkup(keyboard))
 
 
 def handle_calendar(update, context):
@@ -596,5 +597,24 @@ def generate_debug():
     no_data = ";".join(["DEBUG", "NO"])
     row.append(InlineKeyboardButton("Ja.", callback_data=yes_data))
     row.append(InlineKeyboardButton("Nein.", callback_data=no_data))
+    keyboard.append(row)
+    return InlineKeyboardMarkup(keyboard)
+
+
+def handle_csv_import(update, context):
+    update.callback_query.answer()
+    answer = update.callback_query.data.split(";")[1]
+    if answer == "YES":
+        msg_id = update.callback_query.data.split(";")[2]
+        rep.ForceReplyJobs().is_set(msg_id)
+        rep.ForceReplyJobs().clear_query(msg_id)
+        shrink_keyboard(update, context, "CSV-Import beendeet.s")
+
+
+def generate_csv_import(msg_id):
+    keyboard = []
+    row = []
+    yes_data = ";".join(["CSV_IMPORT", "YES", str(msg_id)])
+    row.append(InlineKeyboardButton("Ja.", callback_data=yes_data))
     keyboard.append(row)
     return InlineKeyboardMarkup(keyboard)
