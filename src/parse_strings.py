@@ -167,6 +167,24 @@ def parse_game_values_from_array(data_sub_array, uuid=None):
     return val_string
 
 
+# only used for csv_import
+def get_last_line(text):
+    """Returns the last line of 'text' to let the user identify the message the bot is working on.
+
+    Parameters
+    ----------
+    text : str
+        csv_import compatible string, i.e. existing of at least one, but probably more lines
+    
+    Returns
+    -------
+    line : str
+        last line of input 'text'
+    """
+    lines = text.split("\n")
+    return lines[-1]
+
+
 def generate_uuid_32():
     """Generate a unique ID encoded in hex.
 

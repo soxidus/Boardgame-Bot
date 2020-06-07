@@ -4,7 +4,7 @@ import configparser
 import os
 from mysql.connector.errors import IntegrityError
 from telegram import (ReplyKeyboardRemove, ForceReply, ReplyKeyboardMarkup,
-                      KeyboardButton)
+                      KeyboardButton, ParseMode)
 from telegram.error import BadRequest
 import database_functions as dbf
 import parse_strings as ps
@@ -321,7 +321,10 @@ def csv(update):
     if old_msg_id:  # have sent a message before
         ForceReplyJobs().clear_query(update.message.reply_to_message.message_id)
         update.message.bot.delete_message(update.message.chat_id, old_msg_id)
-    msg = update.message.reply_text('OKAY, ich habe die Spiele alle eingetragen.',
+    last_line = ps.get_last_line(update.message.text)
+    msg = update.message.reply_text('Ich habe alle Spiele aus deinem Import eingetragen, der auf\n\n`' +
+                                    last_line + '`\n\nendet\\.\nBin ich fertig?',  # "." must be escaped with "\" in MarkdownV2, "\" must be escaped in str
+                                    parse_mode=ParseMode.MARKDOWN_V2,
                                     reply_markup=ReplyKeyboardRemove())
     ForceReplyJobs().add_with_query(update.message.reply_to_message.message_id, "csv", str(msg.message_id))
 
