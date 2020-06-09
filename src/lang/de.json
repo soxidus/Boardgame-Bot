@@ -1,0 +1,62 @@
+{
+    "commands_dialogue":[
+        {
+            "subsection":"general",
+            "please_auth":"Bitte authentifiziere dich zunächst mit /key.",
+            "not_in_group":"Hey, {command} kannst du im Gruppenchat nicht verwenden. Hier schon!",
+            "not_in_private":"Stopp, das hat hier nichts zu suchen.\nBitte versuche es im Gruppenchat..."
+        },
+        {
+            "subsection":"start",
+            "please_auth":"Hi! Bitte authentifiziere dich zuerst, um mit mir zu reden:"
+        },
+        {
+            "subsection":"key",
+            "no_auth_needed":"Du musst dich nicht authentifizieren. Ich weiß schon, wer du bist!",
+            "no_alias": "So wird das mit uns nichts. Bitte lege zunächst deinen Alias unter Einstellungen > Username fest!\nAuthentifiziere dich dann mit /key.",
+            "password": "Wie lautet das Passwort?"
+        },
+        {
+            "subsection":"csv_import",
+            "import": "Gib die Daten ein, die du im CSV-Format in die Spiele-Datenbank importieren möchtest.\nImportiere zur Sicherheit max. 75 Einträge über den Chat auf einmal!\nFormat: Besitzer, Titel, Max. Spielerzahl, Kategorie_1, Kategorie_2, ... Pro Zeile ein Spiel."
+        },
+        {
+            "subsection":"neuertermin",
+            "ask_date": "Okay, wann wollt ihr spielen?"
+        },
+        {
+            "subsection":"endetermin",
+            "reset":"Ich habe alles zurückgesetzt"
+        },
+        {
+            "subsection":"ich",
+            "error_no_date": "Das war leider nichts. Vereinbart erst einmal einen Termin mit /neuer_termin.",
+            "previously_registered": "Alles gut, {name}, ich weiß schon, dass du am {date} teilnimmst.",
+            "newly_registered": "Danke für deine Zusage zum Spieleabend {date}, {name}!"
+        },
+        {
+            "subsection":"nichtich",
+            "declined": "Danke für deine Absage. Schade, dass du nicht teilnehmen kannst.",
+            "unregistered": "Schade, dass du doch nicht teilnehmen kannst, {name}."
+        },
+        {
+            "subsection":"start_umfrage_spiel",
+            "error_poll_game": "Das war leider nichts. Dies könnte verschiedene Gründe haben:\n(1) Ihr habt kein Datum festgelegt. Holt das mit /neuer_termin nach.\n(2) Du bist nicht zum Spieleabend angemeldet. Hole das mit /ich nach.\n(3) Euch steht kein einziges Spiel zur Verfügung. Tragt neue Spiele mit /neues_spiel ein",
+            "what_game": "Welches Spiel wollt ihr spielen?"
+        },
+        {
+            "subsection":"start_umfrage_erweiterung",
+            "for_what_game": "Für welches Spiel soll über Erweiterungen abgestimmt werden?\nAntwortet mit /stop, um abzubrechen."
+        },
+        {
+            "subsection":"start_umfrage_genrespiel",
+            "what_category": "Auf welche Kategorie habt ihr denn heute Lust?"
+        },
+        {
+            "subsection":"ende_umfrage",
+            "no_poll": "Das hat leider nicht funktioniert. Scheinbar gibt es keine Umfrage, die ich beenden könnte.",
+            "not_authorised": "Das hat leider nicht funktioniert. Du hast wohl nicht das Recht zu dieser Aktion.",
+            "ended_poll": "Die Umfrage ist beendet. Mit /ergebnis könnt ihr sehen, wie sie ausgegangen ist."
+        }
+    ]
+}
