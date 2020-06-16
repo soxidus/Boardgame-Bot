@@ -100,7 +100,7 @@ def main():
     updater.start_polling()
     updater.idle()
 
-    schedule.every().day.at("12:00:00").do(test_termin, dp.bot)
+    #schedule.every().day.at("12:00:00").do(test_termin, dp.bot)
 
 
 if __name__ == '__main__':
