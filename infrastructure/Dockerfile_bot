@@ -8,6 +8,7 @@ RUN pip3 install mysql-connector
 RUN pip3 install datetime
 RUN pip3 install schedule
 RUN pip3 install icalendar
+RUN pip3 install jsonpickle
 
 RUN locale-gen en_US.utf8
 ENV LANG en_US.utf8
