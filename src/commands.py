@@ -92,8 +92,6 @@ def csv_import(update, context):
                                            'Gib die Daten ein, die du im CSV-Format '
                                            'in die Spiele-Datenbank importieren '
                                            'möchtest.\n'
-                                           'Importiere zur Sicherheit max. 75 Einträge'
-                                           ' über den Chat auf einmal!\n'
                                            'Format: Besitzer, Titel, Max. Spielerzahl, '
                                            'Kategorie_1, Kategorie_2, ... '
                                            'Pro Zeile ein Spiel',
