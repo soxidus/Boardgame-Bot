@@ -7,7 +7,7 @@ This is a Boardgame Bot under construction.
 
 It allows a group of friends who like to play boardgames to (potentially) over-engineer their organization: Users can tell the bot which boardgames (and expansions) they own, they can set up a date for game night and then sign up for it. And the best part: You'll never have to discuss what to play again! When everyone feels ready, the bot can select six games from everyone attending game night (making sure that you're not too many people for it, and that different types of games are considered) and generate a poll where every participant gets one vote.
 
-This is already version 2 of this idea: Our first boardgame bot was based on a GoogleSpreadsheet structure with gscript code. That old Code can be found in the [OLD-GScript](OLD-GScript/) folder, so if for some reason you prefer that to a database and Python... Go for it. If you need any help understanding the structure, feel free to ask.
+This is already version 2 of this idea: Our first boardgame bot was based on a GoogleSpreadsheet structure with gscript code.
 
 The current code can be found in [src](src/). In [infrastructure](infrastructure/), you can also find all files related to docker database setup (and also a [README.md](infrastructure/README.md) explaining how to use them).
 
@@ -15,13 +15,13 @@ The current code can be found in [src](src/). In [infrastructure](infrastructure
 
 If you want to test the code locally feel free to do so but you have to meet the requirements:
 
-    - Python 3.xx 
+    - Python 3.xx
     - python-telegram-bot
     - maria-db environment
 
 Instructions can be found below.
 
-## Quick Start 
+## Quick Start
 
 To get started locally I recommend not just installing python3
 but also to use an IDE that helps with formatting and testing.
@@ -52,7 +52,7 @@ pip3 install mysql-connector
 
 ### Get your own Telegram Bot!
 
-Have a chat with the BotFather and create your own bot. 
+Have a chat with the BotFather and create your own bot.
 If you don't know what I mean by that, have a look here: [Bots: An introduction for developers](https://core.telegram.org/bots#botfather)
 The Botfather is going to give you a token for your bot. Hold on to that, you're going to need it!
 
@@ -62,7 +62,7 @@ Enjoy the comfort of an interactive approach on configuration by running ``./con
 Or, if you don't like being asked helpful questions by your CLI, here's your guide to DIY:
 
 There's two configuration files you will need to take care of: [src/config.ini](src/config.ini.example) and [infrastructure/.env](infrastructure/.env.example). The latter is important for the Docker setup and will be dealt with later. For now,
-find [src/config.ini.example](src/config.ini.example) and rename your local copy of it to 'src/config.ini'. 
+find [src/config.ini.example](src/config.ini.example) and rename your local copy of it to 'src/config.ini'.
 Then, modify the values held within:
 
 #### Bot
@@ -82,9 +82,9 @@ This is where you enter your group's name.
 
 ### Docker setup
 
-Our databases and the bot run in Docker containers. To set them up, please refer to [infrastructure/README.md](infrastructure/README.md). 
+Our databases and the bot run in Docker containers. To set them up, please refer to [infrastructure/README.md](infrastructure/README.md).
 
-Of course, it is also possible to run the bot locally on your device (for testing purposes, for example), and the databases, too. For this, please refer to [infrastructure/README.md](infrastructure/README.md#(2)LocalSetup). 
+Of course, it is also possible to run the bot locally on your device (for testing purposes, for example), and the databases, too. For this, please refer to [infrastructure/README.md](infrastructure/README.md#(2)LocalSetup).
 
 If that didn't throw any errors, you now have a database structure like the one described in [database_structure.md](database_structure.md).
 Have a closer look at it if you are not entirely sure what you just did!

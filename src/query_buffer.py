@@ -19,6 +19,7 @@ class QueryBuffer(Singleton):
         for entry in self.queries:
             if entry[0] == reply_to_id:
                 return entry[1]
+        return None
 
     def clear_query(self, reply_to_id):
         for entry in self.queries:

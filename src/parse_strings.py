@@ -182,6 +182,46 @@ def parse_sql_param_from_array(array, escape=False):
     string = string[:-1]
     return string
 
+# only used for csv_import
+def get_last_line(text):
+    """Returns the last line of 'text' to let the user identify the message the bot is working on.
+
+    Parameters
+    ----------
+    text : str
+        csv_import compatible string, i.e. existing of at least one, but probably more lines
+    
+    Returns
+    -------
+    line : str
+        last line of input 'text'
+    """
+    lines = text.split("\n")
+    return escape_markdown_v2(lines[-1])
+
+
+def escape_markdown_v2(text):
+    """Escapes all characters that need to be escaped in markdownV2 entites"""
+    text = text.replace('_', '\\_')
+    text = text.replace('*', '\\*')
+    text = text.replace('[', '\\[')
+    text = text.replace(']', '\\]')
+    text = text.replace('(', '\\(')
+    text = text.replace(')', '\\)')
+    text = text.replace('~', '\\~')
+    text = text.replace('`', '\\`')
+    text = text.replace('>', '\\>')
+    text = text.replace('#', '\\#')
+    text = text.replace('+', '\\+')
+    text = text.replace('-', '\\-')
+    text = text.replace('=', '\\=')
+    text = text.replace('|', '\\|')
+    text = text.replace('{', '\\{')
+    text = text.replace('}', '\\}')
+    text = text.replace('.', '\\.')
+    text = text.replace('!', '\\!')
+    return text
+
 
 def generate_uuid_32():
     """Generate a unique ID encoded in hex.
