@@ -244,8 +244,10 @@ def expansion_title(update):
 
         if ps.parse_csv_to_array(query)[0] == "new_expansion":
             try:
-                dbf.add_expansion_into_db(ps.parse_values_from_query(
+                dbf.add_expansion_into_db(ps.parse_csv_to_array(
                                             ps.remove_first_string(query)))
+                # dbf.add_expansion_into_db(ps.parse_values_from_query(
+                #                             ps.remove_first_string(query)))
             except IntegrityError:
                 update.message.reply_text(
                         "Wusste ich doch: Diese Erweiterung hast du schon "
@@ -268,7 +270,6 @@ def expansions_list(update):
     else:
         msgtext = 'Du hast folgende Erweiterungen:\n'
         search = dbf.search_expansions_by_game(
-                    dbf.choose_database("datadb"), 'expansions',
                     update.message.from_user.username, update.message.text)
         if search is None:  # user owns game, but no expansions
             update.message.reply_text('Du besitzt keine Erweiterungen zu diesem Spiel. '

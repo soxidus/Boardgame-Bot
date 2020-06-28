@@ -157,8 +157,10 @@ def end_of_categories(update, context, no_category=False):
     if query_csv[0] == "new_game":
         if no_category:
             try:
-                dbf.add_game_into_db(ps.parse_values_from_query(
+                dbf.add_game_into_db(ps.parse_csv_to_array(
                                         ps.remove_first_string(query)))
+                # dbf.add_game_into_db(ps.parse_values_from_query(
+                #                         ps.remove_first_string(query)))
             except IntegrityError:
                 context.bot.send_message(
                     chat_id=update.callback_query.message.chat_id,
@@ -170,10 +172,14 @@ def end_of_categories(update, context, no_category=False):
                 return
         else:
             try:
-                dbf.add_game_into_db(ps.parse_values_from_query(
-                                    ps.remove_first_string(query)),
-                                    cats=categories,
-                                    uuid=uuid)
+                dbf.add_game_into_db(ps.parse_csv_to_array(
+                                        ps.remove_first_string(query)),
+                                     cats=categories,
+                                     uuid=uuid)
+                # dbf.add_game_into_db(ps.parse_values_from_query(
+                #                     ps.remove_first_string(query)),
+                #                     cats=categories,
+                #                     uuid=uuid)
             except IntegrityError:
                 context.bot.send_message(
                     chat_id=update.callback_query.message.chat_id,
@@ -239,8 +245,8 @@ def handle_findbycategory(update, context):
     else:  # got a category
         opt = []
         entries = dbf.get_playable_entries_by_category(
-            dbf.choose_database("datadb"), 'games', 'title',
-            update.callback_query.from_user.username, category)
+                    'games', 'title',
+                    update.callback_query.from_user.username, category)
         for e in entries:
             opt.append(parse_single_db_entry_to_string(e))
         if opt:
@@ -309,7 +315,8 @@ def handle_pollbycategory(update, context):
                              '(4) Ihr habt die Spiele dieser Kategorie, '
                              'welche euch zur Verfügung stehen, alle innerhalb '
                              'der letzten 14 Tage gespielt. Kommt schon, '
-                             'es ist mal Zeit für was anderes!',
+                             'es ist mal Zeit für was anderes!\n'
+                             '(5) Es läuft schon eine Umfrage.',
                         reply_markup=ReplyKeyboardRemove())
         else:
             keys = []
@@ -435,7 +442,8 @@ def generate_settings(settings_type, to_set=None, first=None, who=None, init_arr
         settings = {'Teilnahme am Spieleabend': 'notify_participation',
                     'Abstimmung': 'notify_vote'}
     if first:
-        current_settings = dbf.search_single_entry(dbf.choose_database("datadb"), table, entry, who)[0][1:]
+        current_settings = dbf.search_column_with_constraint(dbf.choose_database("datadb"), table, "*", entry, who)[0][1:]
+        # current_settings = dbf.search_single_entry(dbf.choose_database("datadb"), table, entry, who)[0][1:]
     keyboard = []
     if first:
         index = 0
@@ -549,7 +557,7 @@ def end_of_household(update, context):
 
 
 def generate_household(remove, first=False, to_set=None):
-    usernames_db = dbf.search_column(dbf.choose_database("datadb"), "settings", "user")
+    usernames_db = dbf.select_columns(dbf.choose_database("datadb"), "settings", "user")
     usernames = list()
     for _ in usernames_db:
         usernames.append(_[0])

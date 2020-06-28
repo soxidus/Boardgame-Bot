@@ -5,7 +5,7 @@ import uuid
 
 def parse_csv_to_array(data_string):
     """Parse one CSV string (delimited by commas) into an array.
-    
+
     Parameters
     ----------
     data_string : str
@@ -73,23 +73,6 @@ def remove_first_string(query_string):
     return data_string
 
 
-def parse_values_from_query(query_string):
-    """Parse query string into values for a database entry.
-
-    Parameters
-    ----------
-    query_string : str
-        looks something like "pseudouser,pseudotitle"
-
-    Returns
-    -------
-    val_string : str
-        looks something like "'pseudouser', 'pseudotitle'"
-    """
-    val_string = str(parse_csv_to_array(query_string))[1:-1]
-    return val_string
-
-
 def parse_db_entries_to_messagestring(db_result):
     """Parses DB entries into a sorted list that can be used as message text.
 
@@ -116,7 +99,7 @@ def parse_db_entries_to_messagestring(db_result):
 
 def parse_single_db_entry_to_string(db_entry):
     """Parse one DB entry into a string.
-    
+
     Parameters
     ----------
     db_entry : tuple
@@ -166,6 +149,38 @@ def parse_game_values_from_array(data_sub_array, uuid=None):
 
     return val_string
 
+
+def parse_sql_param_from_array(array, escape=False):
+    """Generate string an SQL statement.
+
+    Parameters
+    ----------
+    array : list
+
+    escape : Boolean
+        if True, items in array will be in "'"'s (for values)
+        Default is False
+
+    Returns
+    -------
+    string : str
+        SQL compliant string of values
+    """
+    # use double quotes to escape quotes
+    for _ in range(len(array)):
+        try:
+            array[_] = array[_].replace("'", "''")
+            array[_] = array[_].replace('"', '""')
+        except AttributeError:  # not a str
+            pass
+    string = ""
+    for _ in array:
+        if escape:
+            string += '\'' + str(_) + '\','
+        else:
+            string += '`' + str(_) + '`,'
+    string = string[:-1]
+    return string
 
 # only used for csv_import
 def get_last_line(text):
