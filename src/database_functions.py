@@ -51,12 +51,7 @@ def add_entry(db, table, columns, values):
     """
     mycursor = db.cursor()
 
-    print(columns)
-    print(values)
-    print(parse_sql_param_from_array(columns))
-    print(parse_sql_param_from_array(values, escape=True))
     sql = "INSERT INTO " + table + " (" + parse_sql_param_from_array(columns) + ") VALUES (" + parse_sql_param_from_array(values, escape=True) + ")"
-    print(sql)
     mycursor.execute(sql)
 
     db.commit()
