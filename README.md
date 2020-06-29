@@ -7,9 +7,7 @@ This is a Boardgame Bot under construction.
 
 It allows a group of friends who like to play boardgames to (potentially) over-engineer their organization: Users can tell the bot which boardgames (and expansions) they own, they can set up a date for game night and then sign up for it. And the best part: You'll never have to discuss what to play again! When everyone feels ready, the bot can select six games from everyone attending game night (making sure that you're not too many people for it, and that different types of games are considered) and generate a poll where every participant gets one vote.
 
-This is already version 2 of this idea: Our first boardgame bot was based on a GoogleSpreadsheet structure with gscript code.
-
-The current code can be found in [src](src/). In [infrastructure](infrastructure/), you can also find all files related to docker database setup (and also a [README.md](infrastructure/README.md) explaining how to use them).
+The code can be found in [src](src/). In [infrastructure](infrastructure/), you can also find all files related to docker database setup (and also a [README.md](infrastructure/README.md) explaining how to use them).
 
 ## Prerequisites
 

@@ -5,7 +5,7 @@ You can configure your bot quite a bit with him, and this file is to keep track 
 
 ## /setdescription (max 512 chars)
 
-This bot helps you organise boardgame nights with your friends. However, this particular instance is password-protected. But you'll soon be able to build your own once we publish our code! As soon as that happens, you will find the link to our repo in this description.
+This bot helps you organise boardgame nights with your friends. However, this particular instance is password-protected. However, you can build your own, just have a look at https://github.com/soxidus/Boardgame-Bot.
 In short, this bot can keep track of who's participating, which games group members own, which expansions, and even generate a poll for when you don't know what to play. Find more info in our git repo README.
 
 ## /setabouttext (max 120 chars)
