@@ -12,7 +12,7 @@ from database_functions import (get_playable_entries, choose_database,
                                 check_notify)
 from singleton import Singleton
 from calendar_export import delete_ics_file
-from parse_strings import parse_single_db_entry_to_string
+from parse_strings import (parse_single_db_entry_to_string, read_json)
 from error_handler import (handle_bot_not_admin, handle_bot_unauthorized)
 
 
@@ -29,10 +29,8 @@ def handle_vote(update, context):
         if check == 0 and send_message:  # user voted the same thing
             try:
                 context.bot.send_message(update.message.from_user.id,
-                                         "Okay " + update.message.from_user.first_name +
-                                         ", du hast erneut für " + update.message.text +
-                                         " gestimmt. Du musst mir das nicht mehrmals "
-                                         "sagen, ich bin fähig ;)")
+                                         read_json(["planning_functions", "voted_again"]).format(
+                                             name=update.message.from_user.first_name, choice=update.message.text))
             except Unauthorized:
                 if not handled_unauthorized:
                     handle_bot_unauthorized(context.bot, update.message.chat_id,
@@ -41,9 +39,7 @@ def handle_vote(update, context):
         elif check < 0:  # user not allowed to vote
             try:
                 context.bot.send_message(update.message.from_user.id,
-                                         "Das hat nicht funktioniert. "
-                                         "Vielleicht darfst du gar nicht abstimmen, " +
-                                         update.message.from_user.first_name + "?")
+                                         read_json(["planning_functions", "not_authorised"]).format(name=update.message.from_user.first_name))
             except Unauthorized:
                 if not handled_unauthorized:
                     handle_bot_unauthorized(context.bot, update.message.chat_id,
@@ -52,9 +48,8 @@ def handle_vote(update, context):
         elif check > 0 and send_message:  # user gave a new vote
             try:
                 context.bot.send_message(update.message.from_user.id,
-                                         "Okay " + update.message.from_user.first_name +
-                                         ", du hast für " + update.message.text +
-                                         " gestimmt.")
+                                         read_json(["planning_functions", "voted"]).format(
+                                             name=update.message.from_user.first_name, choice=update.message.text))
             except Unauthorized:
                 if not handled_unauthorized:
                     handle_bot_unauthorized(context.bot, update.message.chat_id,
@@ -99,13 +94,13 @@ class GameNight(Singleton):
     def get_participants(self):
         if self.date:
             if len(self.participants) == 0:
-                result = "Am Spieleabend " + self.date + " nimmt bisher niemand teil."
+                result = read_json(["planning_functions", "no_participants"]).format(date=self.date)
                 return result
-            result = "Am Spieleabend " + self.date + " nehmen teil:\n"
+            result = read_json(["planning_functions", "list_participants"]).format(date=self.date)
             for p in self.participants:
                 result = result + p + "\n"
         else:
-            result = "Derzeit ist kein Spieleabend geplant. Das kannst du mit /neuer_termin ändern!"
+            result = read_json(["planning_functions", "no_date"])
         return result
 
     def set_date(self, date):

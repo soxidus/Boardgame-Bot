@@ -59,13 +59,13 @@ def handle_calendar(update, context):
     if stop:
         context.bot.send_message(
             chat_id=update.callback_query.message.chat_id,
-            text='Okay, hier ist nichts passiert.'
+            text=ps.read_json(["inline_handler", "stop_interaction"])
         )
     elif selected:
         if user_inp_req:
             msg = context.bot.send_message(
                 chat_id=update.callback_query.message.chat_id,
-                text='Okay, wann wollt ihr spielen? Antworte mit /stop, um abzubrechen.',
+                text=ps.read_json(["inline_handler", "handle_calendar", "ask_date"]),
                 reply_markup=ForceReply())
             rep.ForceReplyJobs().add(msg.message_id, "date")
         elif date:
@@ -73,8 +73,7 @@ def handle_calendar(update, context):
             if check < 0:
                 context.bot.send_message(
                     chat_id=update.callback_query.message.chat_id,
-                    text="Melde dich doch einfach mit /ich "
-                         "beim festgelegten Termin an.",
+                    text=ps.read_json(["inline_handler", "handle_calendar", "have_date_already"]),
                     reply_markup=ReplyKeyboardRemove())
             else:
                 config = configparser.ConfigParser()
@@ -91,8 +90,7 @@ def handle_calendar(update, context):
                 GameNight(chat_id=update.callback_query.message.chat_id).set_cal_file(filename)
                 context.bot.send_message(
                     chat_id=update.callback_query.message.chat_id,
-                    text="Okay, schrei einfach /ich, wenn du "
-                         "teilnehmen willst!",
+                    text=ps.read_json(["inline_handler", "handle_calendar", "date_set"]),
                     reply_markup=ReplyKeyboardRemove())
 
 
@@ -105,9 +103,9 @@ def handle_category(update, context):
         QueryBuffer().clear_query(update.callback_query.message.message_id)
         context.bot.send_message(
             chat_id=update.callback_query.message.chat_id,
-            text='Okay, hier ist nichts passiert.',
+            text=ps.read_json(["inline_handler", "stop_interaction"]),
             reply_markup=ReplyKeyboardRemove())
-        shrink_keyboard(update, context, "Abbruch.")
+        shrink_keyboard(update, context, ps.read_json(["inline_handler", "stop_shrink"]))
     elif category == "done":
         end_of_categories(update, context)
     elif category == "IGNORE":
@@ -161,10 +159,9 @@ def end_of_categories(update, context, no_category=False):
             except IntegrityError:
                 context.bot.send_message(
                     chat_id=update.callback_query.message.chat_id,
-                    text="Wusste ich doch: Das Spiel hast du schon "
-                         "einmal eingetragen. Viel Spaß noch damit!",
+                    text=ps.read_json(["inline_handler", "category", "known_game"]),
                     reply_markup=ReplyKeyboardRemove())
-                inline_text = "Du wolltest das Spiel " + query_csv[2] + " hinzufügen."
+                inline_text = ps.read_json(["inline_handler", "category", "shrink_known_game"]).format(title=query_csv[2])
                 shrink_keyboard(update, context, inline_text)
                 return
         else:
@@ -176,17 +173,16 @@ def end_of_categories(update, context, no_category=False):
             except IntegrityError:
                 context.bot.send_message(
                     chat_id=update.callback_query.message.chat_id,
-                    text="Wusste ich doch: Das Spiel hast du schon "
-                         "einmal eingetragen. Viel Spaß noch damit!",
+                    text=ps.read_json(["inline_handler", "category", "known_game"]),
                     reply_markup=ReplyKeyboardRemove())
-                inline_text = "Du wolltest das Spiel " + query_csv[2] + " hinzufügen."
+                inline_text = ps.read_json(["inline_handler", "category", "shrink_known_game"]).format(title=query_csv[2])
                 shrink_keyboard(update, context, inline_text)
                 return
         context.bot.send_message(
                     chat_id=update.callback_query.message.chat_id,
-                    text="Okay, das Spiel wurde hinzugefügt \\o/",
+                    text=ps.read_json(["inline_handler", "category", "added_game"]),
                     reply_markup=ReplyKeyboardRemove())
-        inline_text = "Du hast das Spiel " + query_csv[2] + " hinzugefügt."
+        inline_text = ps.read_json(["inline_handler", "category", "shrink_added_game"]).format(title=query_csv[2])
         shrink_keyboard(update, context, inline_text)
     else:
         pass
@@ -214,12 +210,12 @@ def generate_categories(first=False, pressed=None):
     row = []
     if first:
         data = ";".join(["CATEGORY", "none"])
-        row.append(InlineKeyboardButton('keine Angabe', callback_data=data))
+        row.append(InlineKeyboardButton(ps.read_json(["inline_handler", "category", "none"]), callback_data=data))
     else:
         data = ";".join(["CATEGORY", "done"])
-        row.append(InlineKeyboardButton('Fertig', callback_data=data))
+        row.append(InlineKeyboardButton(ps.read_json(["inline_handler", "done_keyboard"]), callback_data=data))
     data = ";".join(["CATEGORY", "stop"])
-    row.append(InlineKeyboardButton('Abbrechen', callback_data=data))
+    row.append(InlineKeyboardButton(ps.read_json(["inline_handler", "stop_keyboard"]), callback_data=data))
     keyboard.append(row)
     return InlineKeyboardMarkup(keyboard)
 
@@ -230,9 +226,9 @@ def handle_findbycategory(update, context):
     if category == "stop":
         context.bot.send_message(
             chat_id=update.callback_query.message.chat_id,
-            text='Okay, hier ist nichts passiert.',
+            text=ps.read_json(["inline_handler", "stop_interaction"]),
             reply_markup=ReplyKeyboardRemove())
-        shrink_keyboard(update, context, "Abbruch.")
+        shrink_keyboard(update, context, ps.read_json(["inline_handler", "stop_shrink"]))
     elif category == "IGNORE":
         pass
     else:  # got a category
@@ -246,12 +242,12 @@ def handle_findbycategory(update, context):
             game = opt[randrange(len(opt))]
             context.bot.send_message(
                         chat_id=update.callback_query.message.chat_id,
-                        text='Wie wäre es mit ' + game + '?',
+                        text=ps.read_json(["inline_handler", "handle_findbycategory", "proposal"]).format(title=game),
                         reply_markup=ReplyKeyboardRemove())
         else:
             context.bot.send_message(
                         chat_id=update.callback_query.message.chat_id,
-                        text='Du besitzt kein Spiel dieser Kategorie.',
+                        text=ps.read_json(["inline_handler", "handle_findbycategory", "none_available"]),
                         reply_markup=ReplyKeyboardRemove())
         shrink_keyboard(update, context, category)
 
@@ -272,7 +268,7 @@ def generate_findbycategory():
     data = ";".join(["FINDBY", "IGNORE"])
     row.append(InlineKeyboardButton(' ', callback_data=data))
     data = ";".join(["FINDBY", "stop"])
-    row.append(InlineKeyboardButton('Abbrechen', callback_data=data))
+    row.append(InlineKeyboardButton(ps.read_json(["inline_handler", "stop_keyboard"]), callback_data=data))
     keyboard.append(row)
     return InlineKeyboardMarkup(keyboard)
 
@@ -283,9 +279,9 @@ def handle_pollbycategory(update, context):
     if category == "stop":
         context.bot.send_message(
             chat_id=update.callback_query.message.chat_id,
-            text='Okay, hier ist nichts passiert.',
+            text=ps.read_json(["inline_handler", "stop_interaction"]),
             reply_markup=ReplyKeyboardRemove())
-        shrink_keyboard(update, context, "Abbruch.")
+        shrink_keyboard(update, context, ps.read_json(["inline_handler", "stop_shrink"]))
     elif category == "IGNORE":
         pass
     else:  # got a category
@@ -295,20 +291,7 @@ def handle_pollbycategory(update, context):
         if check < 0:
             context.bot.send_message(
                         chat_id=update.callback_query.message.chat_id,
-                        text='Das war leider nichts. '
-                             'Dies könnte verschiedene Gründe haben:\n'
-                             '(1) Ihr habt kein Datum festgelegt. '
-                             'Holt das mit /neuer_termin nach.\n'
-                             '(2) Du bist nicht zum Spieleabend angemeldet. '
-                             'Hole das mit /ich nach.\n'
-                             '(3) Ihr habt gerade kein Spiel dieser Kategorie '
-                             'zur Verfügung. Sollte ich mich da irren, '
-                             'tragt das Spiel mit /neues_spiel ein '
-                             '(natürlich im Privatchat).\n'
-                             '(4) Ihr habt die Spiele dieser Kategorie, '
-                             'welche euch zur Verfügung stehen, alle innerhalb '
-                             'der letzten 14 Tage gespielt. Kommt schon, '
-                             'es ist mal Zeit für was anderes!',
+                        text=ps.read_json(["inline_handler", "handle_pollbycategory", "no_poll"]),
                         reply_markup=ReplyKeyboardRemove())
         else:
             keys = []
@@ -316,7 +299,7 @@ def handle_pollbycategory(update, context):
                 keys.append([KeyboardButton(o)])
             context.bot.send_message(
                         chat_id=update.callback_query.message.chat_id,
-                        text='Welches Spiel wollt ihr spielen?',
+                        text=ps.read_json(["inline_handler", "handle_pollbycategory", "what_game"]),
                         reply_markup=ReplyKeyboardMarkup(
                                         keys, one_time_keyboard=True))
         shrink_keyboard(update, context, category)
@@ -338,7 +321,7 @@ def generate_pollbycategory():
     data = ";".join(["POLLBY", "IGNORE"])
     row.append(InlineKeyboardButton(' ', callback_data=data))
     data = ";".join(["POLLBY", "stop"])
-    row.append(InlineKeyboardButton('Abbrechen', callback_data=data))
+    row.append(InlineKeyboardButton(ps.read_json(["inline_handler", "stop_keyboard"]), callback_data=data))
     keyboard.append(row)
     return InlineKeyboardMarkup(keyboard)
 
@@ -350,7 +333,7 @@ def handle_settings(update, context):
         QueryBuffer().clear_query(update.callback_query.message.message_id)
         context.bot.send_message(
             chat_id=update.callback_query.message.chat_id,
-            text='Okay, hier ist nichts passiert.',
+            text=ps.read_json(["inline_handler", "stop_interaction"]),
             reply_markup=ReplyKeyboardRemove())
         shrink_keyboard(update, context, "Abbruch.")
     elif setting == "done":
@@ -410,9 +393,9 @@ def end_of_settings(update, context, settings_type):
         dbf.update_settings(table, who, to_set, to_unset)
         context.bot.send_message(
                     chat_id=update.callback_query.message.chat_id,
-                    text="Okay, ich habe mir die Einstellungen vermerkt.",
+                    text=ps.read_json(["inline_handler", "settings", "set"]),
                     reply_markup=ReplyKeyboardRemove())
-        shrink_keyboard(update, context, "Einstellungen angepasst.")
+        shrink_keyboard(update, context, ps.read_json(["inline_handler", "settings", "shrink_set"]))
     else:
         pass
     QueryBuffer().clear_query(
@@ -426,13 +409,13 @@ def generate_settings(settings_type, to_set=None, first=None, who=None, init_arr
     if settings_type == "settings_group":
         table = "group_settings"
         entry = "id"
-        settings = {'Bot ist kein Admin': 'notify_not_admin',
-                    'Fehlender Privatchat': 'notify_unauthorized'}
+        settings = {ps.read_json(["inline_handler", "settings", "not_admin"]): 'notify_not_admin',
+                    ps.read_json(["inline_handler", "settings", "no_privatechat"]): 'notify_unauthorized'}
     else:  # settings_type == "settings_private"
         table = "settings"
         entry = "user"
-        settings = {'Teilnahme am Spieleabend': 'notify_participation',
-                    'Abstimmung': 'notify_vote'}
+        settings = {ps.read_json(["inline_handler", "settings", "participation"]): 'notify_participation',
+                    ps.read_json(["inline_handler", "settings", "votes"]): 'notify_vote'}
     if first:
         current_settings = dbf.search_single_entry(dbf.choose_database("datadb"), table, entry, who)[0][1:]
     keyboard = []
@@ -465,9 +448,9 @@ def generate_settings(settings_type, to_set=None, first=None, who=None, init_arr
     # last row: done and /stop button
     row = []
     data = ";".join(["SETTING", "done"])
-    row.append(InlineKeyboardButton('Fertig', callback_data=data))
+    row.append(InlineKeyboardButton(ps.read_json(["inline_handler", "done_keyboard"]), callback_data=data))
     data = ";".join(["SETTING", "stop"])
-    row.append(InlineKeyboardButton('Abbrechen', callback_data=data))
+    row.append(InlineKeyboardButton(ps.read_json(["inline_handler", "stop_keyboard"]), callback_data=data))
     keyboard.append(row)
     return InlineKeyboardMarkup(keyboard)
 
@@ -479,12 +462,12 @@ def handle_household(update, context):
         QueryBuffer().clear_query(update.callback_query.message.message_id)
         context.bot.send_message(
             chat_id=update.callback_query.message.chat_id,
-            text='Okay, hier ist nichts passiert.',
+            text=ps.read_json(["inline_handler", "stop_interaction"]),
             reply_markup=ReplyKeyboardRemove())
-        shrink_keyboard(update, context, "Nein.")
+        shrink_keyboard(update, context, ps.read_json(["inline_handler", "no_keyboard"]))
         if LogToMessageFilter().ask_chat_type == "private":
             context.bot.send_message(chat_id=update.callback_query.message.chat_id,
-                                     text='Hey, soll ich meine Debug-Nachrichten hier rein schicken?',
+                                     text=ps.read_json(["inline_handler", "household", "ask_debug"]),
                                      reply_markup=generate_debug())
     elif member == "done":
         end_of_household(update, context)
@@ -533,13 +516,13 @@ def end_of_household(update, context):
         dbf.add_household(household)
         context.bot.send_message(
                     chat_id=update.callback_query.message.chat_id,
-                    text="Okay, ich weiß Bescheid.",
+                    text=ps.read_json(["inline_handler", "household", "ok"]),
                     reply_markup=ReplyKeyboardRemove())
         shrink_label = " ".join(household)
         shrink_keyboard(update, context, shrink_label)
         if LogToMessageFilter().ask_chat_type == "private":
             update.message.bot.send_message(chat_id=update.callback_query.message.chat_id,
-                                            text='Hey, soll ich meine Debug-Nachrichten hier rein schicken?',
+                                            text=ps.read_json(["inline_handler", "household", "ask_debug"]),
                                             reply_markup=generate_debug())
     else:
         pass
@@ -571,9 +554,9 @@ def generate_household(remove, first=False, to_set=None):
     row = []
     if not first:
         data = ";".join(["HOUSEHOLD", "done"])
-        row.append(InlineKeyboardButton('Fertig', callback_data=data))
+        row.append(InlineKeyboardButton(ps.read_json(["inline_handler", "done_keyboard"]), callback_data=data))
     data = ";".join(["HOUSEHOLD", "stop"])
-    row.append(InlineKeyboardButton('Nein.', callback_data=data))
+    row.append(InlineKeyboardButton(ps.read_json(["inline_handler", "no_keyboard"]), callback_data=data))
     keyboard.append(row)
     return InlineKeyboardMarkup(keyboard)
 
@@ -584,9 +567,9 @@ def handle_debug(update, context):
     if answer == "YES":
         LogToMessageFilter().set_chat_id(update.callback_query.message.chat_id)
         LogToMessageFilter().set_bot(context.bot)
-        shrink_keyboard(update, context, "Ja.")
+        shrink_keyboard(update, context, ps.read_json(["inline_handler", "debug", "yes"]))
     else:
-        shrink_keyboard(update, context, "Nein.")
+        shrink_keyboard(update, context, ps.read_json(["inline_handler", "debug", "no"]))
 
 
 def generate_debug():
@@ -594,7 +577,7 @@ def generate_debug():
     row = []
     yes_data = ";".join(["DEBUG", "YES"])
     no_data = ";".join(["DEBUG", "NO"])
-    row.append(InlineKeyboardButton("Ja.", callback_data=yes_data))
-    row.append(InlineKeyboardButton("Nein.", callback_data=no_data))
+    row.append(InlineKeyboardButton(ps.read_json(["inline_handler", "debug", "yes"]), callback_data=yes_data))
+    row.append(InlineKeyboardButton(ps.read_json(["inline_handler", "debug", "no"]), callback_data=no_data))
     keyboard.append(row)
     return InlineKeyboardMarkup(keyboard)

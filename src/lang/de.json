@@ -64,14 +64,21 @@
     },
     "inline_handler":{
         "stop_interaction": "Okay, hier ist nichts passiert.",
+        "stop_shrink": "Abbruch",
+        "stop_keyboard": "Abbrechen",        
+        "done_keyboard": "Fertig",
+        "no_keyboard": "Nein",
         "handle_calendar":{
             "ask_date": "Okay, wann wollt ihr spielen? Antworte mit /stop, um abzubrechen.",
             "have_date_already": "Melde dich doch einfach mit /ich beim festgelegten Termin an.",
             "date_set": "Okay, schrei einfach /ich, wenn du teilnehmen willst!"
         },
-        "end_of_category":{
+        "category":{
             "known_game": "Wusste ich doch: Das Spiel hast du schon einmal eingetragen. Viel Spaß noch damit!",
-            "added_game": "Okay, das Spiel wurde hinzugefügt \\o/"
+            "shrink_known_game": "Du wolltest das Spiel {title} hinzufügen.",
+            "added_game": "Okay, das Spiel wurde hinzugefügt \\o/",
+            "shrink_added_game": "Du hast das Spiel {title} hinzugefügt.",
+            "none": "Keine Angabe"
         },
         "handle_findbycategory":{
             "proposal": "Wie wäre es mit {title}?",
@@ -81,8 +88,22 @@
             "no_poll": "Das war leider nichts. Dies könnte verschiedene Gründe haben:\n(1) Ihr habt kein Datum festgelegt. Holt das mit /neuer_termin nach.\n(2) Du bist nicht zum Spieleabend angemeldet. Hole das mit /ich nach.\n(3) Ihr habt gerade kein Spiel dieser Kategorie zur Verfügung. Sollte ich mich da irren, tragt das Spiel mit /neues_spiel ein (natürlich im Privatchat).\n(4) Ihr habt die Spiele dieser Kategorie, welche euch zur Verfügung stehen, alle innerhalb der letzten 14 Tage gespielt. Kommt schon, es ist mal Zeit für was anderes!",
             "what_game": "Welches Spiel wollt ihr spielen?"
         },
-        "end_of_settings":"Okay, ich habe mir die Einstellungen vermerkt.",
-        "ask_debug":"Hey, soll ich meine Debug-Nachrichten hier rein schicken?"
+        "settings":{
+            "set": "Okay, ich habe mir die Einstellungen vermerkt.",
+            "shrink_set": "Einstellungen angepasst.",
+            "no_admin": "Bot ist kein Admin",
+            "no_privatechat": "Fehlender Privatchat",
+            "participation": "Teilnahme am Spieleabend",
+            "votes": "Abstimmung"
+        },
+        "household":{
+            "ask_debug":"Hey, soll ich meine Debug-Nachrichten hier rein schicken?",
+            "ok": "Okay, ich weiß Bescheid."
+        },
+        "debug":{
+            "yes": "Ja.",
+            "no": "Nein."
+        }
     },
     "planning_functions":{
         "voted_again": "Okay {name}, du hast erneut für {choice} gestimmt. Du musst mir das nicht mehrmals sagen, ich bin fähig ;)",
@@ -93,6 +114,7 @@
         "no_date": "Derzeit ist kein Spieleabend geplant. Das kannst du mit /neuer_termin ändern!"
     },
     "reply_handler":{
+        "stop_interaction": "Okay, hier ist nichts passiert.",
         "auth":{
             "ask_household": "Super! Wir dürfen jetzt miteinander reden. Noch eine Frage: Wohnst du vielleicht mit einem (oder mehreren) der Gruppenmitglieder zusammen? Wenn ja, wähle unten den (die) entsprechenden Alias(e)! Wenn nicht, wähle Nein.",
             "can_talk_now": "Super! Wir dürfen jetzt miteinander reden.",
@@ -111,6 +133,7 @@
             "added_expansion": "Okay, die Erweiterung wurde hinzugefügt \\o/"
         },
         "expansions_list":{
+            "expansions": "Du hast folgende Erweiterungen:\n",
             "no_expansions": "Du besitzt keine Erweiterungen zu diesem Spiel. Falls doch, dann ist jetzt ein guter Zeitpunkt, mir das mit /neue_erweiterung mitzuteilen!",
             "error_no_game": "Du besitzt dieses Spiel nicht. Falls doch, dann ist jetzt ein guter Zeitpunkt, mir das mit /neues_spiel mitzuteilen!"
         },
