@@ -15,6 +15,7 @@ from singleton import Singleton
 from inline_handler import (generate_categories, generate_household, generate_debug, generate_csv_import)
 from query_buffer import QueryBuffer
 from error_handler import handle_bot_not_admin
+from parse_strings import read_json
 
 
 # keeps track of ForceReplys not being answered
@@ -114,41 +115,32 @@ def auth(update):
                 try:
                     msg = update.message.bot.send_message(
                             chat_id=update.message.chat_id,
-                            text='Super! Wir dürfen jetzt miteinander reden. '
-                            'Noch eine Frage: Wohnst du vielleicht mit einem '
-                            '(oder mehreren) '
-                            'der Gruppenmitglieder zusammen? '
-                            'Wenn ja, wähle unten den (die) '
-                            'entsprechenden Alias(e)! '
-                            'Wenn nicht, wähle Nein.',
+                            text=read_json(["reply_handler", "auth", "ask_household"]),
                             reply_markup=generate_household(update.message.from_user.username, first=True))
                     query = "household," + update.message.from_user.username + ","
                     QueryBuffer().add(msg.message_id, query)
                 except IndexError:  # first user
                     update.message.bot.send_message(chat_id=update.message.chat_id,
-                                                    text='Super! Wir dürfen jetzt miteinander reden.',
+                                                    text=read_json(["reply_handler", "auth", "can_talk_now"]),
                                                     reply_markup=ReplyKeyboardRemove())
                     if LogToMessageFilter().ask_chat_type == "private":
                         update.message.bot.send_message(chat_id=update.message.chat_id,
-                                                        text='Hey, soll ich meine Debug-Nachrichten hier rein schicken?',
+                                                        text=read_json(["reply_handler", "auth", "ask_debug"]),
                                                         reply_markup=generate_debug())
             else:
                 dbf.add_user_auth(update.message.chat_id)
                 update.message.bot.send_message(chat_id=update.message.chat_id,
-                                                text='Super! Wir dürfen jetzt '
-                                                'miteinander reden.',
+                                                text=read_json(["reply_handler", "auth", "can_talk_now"]),
                                                 reply_markup=ReplyKeyboardRemove())
                 if LogToMessageFilter().ask_chat_type == "group":
                     update.message.bot.send_message(chat_id=update.message.chat_id,
-                                                    text='Hey, soll ich meine Debug-Nachrichten hier rein schicken?',
+                                                    text=read_json(["reply_handler", "auth", "ask_debug"]),
                                                     reply_markup=generate_debug())
         else:
-            update.message.reply_text("Du musst das Passwort nicht nochmal "
-                                      "eingeben... Rede einfach mit mir!",
+            update.message.reply_text(read_json(["reply_handler", "auth", "no_auth_needed"]),
                                       reply_markup=ReplyKeyboardRemove())
     else:
-        update.message.reply_text("Schade, das hat leider nicht funktioniert. "
-                                  "Mach es gut!",
+        update.message.reply_text(read_json(["reply_handler", "auth", "error_auth"]),
                                   reply_markup=ReplyKeyboardRemove())
         update.message.chat.leave()
 
@@ -158,15 +150,11 @@ def game_title(update):
     if "/stop" in update.message.text:
         ForceReplyJobs().clear_query(
             update.message.reply_to_message.message_id)
-        update.message.reply_text('Okay, hier ist nichts passiert.',
+        update.message.reply_text(read_json(["reply_handler", "stop_interaction"]),
                                   reply_markup=ReplyKeyboardRemove())
     else:
         msg = update.message.reply_text(
-                'Mit wie vielen Leuten kann man ' + update.message.text +
-                ' maximal spielen?\n'
-                'Anworte mit EINER Zahl oder einem X, wenn es mit unendlich '
-                'vielen gespielt werden kann.\n'
-                'Antworte mit /stop, um abzubrechen.',
+                read_json(["reply_handler", "game_no_players"]).format(titel=update.message.text),
                 reply_markup=ForceReply())
         query = ForceReplyJobs().get_query(update.message.reply_to_message.message_id) + update.message.text
         ForceReplyJobs().clear_query(
@@ -181,17 +169,12 @@ def game_players(update):
     if "/stop" in update.message.text:
         ForceReplyJobs().clear_query(
             update.message.reply_to_message.message_id)
-        update.message.reply_text('Okay, hier ist nichts passiert.',
+        update.message.reply_text(read_json(["reply_handler", "stop_interaction"]),
                                   reply_markup=ReplyKeyboardRemove())
     else:
         query = ForceReplyJobs().get_query(update.message.reply_to_message.message_id) + "," + update.message.text + ","
         msg = update.message.reply_text(
-                'In welche Kategorien passt ' + ps.parse_csv_to_array(query)[2] +
-                ' am besten?\n'
-                'Wähle so viele, wie du willst, und drücke dann '
-                'auf \'Fertig\'.\n'
-                'Wenn du keine Kategorie angeben möchtest, drücke '
-                'auf \'Keine Angabe\'.',
+                read_json(["reply_handler", "game_what_categories"]).format(title=ps.parse_csv_to_array(query)[2]),
                 reply_markup=generate_categories(first=True))
         ForceReplyJobs().clear_query(
             update.message.reply_to_message.message_id)
@@ -204,7 +187,7 @@ def expansion_for(update):
     if "/stop" in update.message.text:
         ForceReplyJobs().clear_query(
             update.message.reply_to_message.message_id)
-        update.message.reply_text('Okay, hier ist nichts passiert.',
+        update.message.reply_text(read_json(["reply_handler", "stop_interaction"]),
                                   reply_markup=ReplyKeyboardRemove())
     # find uuid, if owner does not have this game, return
     else:
@@ -214,9 +197,7 @@ def expansion_for(update):
                                update.message.text)
         if uuid:
             msg = update.message.reply_text(
-                    'Wie heißt deine Erweiterung für ' +
-                    update.message.text + '?\n'
-                    'Antworte mit /stop, um abzubrechen.',
+                    read_json(["reply_handler", "expansion_for", "expansion_title"]).format(game=update.message.text),
                     reply_markup=ForceReply())
             query += "," + uuid  # query now has structure new_expansion, <owner>, <uuid>
             ForceReplyJobs().clear_query(
@@ -224,9 +205,7 @@ def expansion_for(update):
             ForceReplyJobs().add_with_query(
                 msg.message_id, "expansion_title", query)
         else:
-            update.message.reply_text('Mir ist nicht bekannt, dass du dieses '
-                                      'Spiel hast. Du kannst es gerne mit '
-                                      '/neues_spiel hinzufügen.',
+            update.message.reply_text(read_json(["reply_handler", "expansion_for", "error_no_game"]),
                                       reply_markup=ReplyKeyboardRemove())
             ForceReplyJobs().clear_query(
                 update.message.reply_to_message.message_id)
@@ -236,7 +215,7 @@ def expansion_title(update):
     if "/stop" in update.message.text:
         ForceReplyJobs().clear_query(
             update.message.reply_to_message.message_id)
-        update.message.reply_text('Okay, hier ist nichts passiert.',
+        update.message.reply_text(read_json(["reply_handler", "stop_interaction"]),
                                   reply_markup=ReplyKeyboardRemove())
     else:
         query = ForceReplyJobs().get_query(update.message.reply_to_message.message_id) + "," + update.message.text
@@ -250,12 +229,11 @@ def expansion_title(update):
                 #                             ps.remove_first_string(query)))
             except IntegrityError:
                 update.message.reply_text(
-                        "Wusste ich doch: Diese Erweiterung hast du schon "
-                        "einmal eingetragen. Viel Spaß noch damit!",
+                        read_json(["reply_handler", "expansion_title", "known_expansion"]),
                         reply_markup=ReplyKeyboardRemove())
                 return
             update.message.reply_text(
-                "Okay, die Erweiterung wurde hinzugefügt \\o/",
+                read_json(["reply_handler", "expansion_title", "added_expansion"]),
                 reply_markup=ReplyKeyboardRemove())
         else:
             pass  # no idea how we got here...
@@ -265,20 +243,16 @@ def expansion_title(update):
 
 def expansions_list(update):
     if "/stop" in update.message.text:
-        update.message.reply_text('Okay, hier ist nichts passiert.',
+        update.message.reply_text(read_json(["reply_handler", "stop_interaction"]),
                                   reply_markup=ReplyKeyboardRemove())
     else:
-        msgtext = 'Du hast folgende Erweiterungen:\n'
+        msgtext = read_json(["reply_handler", "expansions_list", "expansions"])
         search = dbf.search_expansions_by_game(
                     update.message.from_user.username, update.message.text)
         if search is None:  # user owns game, but no expansions
-            update.message.reply_text('Du besitzt keine Erweiterungen zu diesem Spiel. '
-                                      'Falls doch, dann ist jetzt ein guter Zeitpunkt, '
-                                      'mir das mit /neue_erweiterung mitzuteilen!')
+            update.message.reply_text(read_json(["reply_handler", "expansions_list", "no_expansions"]))
         elif not search:  # user doesn't own this game
-            update.message.reply_text('Du besitzt dieses Spiel nicht. '
-                                      'Falls doch, dann ist jetzt ein guter Zeitpunkt, '
-                                      'mir das mit /neues_spiel mitzuteilen!')
+            update.message.reply_text(read_json(["reply_handler", "expansions_list", "error_no_game"]))
         else:
             gamestring = ps.parse_db_entries_to_messagestring(search)
             msgtext += gamestring
@@ -287,7 +261,7 @@ def expansions_list(update):
 
 def expansion_poll_game(update):
     if "/stop" in update.message.text:
-        update.message.reply_text('Okay, hier ist nichts passiert.',
+        update.message.reply_text(read_json(["reply_handler", "stop_interaction"]),
                                   reply_markup=ReplyKeyboardRemove())
     else:
         plan = GameNight()
@@ -295,20 +269,12 @@ def expansion_poll_game(update):
                               game=update.message.text)
         if check < 0:
             update.message.reply_text(
-                'Das war leider nichts. Dies könnte verschiedene Gründe haben:\n\n'
-                '(1) Ihr habt kein Datum festgelegt. Holt das mit '
-                '/neuer_termin nach.\n'
-                '(2) Du bist nicht zum Spieleabend angemeldet. '
-                'Hole das mit /ich nach.\n'
-                '(3) Mir ist nicht bekannt, dass einer der Teilnehmenden eine '
-                'Erweiterung für dieses Spiel hat.'
-                'Wenn das jedoch der Fall ist, sagt mir mit /neue_erweiterung '
-                'Bescheid (natürlich im Privatchat)!')
+                read_json(["reply_handler", "expansion_poll_game", "error_no_poll_expansion"]))
         else:
             keys = []
             for o in plan.poll.options:
                 keys.append([KeyboardButton(o)])
-            update.message.reply_text('Welche Erweiterung wollt ihr spielen?',
+            update.message.reply_text(read_json(["reply_handler", "expansion_poll_game", "what_expansion"]),
                                       reply_markup=ReplyKeyboardMarkup(
                                                     keys, one_time_keyboard=True))
 
@@ -330,16 +296,18 @@ def csv(update):
                                     reply_markup=generate_csv_import(update.message.reply_to_message.message_id))
     ForceReplyJobs().add_with_query(update.message.reply_to_message.message_id, "csv", str(msg.message_id))
 
+    update.message.reply_text(read_json(["reply_handler", "csv"]),
+                              reply_markup=ReplyKeyboardRemove())
+
 
 def date(update):
     if "/stop" in update.message.text:
-        update.message.reply_text('Okay, hier ist nichts passiert.',
+        update.message.reply_text(read_json(["reply_handler", "stop_interaction"]),
                                   reply_markup=ReplyKeyboardRemove())
     else:
         check = GameNight(update.message.chat.id).set_date(update.message.text)
         if check < 0:
-            update.message.reply_text("Melde dich doch einfach mit /ich "
-                                      "beim festgelegten Termin an.",
+            update.message.reply_text(read_json(["reply_handler", "date", "have_date_already"]),
                                       reply_markup=ReplyKeyboardRemove())
         else:
             config = configparser.ConfigParser()
@@ -351,11 +319,10 @@ def date(update):
                     update.message.chat.id, title + ': ' + update.message.text)
             except BadRequest:
                 handle_bot_not_admin(update.message.bot, update.message.chat.id)
-            update.message.reply_text("Okay, schrei einfach /ich, "
-                                      "wenn du teilnehmen willst!",
+            update.message.reply_text(read_json(["reply_handler", "date", "date_set"]),
                                       reply_markup=ReplyKeyboardRemove())
 
 
 def default(update):
-    update.message.reply_text("Ja... Bald...",
+    update.message.reply_text(read_json(["reply_handler", "default"]),
                               reply_markup=ReplyKeyboardRemove())
