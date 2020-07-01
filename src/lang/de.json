@@ -45,6 +45,120 @@
             "no_poll": "Das hat leider nicht funktioniert. Scheinbar gibt es keine Umfrage, die ich beenden könnte.",
             "not_authorised": "Das hat leider nicht funktioniert. Du hast wohl nicht das Recht zu dieser Aktion.",
             "ended_poll": "Die Umfrage ist beendet. Mit /ergebnis könnt ihr sehen, wie sie ausgegangen ist."
+        },
+        "ergebnis":{
+            "no_results": "Leider gibt es derzeit kein Ergebnis, was ich zeigen kann.",
+            "results": "Das Ergebnis ist: \n{votes}"
+        },
+        "spiele":{
+            "no_games": "Dass du Spiele hast, wäre mir neu. Wenn es doch der Fall ist, sag mir das mit /neues_spiel!",
+            "games_list": "Du hast folgende Spiele:"
+        },
+        "erweiterungen":{
+            "for_what_game": "Für welches Grundspiel fragst du?\nAntworte mit /stop, um abzubrechen."
+        },
+        "neues_spiel":{
+            "game_title": "Wie heißt dein neues Spiel?\nAntworte mit /stop, um abzubrechen."
+        },
+        "neue_erweiterung":{
+            "for_what_game": "Für welches Spiel hast du eine neue Erweiterung?\nAntworte mit /stop, um abzubrechen."
+        },
+        "zufallsspiel":{
+            "proposal": "Wie wäre es mit {title}?"
+        },
+        "genrespiel":{
+            "what_category": "Auf welche Kategorie hast du denn heute Lust?"
+        },
+        "leeren":{
+            "reset": "Ich habe alle Termine und Umfragen zurückgesetzt."
+        },
+        "einstellungen":{
+            "group": "Ändert hier die Gruppeneinstellungen. Bei welchen Problemen soll ich euch eine Warnung senden?",
+            "private": "Ändere hier deine Einstellungen. Bei welchen Ereignissen soll ich dich benachrichtigen?"
+        },
+        "help":{
+            "group": "Folgende Funktionen stehen dir im Gruppenchat zur Verfügung:\n\n/key - Authentifiziere dich!\n/neuer_termin - Wir wollen spielen! (nur in Gruppen)\n/ich - Nimm am nächsten Spieleabend teil! (nur in Gruppen)\n/nichtich - Melde dich vom Spieleabend ab (nur in Gruppen)\n/start_umfrage_spiel - Wähle, welches Spiel du spielen möchtest! (nur in Gruppen)\n/start_erweiterung - Stimmt ab, welche Erweiterung eines Spiels ihr spielen wollt. (nur in Gruppen)\n /start_umfrage_genrespiel - Stimmt ab, welches Spiel einer bestimmten Kategorie ihr spielen wollt.\n/ende_umfrage - Beende die Abstimmung. (nur in Gruppen)\n/ergebnis - Lass dir die bisher abgegebenen Stimmen anzeigen.\n/leeren - Lösche alle laufenden Pläne und Abstimmungen (laufende Spiel-Eintragungen etc. sind davon nicht betroffen)\n /einstellungen - Verändere die Gruppeneinstellungen (Benachrichtigungen etc.)\n/help - Was kann ich alles tun?\n\nSolltest du im Gruppenchat Funktionen nutzen, die dort nicht erlaubt sind, wird deine Nachricht sofort gelöscht.\nWeitere Funktionen stehen dir im Privatchat zur Verfügung.",
+            "private": "Folgende Funktionen stehen dir im Privatchat zur Verfügung:\n\n/key - Authentifiziere dich!\n/wer - Finde heraus, wer alles am Spieleabend teilnimmt\n/ergebnis - Lass dir die bisher abgegebenen Stimmen anzeigen.\n/spiele - Ich sage dir, welche Spiele du bei mir angemeldet hast.\n/erweiterungen - Ich sage dir, welche Erweiterungen du bei mir angemeldet hast.\n/neues_spiel - Trag dein neues Spiel ein!\n/neue_erweiterung - Trag deine neue Erweiterung ein.\n/zufallsspiel - Ich schlage dir ein Spiel vor.\n/genrespiel - Ich schlage dir ein Spiel einer bestimmten Kategorie vor.\n/einstellungen - Verändere deine Einstellungen (Benachrichtigungen etc.)\n/help - Was kann ich alles tun?\n\nWeitere Funktionen stehen dir im Gruppenchat zur Verfügung. Solltest du im Gruppenchat Funktionen nutzen, die dort nicht erlaubt sind, wird deine Nachricht sofort gelöscht.\n"
         }
+    },
+    "error_handler":{
+        "not_admin": "Hey Leute, leider bin ich hier kein Admin. Das fällt gerade auf, weil ich so ein paar meiner Funktionen nicht nutzen kann:\n- Gruppennamen verändern (um das Datum des nächsten Spieleabends einzutragen)\n- Gruppenbeschreibung verändern (um eine Teilnehmerliste zu führen)\n- Nachrichten von anderen Gruppenmitgliedern löschen (ZENSUR! Nein, im Ernst, es macht alles übersichtlicher.)\nBitte überlegt euch, ob ihr das wirklich verpassen wollt :)",
+        "not_authorised": "OH! Scheinbar darf ich nicht privat mit dir reden, {name}. Versuche, dich in einem Privatchat mit mir mit /start oder /key zu authentifizieren.",
+        "try_again": " Danach kannst du {try_what} nochmal probieren."
+    },
+    "inline_handler":{
+        "general":{
+            "stop_interaction": "Okay, hier ist nichts passiert."
+        },
+        "handle_calendar":{
+            "ask_date": "Okay, wann wollt ihr spielen? Antworte mit /stop, um abzubrechen.",
+            "have_date_already": "Melde dich doch einfach mit /ich beim festgelegten Termin an.",
+            "date_set": "Okay, schrei einfach /ich, wenn du teilnehmen willst!"
+        },
+        "end_of_category":{
+            "known_game": "Wusste ich doch: Das Spiel hast du schon einmal eingetragen. Viel Spaß noch damit!",
+            "added_game": "Okay, das Spiel wurde hinzugefügt \\o/"
+        },
+        "handle_findbycategory":{
+            "proposal": "Wie wäre es mit {title}?",
+            "none_available": "Du besitzt kein Spiel dieser Kategorie."
+        },
+        "handle_pollbycategory":{
+            "no_poll": "Das war leider nichts. Dies könnte verschiedene Gründe haben:\n(1) Ihr habt kein Datum festgelegt. Holt das mit /neuer_termin nach.\n(2) Du bist nicht zum Spieleabend angemeldet. Hole das mit /ich nach.\n(3) Ihr habt gerade kein Spiel dieser Kategorie zur Verfügung. Sollte ich mich da irren, tragt das Spiel mit /neues_spiel ein (natürlich im Privatchat).\n(4) Ihr habt die Spiele dieser Kategorie, welche euch zur Verfügung stehen, alle innerhalb der letzten 14 Tage gespielt. Kommt schon, es ist mal Zeit für was anderes!",
+            "what_game": "Welches Spiel wollt ihr spielen?"
+        },
+        "end_of_settings":{
+            "done": "Okay, ich habe mir die Einstellungen vermerkt."
+        },
+        "household":{
+            "ask_debug": "Hey, soll ich meine Debug-Nachrichten hier rein schicken?"
+        }
+    },
+    "planning_functions":{
+        "voted_again": "Okay {name}, du hast erneut für {choice} gestimmt. Du musst mir das nicht mehrmals sagen, ich bin fähig ;)",
+        "not_authorised": "Das hat nicht funktioniert. Vielleicht darfst du gar nicht abstimmen, {name}?",
+        "voted": "Okay {name}, du hast für {choice} gestimmt.",
+        "no_participants": "Am Spieleabend {date} nimmt bisher niemand teil.",
+        "list_participants": "Am Spieleabend {date} nehmen teil:\n",
+        "no_date": "Derzeit ist kein Spieleabend geplant. Das kannst du mit /neuer_termin ändern!"
+    },
+    "reply_handler":{
+        "auth":{
+            "ask_household": "Super! Wir dürfen jetzt miteinander reden. Noch eine Frage: Wohnst du vielleicht mit einem (oder mehreren) der Gruppenmitglieder zusammen? Wenn ja, wähle unten den (die) entsprechenden Alias(e)! Wenn nicht, wähle Nein.",
+            "can_talk_now": "Super! Wir dürfen jetzt miteinander reden.",
+            "ask_debug": "Hey, soll ich meine Debug-Nachrichten hier rein schicken?",
+            "no_auth_needed": "Du musst das Passwort nicht nochmal eingeben... Rede einfach mit mir!",
+            "error_auth": "Schade, das hat leider nicht funktioniert. Mach es gut!"
+        },
+        "game_title":{
+            "no_players": "Mit wie vielen Leuten kann man {title} maximal spielen?\nAnworte mit EINER Zahl oder einem X, wenn es mit unendlich vielen gespielt werden kann.\nAntworte mit /stop, um abzubrechen."
+        },
+        "game_players":{
+            "what_categories": "In welche Kategorien passt {title} am besten?\nWähle so viele, wie du willst, und drücke dann auf \"Fertig\".\nWenn du keine Kategorie angeben möchtest, drücke auf \"Keine Angabe\"."
+        },
+        "expansion_for":{
+            "expansion_title": "Wie heißt deine Erweiterung für {game}?\nAntworte mit /stop, um abzubrechen.",
+            "error_no_game": "Mir ist nicht bekannt, dass du dieses Spiel hast. Du kannst es gerne mit /neues_spiel hinzufügen."
+        },
+        "expansions_title":{
+            "known_expansion": "Wusste ich doch: Diese Erweiterung hast du schon einmal eingetragen. Viel Spaß noch damit!",
+            "added_expansion": "Okay, die Erweiterung wurde hinzugefügt \\o/"
+        },
+        "expansions_list":{
+            "no_expansions": "Du besitzt keine Erweiterungen zu diesem Spiel. Falls doch, dann ist jetzt ein guter Zeitpunkt, mir das mit /neue_erweiterung mitzuteilen!",
+            "error_no_game": "Du besitzt dieses Spiel nicht. Falls doch, dann ist jetzt ein guter Zeitpunkt, mir das mit /neues_spiel mitzuteilen!"
+        },
+        "expansion_poll_game":{
+            "error_no_poll_expansion": "Das war leider nichts. Dies könnte verschiedene Gründe haben:\n\n(1) Ihr habt kein Datum festgelegt. Holt das mit /neuer_termin nach.\n(2) Du bist nicht zum Spieleabend angemeldet. Hole das mit /ich nach.\n(3) Mir ist nicht bekannt, dass einer der Teilnehmenden eine Erweiterung für dieses Spiel hat.Wenn das jedoch der Fall ist, sagt mir mit /neue_erweiterung Bescheid (natürlich im Privatchat)!",
+            "what_expansion": "Welche Erweiterung wollt ihr spielen?"
+        },
+        "csv":{
+            "done": "OKAY, ich habe die Spiele alle eingetragen."
+        },
+        "date":{
+            "have_date_already": "Melde dich doch einfach mit /ich beim festgelegten Termin an.",
+            "date_set": "Okay, schrei einfach /ich, wenn du teilnehmen willst!"
+        },
+        "default": "Ja... Bald..."
     }
 }
