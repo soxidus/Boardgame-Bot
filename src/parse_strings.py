@@ -1,11 +1,12 @@
 # coding=utf-8
 
 import uuid
+import jsonpickle
 
 
 def parse_csv_to_array(data_string):
     """Parse one CSV string (delimited by commas) into an array.
-    
+
     Parameters
     ----------
     data_string : str
@@ -116,7 +117,7 @@ def parse_db_entries_to_messagestring(db_result):
 
 def parse_single_db_entry_to_string(db_entry):
     """Parse one DB entry into a string.
-    
+
     Parameters
     ----------
     db_entry : tuple
@@ -175,3 +176,14 @@ def generate_uuid_32():
     str
     """
     return uuid.uuid4().hex
+
+
+def read_json(keys):
+    f = open("./lang/de.json", 'rb')
+    json_str = f.read()
+    text = jsonpickle.decode(json_str)
+
+    for _ in keys:
+        text = text[_]
+
+    return(text)
