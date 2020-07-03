@@ -148,7 +148,6 @@ def auth(update):
 # Provided the game title, the bot asks for the maximum player count.
 def game_title(update):
     if "/stop" in update.message.text:
-        print("stopped")
         ForceReplyJobs().clear_query(
             update.message.reply_to_message.message_id)
         update.message.reply_text(read_json(["reply_handler", "stop_interaction"]),
