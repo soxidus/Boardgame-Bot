@@ -598,13 +598,13 @@ def handle_csv_import(update, context):
         msg_id = update.callback_query.data.split(";")[2]
         rep.ForceReplyJobs().is_set(msg_id)
         rep.ForceReplyJobs().clear_query(msg_id)
-        shrink_keyboard(update, context, "CSV-Import beendeet.s")
+        shrink_keyboard(update, context, ps.read_json(["inline_handler", "csv_import", "shrink_ended"]))
 
 
 def generate_csv_import(msg_id):
     keyboard = []
     row = []
     yes_data = ";".join(["CSV_IMPORT", "YES", str(msg_id)])
-    row.append(InlineKeyboardButton("Ja.", callback_data=yes_data))
+    row.append(InlineKeyboardButton(ps.read_json(["inline_handler", "csv_import", "yes_keyboard"]), callback_data=yes_data))
     keyboard.append(row)
     return InlineKeyboardMarkup(keyboard)

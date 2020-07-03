@@ -101,6 +101,10 @@
         "debug":{
             "yes": "Ja.",
             "no": "Nein."
+        },
+        "csv_import":{
+            "shrink_ended": "CSV-Import beendet.",
+            "yes_keyboard": "Ja."
         }
     },
     "planning_functions":{
@@ -139,7 +143,7 @@
             "error_no_poll_expansion": "Das war leider nichts. Dies könnte verschiedene Gründe haben:\n\n(1) Ihr habt kein Datum festgelegt. Holt das mit /neuer_termin nach.\n(2) Du bist nicht zum Spieleabend angemeldet. Hole das mit /ich nach.\n(3) Mir ist nicht bekannt, dass einer der Teilnehmenden eine Erweiterung für dieses Spiel hat.Wenn das jedoch der Fall ist, sagt mir mit /neue_erweiterung Bescheid (natürlich im Privatchat)!",
             "what_expansion": "Welche Erweiterung wollt ihr spielen?"
         },
-        "csv":"OKAY, ich habe die Spiele alle eingetragen.",
+        "csv":"Ich habe alle Spiele aus deiner Import\\-Nachricht eingetragen, die auf\n\n`{last_line}`\n\nendet\\.\nBin ich fertig? Wenn nicht, dann *warte bitte noch kurz*\\.",
         "date":{
             "have_date_already": "Melde dich doch einfach mit /ich beim bereits festgelegten Termin an.",
             "date_set": "Okay, schrei einfach /ich, wenn du teilnehmen willst!"
