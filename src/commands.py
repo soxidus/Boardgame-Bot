@@ -342,9 +342,9 @@ def spiele(update, context):
                                        update.message.from_user.username))
             if len(gamestring) == 0:
                 context.bot.send_message(update.message.chat_id,
-                                         text=read_json(["commands", "spiele", "no_games"]))
+                                         text=read_json(["commands", "general", "no_games"]))
             else:
-                update.message.reply_text(read_json(["commands", "spiele", "games_list"]))
+                update.message.reply_text(read_json(["commands", "spiele"]))
                 context.bot.send_message(update.message.chat_id, text=gamestring)
     else:
         update.message.reply_text(read_json(["commands", "general", "please_auth"]))
@@ -452,8 +452,11 @@ def zufallsspiel(update, context):
                 update.message.from_user.username)
             for e in entries:
                 opt.append(parse_single_db_entry_to_string(e))
-            game = opt[randrange(len(opt))]
-            update.message.reply_text(read_json(["commands", "zufallsspiel"]).format(title=game))
+            if not opt:
+                read_json(["commands", "general", "no_games"])
+            else:
+                game = opt[randrange(len(opt))]
+                update.message.reply_text(read_json(["commands", "zufallsspiel"]).format(title=game))
     else:
         update.message.reply_text(read_json(["commands", "general", "please_auth"]))
 

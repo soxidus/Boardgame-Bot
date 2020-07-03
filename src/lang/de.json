@@ -3,7 +3,8 @@
         "general":{
             "please_auth":"Bitte authentifiziere dich zunächst mit /key.",
             "not_in_group":"Hey, {command} kannst du im Gruppenchat nicht verwenden. Hier schon!",
-            "not_in_private":"Stopp, das hat hier nichts zu suchen.\nBitte versuche es im Gruppenchat..."
+            "not_in_private":"Stopp, das hat hier nichts zu suchen.\nBitte versuche es im Gruppenchat...",
+            "no_games": "Dass du Spiele hast, wäre mir neu. Wenn es doch der Fall ist, sag mir das mit /neues_spiel!"
         },
         "start":"Hi! Bitte authentifiziere dich zuerst, um mit mir zu reden:",
         "key":{
@@ -38,10 +39,7 @@
             "no_results": "Leider gibt es derzeit kein Ergebnis, was ich zeigen kann.",
             "results": "Das Ergebnis ist: \n{votes}"
         },
-        "spiele":{
-            "no_games": "Dass du Spiele hast, wäre mir neu. Wenn es doch der Fall ist, sag mir das mit /neues_spiel!",
-            "games_list": "Du hast folgende Spiele:"
-        },
+        "spiele": "Du hast folgende Spiele:",
         "erweiterungen":"Für welches Grundspiel fragst du?\nAntworte mit /stop, um abzubrechen.",
         "neues_spiel":"Wie heißt dein neues Spiel?\nAntworte mit /stop, um abzubrechen.",
         "neue_erweiterung":"Für welches Spiel hast du eine neue Erweiterung?\nAntworte mit /stop, um abzubrechen.",
@@ -70,7 +68,7 @@
         "no_keyboard": "Nein",
         "handle_calendar":{
             "ask_date": "Okay, wann wollt ihr spielen? Antworte mit /stop, um abzubrechen.",
-            "have_date_already": "Melde dich doch einfach mit /ich beim festgelegten Termin an.",
+            "have_date_already": "Melde dich doch einfach mit /ich beim bereits festgelegten Termin an.",
             "date_set": "Okay, schrei einfach /ich, wenn du teilnehmen willst!"
         },
         "category":{
@@ -91,7 +89,7 @@
         "settings":{
             "set": "Okay, ich habe mir die Einstellungen vermerkt.",
             "shrink_set": "Einstellungen angepasst.",
-            "no_admin": "Bot ist kein Admin",
+            "not_admin": "Bot ist kein Admin",
             "no_privatechat": "Fehlender Privatchat",
             "participation": "Teilnahme am Spieleabend",
             "votes": "Abstimmung"
@@ -128,7 +126,7 @@
             "expansion_title": "Wie heißt deine Erweiterung für {game}?\nAntworte mit /stop, um abzubrechen.",
             "error_no_game": "Mir ist nicht bekannt, dass du dieses Spiel hast. Du kannst es gerne mit /neues_spiel hinzufügen."
         },
-        "expansions_title":{
+        "expansion_title":{
             "known_expansion": "Wusste ich doch: Diese Erweiterung hast du schon einmal eingetragen. Viel Spaß noch damit!",
             "added_expansion": "Okay, die Erweiterung wurde hinzugefügt \\o/"
         },
@@ -143,7 +141,7 @@
         },
         "csv":"OKAY, ich habe die Spiele alle eingetragen.",
         "date":{
-            "have_date_already": "Melde dich doch einfach mit /ich beim festgelegten Termin an.",
+            "have_date_already": "Melde dich doch einfach mit /ich beim bereits festgelegten Termin an.",
             "date_set": "Okay, schrei einfach /ich, wenn du teilnehmen willst!"
         },
         "default": "Ja... Bald..."

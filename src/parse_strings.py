@@ -1,5 +1,6 @@
 # coding=utf-8
 
+import os
 import uuid
 import jsonpickle
 
@@ -179,7 +180,8 @@ def generate_uuid_32():
 
 
 def read_json(keys):
-    f = open("./lang/de.json", 'rb')
+    path = os.path.dirname(os.path.realpath(__file__))
+    f = open(os.path.join(path, "lang/de.json"), 'rb')
     json_str = f.read()
     text = jsonpickle.decode(json_str)
 
